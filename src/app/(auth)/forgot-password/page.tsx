@@ -10,6 +10,8 @@ import { forgotPasswordSchema } from '@/schema/authSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { ForgotPasswordHeader } from './ForgotPasswordHeader';
+import { OTPForm } from '@/components/auth/OTPForm';
+import { useState } from 'react';
 
 export default function ForgotPassword() {
   const form = useForm<ForgotPasswordFormValues>({
@@ -18,12 +20,20 @@ export default function ForgotPassword() {
     },
     resolver: zodResolver(forgotPasswordSchema),
   });
+  const [showOtpScreen, setShowOtpScreen] = useState(false);
 
   const { handleSubmit } = form;
 
   const onSubmit = (values: ForgotPasswordFormValues) => {
     console.log(values);
+    setShowOtpScreen(true);
   };
+
+  const onOtpBack = () => {
+    setShowOtpScreen(false);
+  };
+
+  if (showOtpScreen) return <OTPForm onBack={onOtpBack} />;
 
   return (
     <AuthWrapper header={<ForgotPasswordHeader />}>
