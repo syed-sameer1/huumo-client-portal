@@ -26,3 +26,10 @@ export const signupSchema = z
 export const forgotPasswordSchema = z.object({
   email: z.email({ message: 'Invalid email address' }),
 });
+
+export const otpSchema = z.object({
+  otp: z
+    .string()
+    .length(6, 'OTP must be 6 digits')
+    .regex(/^\d+$/, 'OTP must contain only numbers'),
+});
