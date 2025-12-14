@@ -1,3 +1,5 @@
+'use client';
+
 import { useForm } from 'react-hook-form';
 import { LoginFormValues } from '../types';
 import { zodResolver } from '@hookform/resolvers/zod';
