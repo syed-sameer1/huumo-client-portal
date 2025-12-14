@@ -24,6 +24,7 @@ export const LoginForm = () => {
   const onSubmit = (values: LoginFormValues) => {
     console.log(values);
   };
+
   return (
     <Form {...form}>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -42,24 +43,33 @@ export const LoginForm = () => {
               />
             )}
           />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <InputWithLabel
-                label="Password"
-                Input={
-                  <PasswordInput
-                    id="password"
-                    placeholder="Enter your password"
-                    {...field}
-                  />
-                }
-                isRequired
-                id="email"
-              />
-            )}
-          />
+          <div>
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <InputWithLabel
+                  label="Password"
+                  Input={
+                    <PasswordInput
+                      id="password"
+                      placeholder="Enter your password"
+                      {...field}
+                    />
+                  }
+                  isRequired
+                  id="email"
+                />
+              )}
+            />
+            <Link
+              className="text-sm text-muted-foreground mt-2 block"
+              href="forgot-password"
+            >
+              Forgot Password?
+            </Link>
+          </div>
+
           <div className="text-sm text-muted-foreground">
             Forgot your email address?{' '}
             <Link href="#" className="text-accent-foreground">
