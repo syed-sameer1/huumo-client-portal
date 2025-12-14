@@ -18,11 +18,11 @@ const eslintConfig = defineConfig([
     },
 
     rules: {
-      /* 🔥 Prettier as ESLint errors */
       'prettier/prettier': 'error',
 
       /* Unused vars */
       'no-unused-vars': 'off',
+      '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-unused-vars': [
         'error',
         {
