@@ -22,3 +22,7 @@ export const signupSchema = z
     message: "Passwords don't match",
     path: ['confirmPassword'],
   });
+
+export const forgotPasswordSchema = z.object({
+  email: z.email({ message: 'Invalid email address' }),
+});
