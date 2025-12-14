@@ -1,5 +1,3 @@
-'use client';
-
 import { AuthWrapper } from '@/components/auth/AuthWrapper';
 import Link from 'next/link';
 import { LoginForm } from '@/components/auth/LoginForm';
