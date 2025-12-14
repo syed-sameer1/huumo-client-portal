@@ -1,8 +1,8 @@
-import { Form, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { LoginFormValues } from '../types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema } from '@/schema/authSchema';
-import { FormField } from '@/components/ui/form';
+import { Form, FormField } from '@/components/ui/form';
 import { InputWithLabel } from '@/components/form-inputs/InputWithLabel';
 import { Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/form-inputs/PasswordInput';
