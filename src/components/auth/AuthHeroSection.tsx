@@ -2,7 +2,7 @@ import Image from 'next/image';
 
 export const AuthHeroSection = () => {
   return (
-    <div className="w-175 bg-background-primary-light flex flex-col items-center relative pt-12 gap-10 px-3">
+    <div className="w-175 bg-background-primary-light flex flex-col items-center relative pt-12 gap-10 px-3 h-screen">
       <div>
         <div className="text-[40px] text-accent-foreground font-semibold mb-4">
           Huumo

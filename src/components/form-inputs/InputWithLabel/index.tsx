@@ -15,7 +15,7 @@ export const InputWithLabel = ({
 }) => {
   return (
     <FormItem>
-      <Label htmlFor={id} className="block mb-1">
+      <Label htmlFor={id} className="block mb-2">
         {label} {isRequired && <span className="ml-1 text-destructive">*</span>}
       </Label>
       <FormControl>{Input}</FormControl>
