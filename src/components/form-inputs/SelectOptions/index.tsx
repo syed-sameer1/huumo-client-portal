@@ -16,14 +16,19 @@ export const SelectOptions = ({
 }: SelectOptionsProps) => {
   return (
     <Select
-      value={field.value}
+      value={field.value || undefined}
       disabled={disabled}
       onValueChange={(value) => field.onChange(value)}
     >
-      <SelectTrigger className="m-0">
+      <SelectTrigger className="w-full">
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent
+        position="popper"
+        side="bottom"
+        align="start"
+        className="w-full max-h-64 overflow-auto"
+      >
         <SelectGroup>
           {options.map(({ value, label }) => (
             <SelectItem key={value} value={value}>

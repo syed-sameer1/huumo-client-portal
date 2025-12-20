@@ -16,6 +16,6 @@ export type OtpFormValues = z.infer<typeof otpSchema>;
 
 export type SignupFormValues = z.infer<typeof signupSchema>;
 
-export type CompanyDetailsSchemaValues = z.infer<typeof companyDetailsSchema>;
+export type CompanyDetailsFormValues = z.infer<typeof companyDetailsSchema>;
 
 export type ResetPasswordSchemaValues = z.infer<typeof resetPasswordSchema>;

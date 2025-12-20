@@ -2,19 +2,20 @@ import { Form, FormField } from '@/components/ui/form';
 import { AuthWrapper } from '../AuthWrapper';
 import { InputWithLabel } from '@/components/form-inputs/InputWithLabel';
 import { useForm } from 'react-hook-form';
-import { CompanyDetailsSchemaValues } from '../types';
+import { CompanyDetailsFormValues } from '../types';
 import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { companyDetailsSchema } from '@/schema/authSchema';
-import { SelectOptions } from '@/components/form-inputs/SelectOptions';
 import { Button } from '@/components/ui/button';
+import { CompanyDetailsFormProps } from './types';
+import { LocationSelectGroup } from '@/components/form-inputs/LocationSelectGroup';
 
 export const CompanyDetailsForm = ({
-  onContinue,
-}: {
-  onContinue: () => void;
-}) => {
-  const form = useForm<CompanyDetailsSchemaValues>({
+  email,
+  password,
+  name,
+}: CompanyDetailsFormProps) => {
+  const form = useForm<CompanyDetailsFormValues>({
     defaultValues: {
       companyName: '',
       website: '',
@@ -25,11 +26,10 @@ export const CompanyDetailsForm = ({
     resolver: zodResolver(companyDetailsSchema),
   });
 
-  const { handleSubmit } = form;
+  const { handleSubmit, control } = form;
 
-  const onSubmit = (values: CompanyDetailsSchemaValues) => {
-    console.log(values);
-    onContinue();
+  const onSubmit = (values: CompanyDetailsFormValues) => {
+    console.log(values, email, name, password);
   };
 
   return (
@@ -76,89 +76,9 @@ export const CompanyDetailsForm = ({
                 />
               )}
             />
-            <FormField
-              control={form.control}
-              name="country"
-              render={({ field }) => (
-                <InputWithLabel
-                  label="Country"
-                  isRequired
-                  id="country"
-                  Input={
-                    <SelectOptions
-                      options={[
-                        {
-                          value: 'united-states',
-                          label: 'United states',
-                        },
-                        {
-                          value: 'pakistan',
-                          label: 'Pakistan',
-                        },
-                      ]}
-                      placeholder="Select your country"
-                      field={field}
-                    />
-                  }
-                />
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="state"
-              render={({ field }) => (
-                <InputWithLabel
-                  label="State"
-                  isRequired
-                  id="state"
-                  Input={
-                    <SelectOptions
-                      options={[
-                        {
-                          value: 'united-states',
-                          label: 'United states',
-                        },
-                        {
-                          value: 'pakistan',
-                          label: 'Pakistan',
-                        },
-                      ]}
-                      placeholder="Select your state"
-                      field={field}
-                      disabled={!form.getValues('country')}
-                    />
-                  }
-                />
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="city"
-              render={({ field }) => (
-                <InputWithLabel
-                  label="City"
-                  isRequired
-                  id="city"
-                  Input={
-                    <SelectOptions
-                      options={[
-                        {
-                          value: 'united-states',
-                          label: 'United states',
-                        },
-                        {
-                          value: 'pakistan',
-                          label: 'Pakistan',
-                        },
-                      ]}
-                      placeholder="Select your city"
-                      field={field}
-                      disabled={!form.getValues('country')}
-                    />
-                  }
-                />
-              )}
-            />
+
+            <LocationSelectGroup control={control} setValue={form.setValue} />
+
             <Button className="bg-accent-foreground h-10 rounded-md">
               Continue
             </Button>
