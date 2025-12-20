@@ -14,19 +14,25 @@ import { Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/form-inputs/PasswordInput';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
 import { AuthWrapper } from '../AuthWrapper';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signupSchema } from '@/schema/authSchema';
-import { SignupFormProps } from './types';
+import { useSendOtpAuth, useSignupAuth } from '@/hooks/auth';
+import { LoadingButton } from '@/components/LoadingButton';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
-export const SignupForm = ({ onContinue }: SignupFormProps) => {
+export const SignupForm = () => {
+  const { mutate, isPending } = useSignupAuth();
+  const { mutate: authMutate, isPending: isOtpLoading } = useSendOtpAuth();
+  const router = useRouter();
   const form = useForm<SignupFormValues>({
     defaultValues: {
       email: '',
       password: '',
       confirmPassword: '',
       name: '',
+      companyName: '',
     },
     resolver: zodResolver(signupSchema),
   });
@@ -34,8 +40,24 @@ export const SignupForm = ({ onContinue }: SignupFormProps) => {
   const { handleSubmit } = form;
 
   const onSubmit = (values: SignupFormValues) => {
-    console.log(values);
-    onContinue();
+    mutate(values, {
+      onSuccess: () => {
+        toast.success('User registered successfully!');
+        authMutate(
+          { email: values.email },
+          {
+            onSuccess: () => {
+              router.push(
+                '/verify-email/otp?email=' + encodeURIComponent(values.email),
+              );
+            },
+          },
+        );
+      },
+      onError: (error) => {
+        toast.error(`Registration failed: ${error.message}`);
+      },
+    });
   };
 
   return (
@@ -52,6 +74,7 @@ export const SignupForm = ({ onContinue }: SignupFormProps) => {
               render={({ field }) => (
                 <InputWithLabel
                   label="Name"
+                  isRequired
                   Input={
                     <Input id="name" placeholder="Enter your name" {...field} />
                   }
@@ -61,10 +84,29 @@ export const SignupForm = ({ onContinue }: SignupFormProps) => {
             />
             <FormField
               control={form.control}
+              name="companyName"
+              render={({ field }) => (
+                <InputWithLabel
+                  label="Company Name"
+                  isRequired
+                  Input={
+                    <Input
+                      id="companyName"
+                      placeholder="Enter your company name"
+                      {...field}
+                    />
+                  }
+                  id="companyName"
+                />
+              )}
+            />
+            <FormField
+              control={form.control}
               name="email"
               render={({ field }) => (
                 <InputWithLabel
                   label="Email Address"
+                  isRequired
                   Input={
                     <Input
                       id="email"
@@ -82,6 +124,7 @@ export const SignupForm = ({ onContinue }: SignupFormProps) => {
               render={({ field }) => (
                 <InputWithLabel
                   label="Password"
+                  isRequired
                   Input={
                     <PasswordInput
                       id="password"
@@ -99,6 +142,7 @@ export const SignupForm = ({ onContinue }: SignupFormProps) => {
               render={({ field }) => (
                 <InputWithLabel
                   label="Re-enter Password"
+                  isRequired
                   Input={
                     <PasswordInput
                       id="confirmPassword"
@@ -132,9 +176,13 @@ export const SignupForm = ({ onContinue }: SignupFormProps) => {
                 </FormItem>
               )}
             />
-            <Button className="bg-accent-foreground h-10 rounded-md">
+            <LoadingButton
+              className="bg-accent-foreground h-10 rounded-md"
+              loading={isPending || isOtpLoading}
+              disabled={isPending || isOtpLoading}
+            >
               Continue
-            </Button>
+            </LoadingButton>
           </div>
         </form>
       </Form>
