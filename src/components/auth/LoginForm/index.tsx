@@ -9,10 +9,13 @@ import { InputWithLabel } from '@/components/form-inputs/InputWithLabel';
 import { Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/form-inputs/PasswordInput';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 import { SocialLogins } from './SocialLogins';
+import { useLoginAuth } from '@/hooks/auth';
+import { toast } from 'sonner';
+import { LoadingButton } from '@/components/LoadingButton';
 
 export const LoginForm = () => {
+  const { mutate, isPending } = useLoginAuth();
   const form = useForm<LoginFormValues>({
     defaultValues: {
       email: '',
@@ -24,7 +27,11 @@ export const LoginForm = () => {
   const { handleSubmit } = form;
 
   const onSubmit = (values: LoginFormValues) => {
-    console.log(values);
+    mutate(values, {
+      onSuccess: () => {
+        toast.success('Logged in successfully!');
+      },
+    });
   };
 
   return (
@@ -79,12 +86,13 @@ export const LoginForm = () => {
             </Link>{' '}
             for help resetting your password.
           </div>
-          <Button
+          <LoadingButton
+            loading={isPending}
             type="submit"
             className="bg-accent-foreground h-10 rounded-md"
           >
             Log In
-          </Button>
+          </LoadingButton>
           <div className="text-sm text-secondary-foreground text-center">
             or continue with
           </div>
