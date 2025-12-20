@@ -1,5 +1,6 @@
-import { AuthWrapper } from '../AuthWrapper';
+'use client';
 
+import { AuthWrapper } from '../AuthWrapper';
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from 'input-otp';
 import {
   InputOTP,
@@ -9,14 +10,20 @@ import {
 import { useForm } from 'react-hook-form';
 import { OtpFormValues } from '../types';
 import { Form, FormField, FormItem, FormMessage } from '@/components/ui/form';
-import { Button } from '@/components/ui/button';
-import { OTPFormProps } from './types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { otpSchema } from '@/schema/authSchema';
 import { AuthHeader } from '../AuthHeader';
 import { ArrowLeft } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { LoadingButton } from '@/components/LoadingButton';
+import { useSendOtpAuth, useVerifyOtpAuth } from '@/hooks/auth';
+import { toast } from 'sonner';
 
-export const OTPForm = ({ onBack, onSuccess }: OTPFormProps) => {
+export const OTPForm = () => {
+  const router = useRouter();
+  const email = useSearchParams().get('email');
+  const { mutate, isPending } = useVerifyOtpAuth();
+  const { mutate: sendAuth, isPending: isOtpLoading } = useSendOtpAuth();
   const form = useForm<OtpFormValues>({
     defaultValues: {
       otp: '',
@@ -27,8 +34,37 @@ export const OTPForm = ({ onBack, onSuccess }: OTPFormProps) => {
   const { handleSubmit } = form;
 
   const onSubmit = (values: OtpFormValues) => {
-    console.log(values);
-    onSuccess();
+    mutate(
+      { otp: Number(values.otp) },
+      {
+        onSuccess: () => {
+          toast.success('Account verified successfully!');
+        },
+        onError: (error) => {
+          toast.error(`Registration failed: ${error.message}`);
+        },
+      },
+    );
+  };
+
+  const onBack = () => {
+    router.back();
+  };
+
+  const resendOtp = () => {
+    console.log(router);
+    if (!email) return;
+    sendAuth(
+      { email },
+      {
+        onSuccess: () => {
+          toast.success('OTP resent successfully!');
+        },
+        onError: (error) => {
+          toast.error(`Failed to resend OTP: ${error.message}`);
+        },
+      },
+    );
   };
 
   return (
@@ -41,7 +77,7 @@ export const OTPForm = ({ onBack, onSuccess }: OTPFormProps) => {
             </button>
           }
           title="OTP Verification"
-          description="Please enter the OTP you received on johndoe@gmail.com"
+          description={`Please enter the OTP you received on ${email}`}
         />
       }
     >
@@ -78,13 +114,22 @@ export const OTPForm = ({ onBack, onSuccess }: OTPFormProps) => {
             </div>
             <div className="text-sm">
               Didn&apos;t receive code?{' '}
-              <button className="text-accent-foreground underline">
+              <LoadingButton
+                type="button"
+                loading={isOtpLoading}
+                onClick={resendOtp}
+                className="text-accent-foreground underline p-0 bg-transparent hover:bg-transparent shadow-none"
+              >
                 Resend
-              </button>
+              </LoadingButton>
             </div>
-            <Button className="bg-accent-foreground h-10 rounded-md w-full">
+            <LoadingButton
+              loading={isPending}
+              disabled={isPending}
+              className="bg-accent-foreground h-10 rounded-md w-full"
+            >
               Continue
-            </Button>
+            </LoadingButton>
           </div>
         </form>
       </Form>
