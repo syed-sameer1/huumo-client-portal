@@ -9,7 +9,6 @@ import { Input } from '@/components/ui/input';
 import { forgotPasswordSchema } from '@/schema/authSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { OTPForm } from '@/components/auth/OTPForm';
 import { useState } from 'react';
 import { ResetPasswordForm } from '@/components/auth/ResetPasswordForm';
 import { AuthHeader } from '@/components/auth/AuthHeader';
@@ -31,17 +30,6 @@ export default function ForgotPassword() {
     console.log(values);
     setFormType('otp');
   };
-
-  const onOtpBack = () => {
-    setFormType('forgot-password');
-  };
-
-  const onOtpSuccess = () => {
-    setFormType('reset-password');
-  };
-
-  if (formType === 'otp')
-    return <OTPForm onBack={onOtpBack} onSuccess={onOtpSuccess} />;
 
   if (formType === 'reset-password')
     return <ResetPasswordForm onBack={() => setFormType('otp')} />;
