@@ -48,8 +48,14 @@ export const SignupForm = () => {
           {
             onSuccess: () => {
               router.push(
-                '/verify-email/otp?email=' + encodeURIComponent(values.email),
+                '/verify-email/otp?email=' +
+                  encodeURIComponent(values.email) +
+                  '&next=purchase-orders',
               );
+            },
+            onError: (error) => {
+              console.log({ error });
+              toast.error(error.response.data.message);
             },
           },
         );

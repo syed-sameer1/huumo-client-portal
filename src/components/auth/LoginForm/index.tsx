@@ -13,9 +13,13 @@ import { SocialLogins } from './SocialLogins';
 import { useLoginAuth } from '@/hooks/auth';
 import { toast } from 'sonner';
 import { LoadingButton } from '@/components/LoadingButton';
+import { useRouter } from 'next/navigation';
+import { AxiosError } from 'axios';
 
 export const LoginForm = () => {
   const { mutate, isPending } = useLoginAuth();
+  const router = useRouter();
+
   const form = useForm<LoginFormValues>({
     defaultValues: {
       email: '',
@@ -28,8 +32,19 @@ export const LoginForm = () => {
 
   const onSubmit = (values: LoginFormValues) => {
     mutate(values, {
-      onSuccess: () => {
+      onSuccess: (res) => {
+        console.log(res);
+        localStorage.setItem('access_token', res.data.accessToken);
+        if (res.data.user.status === 'pending') {
+          router.push('/verify-email/otp');
+          return;
+        }
+        router.push('/purchase-orders');
         toast.success('Logged in successfully!');
+      },
+      onError: (error: AxiosError) => {
+        console.log({ error });
+        toast.error(error.response.data.message);
       },
     });
   };
