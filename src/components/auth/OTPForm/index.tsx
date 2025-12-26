@@ -40,7 +40,7 @@ export const OTPForm = () => {
         onSuccess: (res) => {
           toast.success('Account verified successfully!');
           router.push('/subscription');
-          localStorage.setItem('access_token', res.data.accessToken);
+          console.log({ res });
         },
         onError: (error) => {
           toast.error(`Registration failed: ${error.message}`);

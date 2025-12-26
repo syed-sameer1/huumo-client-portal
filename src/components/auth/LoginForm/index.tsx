@@ -14,7 +14,8 @@ import { useLoginAuth } from '@/hooks/auth';
 import { toast } from 'sonner';
 import { LoadingButton } from '@/components/LoadingButton';
 import { useRouter } from 'next/navigation';
-import { AxiosError } from 'axios';
+import { UserStatus } from '@/types/user';
+import { urls } from '@/constants/urls';
 
 export const LoginForm = () => {
   const { mutate, isPending } = useLoginAuth();
@@ -34,17 +35,15 @@ export const LoginForm = () => {
     mutate(values, {
       onSuccess: (res) => {
         console.log(res);
-        localStorage.setItem('access_token', res.data.accessToken);
-        if (res.data.user.status === 'pending') {
-          router.push('/verify-email/otp');
+        if (res.data.user.status === UserStatus.pending) {
+          router.push(urls.otpRoute);
           return;
         }
         router.push('/purchase-orders');
         toast.success('Logged in successfully!');
       },
-      onError: (error: AxiosError) => {
+      onError: (error) => {
         console.log({ error });
-        toast.error(error.response.data.message);
       },
     });
   };

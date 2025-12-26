@@ -6,4 +6,5 @@ export const urls = {
   verifyOtp: '/auth/client/verify-otp',
   login: '/auth/client/login',
   forgotPassword: '/auth/client/forget-password',
+  otpRoute: '/verify-email/otp',
 };

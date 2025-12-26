@@ -11,7 +11,7 @@ export function PasswordInput({
   ...props
 }: React.InputHTMLAttributes<HTMLInputElement>) {
   const [showPassword, setShowPassword] = React.useState(false);
-  console.log({ showPassword });
+
   return (
     <div className="relative">
       <Input

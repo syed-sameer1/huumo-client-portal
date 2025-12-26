@@ -9,7 +9,6 @@ export const POOptions = () => {
     PO_VALUES.UPLOAD_CSV,
   );
   const fileInputRef = useRef<HTMLInputElement>(null);
-  console.log({ selectPurchaseOption });
 
   const onSelectPurchaseOption = (purchaseOption) => {
     setPurchaseOption(purchaseOption);
@@ -22,9 +21,6 @@ export const POOptions = () => {
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    console.log('Selected file:', file);
-    // handle CSV upload here
   };
 
   return (

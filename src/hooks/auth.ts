@@ -10,9 +10,18 @@ import {
   OtpVerifyPayload,
 } from '@/service/otp/types';
 import { login } from '@/service/login';
+import { AxiosError } from 'axios';
+
+export type ApiErrorResponse = {
+  message?: string;
+};
 
 export const useSignupAuth = (
-  options?: MutationOptions<AuthResponse, Error, SignupFormValues>,
+  options?: MutationOptions<
+    AuthResponse,
+    AxiosError<ApiErrorResponse>,
+    SignupFormValues
+  >,
 ) => {
   return useApiMutation(register, options);
 };

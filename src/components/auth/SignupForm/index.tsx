@@ -41,8 +41,13 @@ export const SignupForm = () => {
 
   const onSubmit = (values: SignupFormValues) => {
     mutate(values, {
-      onSuccess: () => {
+      onSuccess: ({ data }) => {
+        const token = data.accessToken;
+        if (token) {
+          localStorage.setItem('access_token', token);
+        }
         toast.success('User registered successfully!');
+
         authMutate(
           { email: values.email },
           {
@@ -55,13 +60,12 @@ export const SignupForm = () => {
             },
             onError: (error) => {
               console.log({ error });
-              toast.error(error.response.data.message);
             },
           },
         );
       },
       onError: (error) => {
-        toast.error(`Registration failed: ${error.message}`);
+        toast.error(error.response?.data.message);
       },
     });
   };
