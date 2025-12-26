@@ -2,6 +2,7 @@ import { api } from '../api';
 import { urls } from '@/constants/urls';
 import { AxiosResponse } from 'axios';
 import { OtpResponse, OtpSendPayload, OtpVerifyPayload } from './types';
+import { AuthResponse } from '../register/types';
 
 export const sendOtp = (
   payload: OtpSendPayload,
@@ -9,4 +10,4 @@ export const sendOtp = (
 
 export const verifyOtp = (
   payload: OtpVerifyPayload,
-): Promise<AxiosResponse<OtpResponse>> => api.post(urls.verifyOtp, payload);
+): Promise<AxiosResponse<AuthResponse>> => api.post(urls.verifyOtp, payload);

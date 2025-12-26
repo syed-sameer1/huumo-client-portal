@@ -24,7 +24,7 @@ export const useSendOtpAuth = (
 };
 
 export const useVerifyOtpAuth = (
-  options?: MutationOptions<OtpResponse, Error, OtpVerifyPayload>,
+  options?: MutationOptions<AuthResponse, Error, OtpVerifyPayload>,
 ) => {
   return useApiMutation(verifyOtp, options);
 };
