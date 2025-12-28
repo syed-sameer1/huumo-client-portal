@@ -10,7 +10,7 @@ export const LocationSelectGroup = ({
 }: LocationSelectParams) => {
   const { countries, states, cities, isStateDisabled, isCityDisabled } =
     useLocationSelects({ control, setValue });
-  console.log({ countries, states, cities, isStateDisabled, isCityDisabled });
+
   return (
     <>
       {/* Country */}

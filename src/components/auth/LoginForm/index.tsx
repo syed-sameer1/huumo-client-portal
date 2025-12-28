@@ -13,9 +13,14 @@ import { SocialLogins } from './SocialLogins';
 import { useLoginAuth } from '@/hooks/auth';
 import { toast } from 'sonner';
 import { LoadingButton } from '@/components/LoadingButton';
+import { useRouter } from 'next/navigation';
+import { UserStatus } from '@/types/user';
+import { urls } from '@/constants/urls';
 
 export const LoginForm = () => {
   const { mutate, isPending } = useLoginAuth();
+  const router = useRouter();
+
   const form = useForm<LoginFormValues>({
     defaultValues: {
       email: '',
@@ -28,8 +33,17 @@ export const LoginForm = () => {
 
   const onSubmit = (values: LoginFormValues) => {
     mutate(values, {
-      onSuccess: () => {
+      onSuccess: (res) => {
+        console.log(res);
+        if (res.data.user.status === UserStatus.pending) {
+          router.push(urls.otpRoute);
+          return;
+        }
+        router.push('/purchase-orders');
         toast.success('Logged in successfully!');
+      },
+      onError: (error) => {
+        console.log({ error });
       },
     });
   };

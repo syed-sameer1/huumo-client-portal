@@ -41,21 +41,31 @@ export const SignupForm = () => {
 
   const onSubmit = (values: SignupFormValues) => {
     mutate(values, {
-      onSuccess: () => {
+      onSuccess: ({ data }) => {
+        const token = data.accessToken;
+        if (token) {
+          localStorage.setItem('access_token', token);
+        }
         toast.success('User registered successfully!');
+
         authMutate(
           { email: values.email },
           {
             onSuccess: () => {
               router.push(
-                '/verify-email/otp?email=' + encodeURIComponent(values.email),
+                '/verify-email/otp?email=' +
+                  encodeURIComponent(values.email) +
+                  '&next=purchase-orders',
               );
+            },
+            onError: (error) => {
+              console.log({ error });
             },
           },
         );
       },
       onError: (error) => {
-        toast.error(`Registration failed: ${error.message}`);
+        toast.error(error.response?.data.message);
       },
     });
   };

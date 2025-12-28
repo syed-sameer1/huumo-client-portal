@@ -37,8 +37,10 @@ export const OTPForm = () => {
     mutate(
       { otp: Number(values.otp) },
       {
-        onSuccess: () => {
+        onSuccess: (res) => {
           toast.success('Account verified successfully!');
+          router.push('/subscription');
+          console.log({ res });
         },
         onError: (error) => {
           toast.error(`Registration failed: ${error.message}`);
@@ -101,7 +103,6 @@ export const OTPForm = () => {
                       <InputOTPSlot index={2} />
                       <InputOTPSlot index={3} />
                       <InputOTPSlot index={4} />
-                      <InputOTPSlot index={5} />
                     </InputOTPGroup>
                   </InputOTP>
                   <FormMessage />
@@ -109,9 +110,6 @@ export const OTPForm = () => {
               )}
             />
 
-            <div>
-              Expires in: <span className="text-accent-foreground">9s</span>
-            </div>
             <div className="text-sm">
               Didn&apos;t receive code?{' '}
               <LoadingButton

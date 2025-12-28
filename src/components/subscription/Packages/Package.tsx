@@ -2,6 +2,7 @@ import { Card } from '@/components/ui/card';
 import { PackageProps } from './types';
 import { CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 export const Package = ({ subscriptionPackage }: PackageProps) => {
   const { packageTitle, description, benefits, hasPrice, price, actionLabel } =
@@ -35,8 +36,9 @@ export const Package = ({ subscriptionPackage }: PackageProps) => {
 
         <Button
           className={`${hasPrice ? 'bg-background-secondary' : 'bg-[#516C6E]'} w-full h-11.5`}
+          asChild
         >
-          {actionLabel}
+          <Link href="/purchase-orders">{actionLabel}</Link>
         </Button>
       </div>
     </Card>

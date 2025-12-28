@@ -7,7 +7,14 @@ export default function Login() {
     <div className="relative flex items-center h-screen">
       <AuthWrapper
         title="Log In"
-        description="Enter your email and password below to log in to your account"
+        description={
+          <div>
+            Don&apos;t have an account?{' '}
+            <Link href="/signup" className="text-accent-foreground">
+              Sign up
+            </Link>
+          </div>
+        }
       >
         <LoginForm />
       </AuthWrapper>
