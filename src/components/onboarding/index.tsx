@@ -2,7 +2,7 @@ import OnBoardingStepper from './OnBoardingStepper';
 
 export const Onboarding = () => {
   return (
-    <div className="pt-[80px]">
+    <div className="pt-20">
       <OnBoardingStepper />
     </div>
   );
