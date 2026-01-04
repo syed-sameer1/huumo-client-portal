@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { routeUrls } from '@/constants/urls';
 import Link from 'next/link';
 
 export const ActionButtons = () => {
@@ -14,9 +15,7 @@ export const ActionButtons = () => {
         className="bg-background-secondary w-37.5 h-10 rounded-md"
         asChild
       >
-        <Link href="/purchase-orders/new-purchase-order/select-import-method">
-          Add PO
-        </Link>
+        <Link href={routeUrls.selectImportMethod}>Add PO</Link>
       </Button>
     </div>
   );
