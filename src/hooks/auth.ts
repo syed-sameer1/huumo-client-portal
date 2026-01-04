@@ -17,29 +17,37 @@ export type ApiErrorResponse = {
 };
 
 export const useSignupAuth = (
-  options?: MutationOptions<
-    AuthResponse,
-    AxiosError<ApiErrorResponse>,
-    SignupFormValues
-  >,
+  options?: MutationOptions<AuthResponse, Error, SignupFormValues>,
 ) => {
   return useApiMutation(register, options);
 };
 
 export const useSendOtpAuth = (
-  options?: MutationOptions<OtpResponse, Error, OtpSendPayload>,
+  options?: MutationOptions<
+    OtpResponse,
+    AxiosError<ApiErrorResponse>,
+    OtpSendPayload
+  >,
 ) => {
   return useApiMutation(sendOtp, options);
 };
 
 export const useVerifyOtpAuth = (
-  options?: MutationOptions<AuthResponse, Error, OtpVerifyPayload>,
+  options?: MutationOptions<
+    AuthResponse,
+    AxiosError<ApiErrorResponse>,
+    OtpVerifyPayload
+  >,
 ) => {
   return useApiMutation(verifyOtp, options);
 };
 
 export const useLoginAuth = (
-  options?: MutationOptions<AuthResponse, Error, LoginFormValues>,
+  options?: MutationOptions<
+    AuthResponse,
+    AxiosError<ApiErrorResponse>,
+    LoginFormValues
+  >,
 ) => {
   return useApiMutation(login, options);
 };

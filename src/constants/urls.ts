@@ -6,5 +6,14 @@ export const urls = {
   verifyOtp: '/auth/client/verify-otp',
   login: '/auth/client/login',
   forgotPassword: '/auth/client/forget-password',
+  createSubscription: '/subscription/create',
+  subscriptionStatus: '/subscription/subscription-status',
+};
+
+export const routeUrls = {
   otpRoute: '/verify-email/otp',
+  subscriptionRoute: '/subscription',
+  purchaseOrdersRoute: '/purchase-orders',
+  onboardingRoute: '/onboarding',
+  selectImportMethod: '/purchase-orders/select-import-method',
 };
