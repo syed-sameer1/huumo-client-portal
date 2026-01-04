@@ -15,7 +15,7 @@ import { toast } from 'sonner';
 import { LoadingButton } from '@/components/LoadingButton';
 import { useRouter } from 'next/navigation';
 import { UserStatus } from '@/types/user';
-import { urls } from '@/constants/urls';
+import { routeUrls } from '@/constants/urls';
 
 export const LoginForm = () => {
   const { mutate, isPending } = useLoginAuth();
@@ -35,15 +35,21 @@ export const LoginForm = () => {
     mutate(values, {
       onSuccess: (res) => {
         console.log(res);
-        if (res.data.user.status === UserStatus.pending) {
-          router.push(urls.otpRoute);
+        localStorage.setItem('access_token', res.data.accessToken);
+        if (res.data.user.client.status === UserStatus.pending) {
+          router.push(routeUrls.otpRoute);
           return;
         }
-        router.push('/purchase-orders');
+        if (res.data.user.client.status === UserStatus.verified) {
+          router.push(routeUrls.subscriptionRoute);
+          return;
+        }
+        router.push(routeUrls.purchaseOrdersRoute);
         toast.success('Logged in successfully!');
       },
       onError: (error) => {
         console.log({ error });
+        toast.error(error.response?.data.message);
       },
     });
   };

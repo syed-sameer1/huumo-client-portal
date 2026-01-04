@@ -39,6 +39,10 @@ export const OTPForm = () => {
       {
         onSuccess: (res) => {
           toast.success('Account verified successfully!');
+          const token = res.data.accessToken;
+          if (token) {
+            localStorage.setItem('access_token', token);
+          }
           router.push('/subscription');
           console.log({ res });
         },
