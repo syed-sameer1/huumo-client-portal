@@ -1,7 +1,8 @@
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { FooterProps } from './types';
 
-export const Footer = ({ showBack, onNextStep, onBackStep }) => {
+export const Footer = ({ showBack, onNextStep, onBackStep }: FooterProps) => {
   return (
     <div className="flex justify-between w-full">
       {showBack && (

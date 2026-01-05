@@ -8,6 +8,7 @@ import {
   TableHead,
   TableHeader as ShadcnTableHeader,
 } from '@/components/ui/table';
+import { PurchaseOrdersTableType } from './types';
 
 export const tableColumns: ColumnDef<PurchaseOrders>[] = [
   {
@@ -88,7 +89,7 @@ export const tableColumns: ColumnDef<PurchaseOrders>[] = [
   },
 ];
 
-export const TableHeader = ({ table }) => {
+export const TableHeader = ({ table }: { table: PurchaseOrdersTableType }) => {
   return (
     <ShadcnTableHeader>
       {table.getHeaderGroups().map((headerGroup) => (

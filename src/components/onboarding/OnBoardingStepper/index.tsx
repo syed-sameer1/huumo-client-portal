@@ -46,7 +46,6 @@ export default function OnBoardingStepper() {
         {steps.map((step, index) => (
           <StepperItem
             key={index}
-            value={step.id}
             step={step.id}
             className="relative flex-1 items-start"
           >
@@ -67,16 +66,7 @@ export default function OnBoardingStepper() {
             value={step.id}
             className="flex items-center justify-center w-238.5 mx-auto mt-10 flex-col space-y-6"
           >
-            {step.IntegrationOption && (
-              <step.IntegrationOption
-                onNextStep={() =>
-                  setCurrentStep((prev) => Math.min(prev + 1, steps.length))
-                }
-                onBackStep={() =>
-                  setCurrentStep((prev) => Math.min(prev - 1, steps.length))
-                }
-              />
-            )}
+            {step.IntegrationOption && <step.IntegrationOption />}
             <Footer
               showBack={currentStep > 1}
               onNextStep={() =>

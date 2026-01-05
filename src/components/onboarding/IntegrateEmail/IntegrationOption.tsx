@@ -1,8 +1,13 @@
 import { Button } from '@/components/ui/button';
-import { Info } from 'lucide-react';
 import Image from 'next/image';
+import { IntegrationOptionsProps } from './types';
 
-export const IntegrationOption = ({ logo, onConnect, title, description }) => {
+export const IntegrationOption = ({
+  logo,
+  onConnect,
+  title,
+  description,
+}: IntegrationOptionsProps) => {
   return (
     <div className="border p-4 space-y-2 rounded-2xl boxShadow-[0px 1px 2px 0px #0000000D]">
       <div className="flex justify-between">

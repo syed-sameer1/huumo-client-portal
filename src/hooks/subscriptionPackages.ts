@@ -1,12 +1,15 @@
-import { createSubscription } from '@/service/subscriptionPackages';
+import {
+  createSubscription,
+  CreateSubscriptionResponse,
+} from '@/service/subscriptionPackages';
 import { useApiMutation } from './query';
-import { AxiosError } from 'axios';
+import { AxiosError, AxiosResponse } from 'axios';
 import { ApiErrorResponse } from './auth';
 import { MutationOptions } from '@tanstack/react-query';
 
 export const useCreateSubscription = (
   options?: MutationOptions<
-    { url: string },
+    AxiosResponse<CreateSubscriptionResponse>,
     AxiosError<ApiErrorResponse>,
     { planId: number }
   >,

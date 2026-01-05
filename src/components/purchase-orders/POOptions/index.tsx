@@ -10,7 +10,7 @@ export const POOptions = () => {
   );
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const onSelectPurchaseOption = (purchaseOption) => {
+  const onSelectPurchaseOption = (purchaseOption: PO_VALUES) => {
     setPurchaseOption(purchaseOption);
 
     if (purchaseOption === PO_VALUES.UPLOAD_CSV) {

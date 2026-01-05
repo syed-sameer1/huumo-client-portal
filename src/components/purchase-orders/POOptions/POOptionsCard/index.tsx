@@ -1,11 +1,12 @@
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
+import { POOptionsCardProps } from './types';
 
 export const POOptionsCard = ({
   purchaseOption,
   selectedPurchaseOption,
   onSelectPurchaseOption,
-}) => {
+}: POOptionsCardProps) => {
   const { image, title, id } = purchaseOption;
   return (
     <Button

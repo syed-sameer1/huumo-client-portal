@@ -1,12 +1,12 @@
 import { z } from 'zod';
 
-export const mappingSchema = z.object({
+export const columnMappingSchema = z.object({
   required: z.object({
     po: z.string().min(1),
     date: z.string().min(1, { message: 'Please enter Date' }),
     vendor: z.string().min(1, { message: 'Please enter Vendor' }),
   }),
-  additional: z.record(z.string(), z.string()).default({}),
+  additional: z.record(z.string(), z.string()),
 });
 
 export const addFieldSchema = z.object({
@@ -16,4 +16,4 @@ export const addFieldSchema = z.object({
 
 export type AddFieldValues = z.infer<typeof addFieldSchema>;
 
-export type MappingFormValues = z.infer<typeof mappingSchema>;
+export type MappingFormValues = z.infer<typeof columnMappingSchema>;

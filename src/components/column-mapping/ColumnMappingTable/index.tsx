@@ -4,13 +4,16 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { AdditionalFieldSection } from './AdditionalFieldSection';
 import { ColumnMappingHeader } from './ColumnMappingHeader';
 import { RequiredFieldSection } from './RequiredFieldSection';
-import { MappingFormValues, mappingSchema } from '@/schema/columnMappingSchema';
+import {
+  MappingFormValues,
+  columnMappingSchema,
+} from '@/schema/columnMappingSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ColumnMappingFooter } from './ColumnMappingFooter';
 
 export const ColumnMappingTable = () => {
   const form = useForm<MappingFormValues>({
-    resolver: zodResolver(mappingSchema),
+    resolver: zodResolver(columnMappingSchema),
     defaultValues: {
       required: {
         po: '',
