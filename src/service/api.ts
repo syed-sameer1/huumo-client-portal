@@ -32,7 +32,6 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error: AxiosError<{ message?: string }>) => {
-    console.log({ error });
     if (error.response?.status === 403 && typeof window !== 'undefined') {
       localStorage.removeItem('access_token');
       window.location.href = '/';

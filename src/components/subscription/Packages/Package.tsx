@@ -19,12 +19,10 @@ export const Package = ({ subscriptionPackage }: PackageProps) => {
 
   const { mutate, isPending } = useCreateSubscription();
   const onCreateSubscription = () => {
-    console.log('here');
     mutate(
       { planId: id },
       {
         onSuccess: (res) => {
-          console.log('res', res);
           window.location.href = res.data.url;
         },
       },
