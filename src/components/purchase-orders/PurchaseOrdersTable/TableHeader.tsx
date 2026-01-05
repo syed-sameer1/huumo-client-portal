@@ -33,7 +33,6 @@ export const tableColumns: ColumnDef<PurchaseOrders>[] = [
       <SortableHeader column={column} title="PO Number" />
     ),
     cell: ({ row }) => {
-      console.log(row.original.poNumber);
       return row.original.poNumber;
     },
   },
