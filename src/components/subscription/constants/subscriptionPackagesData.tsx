@@ -1,4 +1,4 @@
-export const packagesMockData = [
+export const subscriptionPackagesData = [
   {
     id: 1,
     packageTitle: 'Lite',
@@ -20,9 +20,9 @@ export const packagesMockData = [
         description: 'Simple, manual data upload',
       },
     ],
+    isRecommended: false,
     hasPrice: true,
     price: '17.99',
-    packageLink: '#',
     actionLabel: 'Start Free Trial',
   },
   {
@@ -46,9 +46,9 @@ export const packagesMockData = [
         description: 'Simple, streamlined work',
       },
     ],
+    isRecommended: true,
     hasPrice: true,
     price: '17.99',
-    packageLink: '#',
     actionLabel: 'Start Free Trial',
   },
   {
@@ -72,8 +72,8 @@ export const packagesMockData = [
         description: 'Faster Integrations',
       },
     ],
+    isRecommended: false,
     hasPrice: false,
-    packageLink: '#',
     actionLabel: 'Book Demo',
   },
 ];

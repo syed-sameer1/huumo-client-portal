@@ -71,7 +71,6 @@ export const useLocationSelects = ({
           },
         );
         const data = await res.json();
-        console.log({ data });
         const mappedStates = data.data.states.map((c: any) => ({
           value: c.state_code,
           label: c.name,

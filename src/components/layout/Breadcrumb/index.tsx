@@ -19,7 +19,7 @@ export const Breadcrumb = ({
   breadcrumbsItem: BreadcrumbItemType[];
 }) => {
   return (
-    <ShadcnBreadcrumb className="py-4 px-6">
+    <ShadcnBreadcrumb className="py-4 px-6 border-b">
       <BreadcrumbList>
         {breadcrumbsItem.map(({ href, label }, index) => {
           const isLast = index === breadcrumbsItem.length - 1;

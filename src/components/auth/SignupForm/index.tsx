@@ -21,6 +21,7 @@ import { useSendOtpAuth, useSignupAuth } from '@/hooks/auth';
 import { LoadingButton } from '@/components/LoadingButton';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export const SignupForm = () => {
   const { mutate, isPending } = useSignupAuth();
@@ -73,7 +74,14 @@ export const SignupForm = () => {
   return (
     <AuthWrapper
       title="Create an account"
-      description="Enter your details below to create your account"
+      description={
+        <div>
+          Already have an account?{' '}
+          <Link href="/" className="text-accent-foreground">
+            Login
+          </Link>
+        </div>
+      }
     >
       <Form {...form}>
         <form onSubmit={handleSubmit(onSubmit)}>

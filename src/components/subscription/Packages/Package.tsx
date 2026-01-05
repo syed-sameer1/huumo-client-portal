@@ -1,12 +1,33 @@
+'use client';
+
 import { Card } from '@/components/ui/card';
 import { PackageProps } from './types';
 import { CheckCircle2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
+import { useCreateSubscription } from '@/hooks/subscriptionPackages';
+import { LoadingButton } from '@/components/LoadingButton';
 
 export const Package = ({ subscriptionPackage }: PackageProps) => {
-  const { packageTitle, description, benefits, hasPrice, price, actionLabel } =
-    subscriptionPackage;
+  const {
+    packageTitle,
+    description,
+    benefits,
+    hasPrice,
+    price,
+    actionLabel,
+    id,
+  } = subscriptionPackage;
+
+  const { mutate, isPending } = useCreateSubscription();
+  const onCreateSubscription = () => {
+    mutate(
+      { planId: id },
+      {
+        onSuccess: (res) => {
+          window.location.href = res.data.url;
+        },
+      },
+    );
+  };
   return (
     <Card className="w-75.5 p-4 h-122 flex flex-col justify-between">
       <div className="space-y-8 ">
@@ -34,12 +55,14 @@ export const Package = ({ subscriptionPackage }: PackageProps) => {
           <div className="font-semibold text-[24px]">Custom Pricing</div>
         )}
 
-        <Button
+        <LoadingButton
           className={`${hasPrice ? 'bg-background-secondary' : 'bg-[#516C6E]'} w-full h-11.5`}
-          asChild
+          onClick={onCreateSubscription}
+          disabled={isPending}
+          loading={isPending}
         >
-          <Link href="/purchase-orders">{actionLabel}</Link>
-        </Button>
+          {actionLabel}
+        </LoadingButton>
       </div>
     </Card>
   );

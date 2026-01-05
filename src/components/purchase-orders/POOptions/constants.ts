@@ -1,9 +1,9 @@
-export const PO_VALUES = {
-  UPLOAD_CSV: 'upload-csv',
-  GOOGLE_SHEET: 'google-sheet',
-  ERP_INTEGRATION: 'erp-integration',
-  TEXT_MANUAL: 'text-manual',
-};
+export enum PO_VALUES {
+  UPLOAD_CSV = 'upload-csv',
+  GOOGLE_SHEET = 'google-sheet',
+  ERP_INTEGRATION = 'erp-integration',
+  TEXT_MANUAL = 'text-manual',
+}
 
 export const PO_OPTIONS = [
   {

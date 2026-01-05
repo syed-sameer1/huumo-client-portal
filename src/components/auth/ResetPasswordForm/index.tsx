@@ -21,7 +21,7 @@ export const ResetPasswordForm = ({ onBack }: { onBack: () => void }) => {
   const { handleSubmit } = form;
 
   const onSubmit = (values: ResetPasswordSchemaValues) => {
-    //
+    console.log(values);
   };
 
   return (

@@ -1,5 +1,5 @@
-import { BASE_URL } from '@/constants/urls';
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
+import { BASE_URL } from '@/constants/urls';
 
 export const api = axios.create({
   baseURL: BASE_URL,
@@ -8,11 +8,10 @@ export const api = axios.create({
 
 /**
  * REQUEST INTERCEPTOR
- * Attaches Authorization token
+ * Attach Authorization token dynamically
  */
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    // Ensure this runs only on client
     if (typeof window !== 'undefined') {
       const token = localStorage.getItem('access_token');
 
@@ -23,28 +22,19 @@ api.interceptors.request.use(
 
     return config;
   },
-  (error: AxiosError) => {
-    return Promise.reject(error);
-  },
+  (error) => Promise.reject(error),
 );
 
 /**
  * RESPONSE INTERCEPTOR
- * Handles global errors (401, etc.)
+ * Handle auth errors globally
  */
 api.interceptors.response.use(
-  (response) => {
-    return response;
-  },
+  (response) => response,
   (error: AxiosError<{ message?: string }>) => {
-    const status = error.response?.status;
-
-    if (status === 401 && typeof window !== 'undefined') {
-      // Token expired or invalid
+    if (error.response?.status === 403 && typeof window !== 'undefined') {
       localStorage.removeItem('access_token');
-
-      // Optional redirect
-      window.location.href = '/login';
+      window.location.href = '/';
     }
 
     return Promise.reject(error);

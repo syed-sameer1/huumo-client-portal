@@ -7,7 +7,7 @@ export const AuthWrapper = ({
   children,
 }: {
   title?: string;
-  description?: string;
+  description?: string | ReactNode;
   header?: ReactNode;
   children: ReactNode;
 }) => {
