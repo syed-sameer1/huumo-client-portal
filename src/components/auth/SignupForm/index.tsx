@@ -44,7 +44,6 @@ export const SignupForm = () => {
     mutate(values, {
       onSuccess: ({ data }) => {
         const token = data.accessToken;
-        console.log('signup token', token, data);
         if (token) {
           localStorage.setItem('access_token', token);
         }

@@ -44,7 +44,6 @@ export const OTPForm = () => {
             localStorage.setItem('access_token', token);
           }
           router.push('/subscription');
-          console.log({ res });
         },
         onError: (error) => {
           toast.error(`Registration failed: ${error.message}`);
@@ -58,7 +57,6 @@ export const OTPForm = () => {
   };
 
   const resendOtp = () => {
-    console.log(router);
     if (!email) return;
     sendAuth(
       { email },

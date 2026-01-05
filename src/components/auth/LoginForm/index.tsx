@@ -34,7 +34,6 @@ export const LoginForm = () => {
   const onSubmit = (values: LoginFormValues) => {
     mutate(values, {
       onSuccess: (res) => {
-        console.log(res);
         localStorage.setItem('access_token', res.data.accessToken);
         if (res.data.user.client.status === UserStatus.pending) {
           router.push(routeUrls.otpRoute);
@@ -48,7 +47,6 @@ export const LoginForm = () => {
         toast.success('Logged in successfully!');
       },
       onError: (error) => {
-        console.log({ error });
         toast.error(error.response?.data.message);
       },
     });
