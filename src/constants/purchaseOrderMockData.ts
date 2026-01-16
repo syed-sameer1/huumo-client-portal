@@ -9,6 +9,7 @@ export const mockData = [
     quantity: 10,
     poValue: '24.2',
     orderDate: '2025-12-28T18:45:30Z',
+    deliverDate: '2025-12-28T18:45:30Z',
     status: POStatus.ACKNOWLEDGE,
   },
   {
@@ -19,6 +20,7 @@ export const mockData = [
     quantity: 10,
     poValue: '24.2',
     orderDate: '2025-12-28T18:45:30Z',
+    deliverDate: '2025-12-28T18:45:30Z',
     status: POStatus.REVIEW,
   },
   {
@@ -29,6 +31,7 @@ export const mockData = [
     quantity: 10,
     poValue: '24.2',
     orderDate: '2025-12-28T18:45:30Z',
+    deliverDate: '2025-12-28T18:45:30Z',
     status: POStatus.FOLLOW_UP,
   },
   {
@@ -39,6 +42,7 @@ export const mockData = [
     quantity: 10,
     poValue: '24.2',
     orderDate: '2025-12-28T18:45:30Z',
+    deliverDate: '2025-12-28T18:45:30Z',
     status: POStatus.OVER_DUE,
   },
   {
@@ -49,6 +53,7 @@ export const mockData = [
     quantity: 10,
     poValue: '24.2',
     orderDate: '2025-12-28T18:45:30Z',
+    deliverDate: '2025-12-28T18:45:30Z',
     status: POStatus.ESCALATED,
   },
   {
@@ -59,6 +64,7 @@ export const mockData = [
     quantity: 10,
     poValue: '24.2',
     orderDate: '2025-12-28T18:45:30Z',
+    deliverDate: '2025-12-28T18:45:30Z',
     status: POStatus.REVIEW,
   },
   {
@@ -69,6 +75,7 @@ export const mockData = [
     quantity: 10,
     poValue: '24.2',
     orderDate: '2025-12-28T18:45:30Z',
+    deliverDate: '2025-12-28T18:45:30Z',
     status: POStatus.OVER_DUE,
   },
   {
@@ -79,6 +86,7 @@ export const mockData = [
     quantity: 10,
     poValue: '24.2',
     orderDate: '2025-12-28T18:45:30Z',
+    deliverDate: '2025-12-28T18:45:30Z',
     status: POStatus.FOLLOW_UP,
   },
   {
@@ -89,6 +97,7 @@ export const mockData = [
     quantity: 10,
     poValue: '24.2',
     orderDate: '2025-12-28T18:45:30Z',
+    deliverDate: '2025-12-28T18:45:30Z',
     status: POStatus.OVER_DUE,
   },
   {
@@ -99,6 +108,7 @@ export const mockData = [
     quantity: 10,
     poValue: '24.2',
     orderDate: '2025-12-28T18:45:30Z',
+    deliverDate: '2025-12-28T18:45:30Z',
     status: POStatus.OVER_DUE,
   },
   {
@@ -109,6 +119,7 @@ export const mockData = [
     quantity: 10,
     poValue: '24.2',
     orderDate: '2025-12-28T18:45:30Z',
+    deliverDate: '2025-12-28T18:45:30Z',
     status: POStatus.ACKNOWLEDGE,
   },
 ];
