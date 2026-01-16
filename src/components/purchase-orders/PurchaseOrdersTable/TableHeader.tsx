@@ -1,6 +1,5 @@
-import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { PurchaseOrders } from '@/types/purchaseOrders';
+import { POStatus, PurchaseOrders } from '@/types/purchaseOrders';
 import { ColumnDef, flexRender } from '@tanstack/react-table';
 import { SortableHeader } from './SortableHeader';
 import {
@@ -9,6 +8,8 @@ import {
   TableHeader as ShadcnTableHeader,
 } from '@/components/ui/table';
 import { PurchaseOrdersTableType } from './types';
+import { format } from 'date-fns';
+import { StatusActionDropdown } from './StatusActionDropdown';
 
 export const tableColumns: ColumnDef<PurchaseOrders>[] = [
   {
@@ -68,9 +69,9 @@ export const tableColumns: ColumnDef<PurchaseOrders>[] = [
   },
 
   {
-    accessorKey: 'value',
+    accessorKey: 'poValue',
     header: ({ column }) => <SortableHeader column={column} title="PO Value" />,
-    cell: ({ getValue }) => `$${getValue<number>()?.toFixed(2)}`,
+    cell: ({ getValue }) => `$${Number(getValue<number>())?.toFixed(2)}`,
   },
 
   {
@@ -78,13 +79,22 @@ export const tableColumns: ColumnDef<PurchaseOrders>[] = [
     header: ({ column }) => (
       <SortableHeader column={column} title="Order Date" />
     ),
+    cell: ({ getValue }) => {
+      return format(new Date(getValue<string>()), 'M/d/yy');
+    },
   },
-
+  {
+    accessorKey: 'deliverDate',
+    header: 'Deliver',
+    cell: ({ getValue }) => {
+      return format(new Date(getValue<string>()), 'M/d/yy');
+    },
+  },
   {
     accessorKey: 'status',
     header: 'Status',
     cell: ({ getValue }) => (
-      <Badge variant="secondary">{getValue<string>()}</Badge>
+      <StatusActionDropdown statusValue={getValue() as POStatus} />
     ),
   },
 ];
