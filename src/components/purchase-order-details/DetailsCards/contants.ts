@@ -22,13 +22,12 @@ export const PurchaseDetailCardConfig = {
     iconColor: '#9925BD',
     formatter: (value: string) => value,
   },
-  deliverDate: {
+  dueDate: {
     title: 'Due In',
     Icon: CalendarIcon,
     iconBg: '#BD21C31A',
     iconColor: '#BD21C3',
     formatter: (value: string) => {
-      console.log('value', value);
       return distanceFromNow(value);
     },
   },
