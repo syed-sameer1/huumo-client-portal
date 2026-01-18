@@ -1,5 +1,5 @@
 import { PurchaseOrderStatusBadge } from '@/components/purchase-order-status-badge';
-import { mockData } from './mockData';
+import { mockData } from '../mockData';
 import { SendFollowUpButton } from './PurchaseActionButtons';
 
 export const PurchaseDetailHeader = () => {

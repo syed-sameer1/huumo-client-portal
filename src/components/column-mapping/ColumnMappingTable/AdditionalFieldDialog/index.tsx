@@ -31,7 +31,6 @@ export const AdditionalFieldDialog = ({
     },
   });
   const submitHandler = (data: AddFieldValues) => {
-    console.log(data);
     onAddField(data);
     reset();
     onClose();

@@ -58,7 +58,6 @@ export const useLocationSelects = ({
     setCities([]);
     setValue('state', '');
     setValue('city', '');
-    console.log({ country });
 
     const fetchStates = async () => {
       try {

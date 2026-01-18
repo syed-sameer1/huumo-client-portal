@@ -5,6 +5,6 @@ export const PurchaseOrderDetailsBreadcrumbs = [
   },
   {
     href: '[id]',
-    label: 'PO Details',
+    label: 'Purchase Order Details',
   },
 ];

@@ -21,7 +21,6 @@ export const AdditionalFieldSection = () => {
   const [open, setOpen] = useState(false);
 
   const addField = ({ name, sample }: AddFieldValues) => {
-    console.log('hee');
     setAdditionalFields((prev) => [
       ...prev,
       {
@@ -35,7 +34,6 @@ export const AdditionalFieldSection = () => {
   console.log({ additionalFields });
 
   const removeField = (id: string) => {
-    console.log(id);
     setAdditionalFields((prev) => prev.filter((f) => f.id !== id));
   };
 
