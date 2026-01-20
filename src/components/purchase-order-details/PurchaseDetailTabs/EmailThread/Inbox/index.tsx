@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { inboxThreads } from '../mockData';
-import { InboxSearch } from './InboxSearch';
+import { InboxSearch } from '../../InboxSearch';
 import { InboxThreadCard } from './InboxThreadCard';
 
 export const Inbox = () => {

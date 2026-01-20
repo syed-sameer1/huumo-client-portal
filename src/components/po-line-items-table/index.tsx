@@ -6,7 +6,7 @@ import { POLineItemBody } from './POLineItemBody';
 import { POLineItemHeader } from './POLineItemHeader';
 import { tableColumns } from './constants/table';
 
-export const POLineItemsTable = ({ data }) => {
+export const POLineItemsTable = ({ data }: { data: any }) => {
   const table = useReactTable({
     data: data,
     columns: tableColumns,

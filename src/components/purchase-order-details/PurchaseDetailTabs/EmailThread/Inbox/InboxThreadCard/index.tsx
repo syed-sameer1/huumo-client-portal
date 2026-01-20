@@ -5,9 +5,12 @@ export const InboxThreadCard = ({
   message,
   selectedMessage,
   onSetSelectedMessage,
+}: {
+  message: any;
+  selectedMessage: any;
+  onSetSelectedMessage: any;
 }) => {
   const { date, subject, preview, id } = message;
-  console.log('id', id, selectedMessage);
   return (
     <Button
       onClick={() => onSetSelectedMessage(message.id)}

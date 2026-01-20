@@ -1,13 +1,6 @@
-import { mockData } from '../mockData';
 import { PurchaseDetailCardConfig } from './contants';
 
-export const DetailCard = ({
-  details,
-  id,
-}: {
-  details: typeof mockData;
-  id: string;
-}) => {
+export const DetailCard = ({ details, id }: { details: any; id: string }) => {
   const selectedCard =
     PurchaseDetailCardConfig[id as keyof typeof PurchaseDetailCardConfig];
   const { iconColor, Icon, iconBg, title, formatter } = selectedCard;

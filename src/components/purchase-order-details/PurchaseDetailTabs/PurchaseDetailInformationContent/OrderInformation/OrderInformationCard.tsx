@@ -1,7 +1,12 @@
 import { OrderInformationConfig } from './orderInformationConfig';
 
-export const OrderInformationCard = ({ id, value }) => {
-  const selectedValue = value[id];
+export const OrderInformationCard = ({
+  id,
+  value,
+}: {
+  id: keyof typeof OrderInformationConfig;
+  value: any;
+}) => {
   const { title, Icon, formatter } = OrderInformationConfig[id];
 
   return (

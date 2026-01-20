@@ -6,6 +6,7 @@ import {
 import { columns } from './constants';
 import { flexRender } from '@tanstack/react-table';
 import { PurchaseOrdersTableType } from './types';
+import Link from 'next/link';
 
 export const TableBody = ({ table }: { table: PurchaseOrdersTableType }) => {
   return (
@@ -15,7 +16,12 @@ export const TableBody = ({ table }: { table: PurchaseOrdersTableType }) => {
           <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
             {row.getVisibleCells().map((cell) => (
               <TableCell key={cell.id} className="py-4">
-                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                <Link
+                  href={`/purchase-orders/${row.id}`}
+                  className="hover:underline text-primary"
+                >
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </Link>
               </TableCell>
             ))}
           </TableRow>

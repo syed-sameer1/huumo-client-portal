@@ -5,7 +5,7 @@ import { POLineItemsLimitedData } from './mockData';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 
-export const POLineItems = ({ data }) => {
+export const POLineItems = () => {
   const params = useParams();
   const { id } = params; // id from route
 

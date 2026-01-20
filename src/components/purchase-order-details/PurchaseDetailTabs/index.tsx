@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PurchaseDetailTabsConfig } from './constants';
 import { PurchaseDetailInformationContent } from './PurchaseDetailInformationContent';
 import { EmailThread } from './EmailThread';
+import { FollowUps } from './FollowUps';
 
 export const PurchaseDetailTabs = () => {
   return (
@@ -29,7 +30,7 @@ export const PurchaseDetailTabs = () => {
         <EmailThread />
       </TabsContent>
       <TabsContent value="follow-ups">
-        <div>Follow ups</div>
+        <FollowUps />
       </TabsContent>
     </Tabs>
   );
