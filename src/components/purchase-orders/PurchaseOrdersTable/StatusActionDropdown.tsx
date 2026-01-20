@@ -1,4 +1,3 @@
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -16,7 +15,6 @@ export const StatusActionDropdown = ({
   statusValue: POStatus;
 }) => {
   const selectedStatus = PurchaseOrdersStatusConfigs[statusValue];
-  console.log({ selectedStatus, bgColor: selectedStatus.bgColor });
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

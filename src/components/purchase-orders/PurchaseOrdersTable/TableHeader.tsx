@@ -8,8 +8,8 @@ import {
   TableHeader as ShadcnTableHeader,
 } from '@/components/ui/table';
 import { PurchaseOrdersTableType } from './types';
-import { format } from 'date-fns';
 import { StatusActionDropdown } from './StatusActionDropdown';
+import { formatDate } from '@/lib/date';
 
 export const tableColumns: ColumnDef<PurchaseOrders>[] = [
   {
@@ -80,14 +80,14 @@ export const tableColumns: ColumnDef<PurchaseOrders>[] = [
       <SortableHeader column={column} title="Order Date" />
     ),
     cell: ({ getValue }) => {
-      return format(new Date(getValue<string>()), 'M/d/yy');
+      return formatDate(getValue<string>());
     },
   },
   {
     accessorKey: 'deliverDate',
     header: 'Deliver',
     cell: ({ getValue }) => {
-      return format(new Date(getValue<string>()), 'M/d/yy');
+      return formatDate(getValue<string>());
     },
   },
   {
