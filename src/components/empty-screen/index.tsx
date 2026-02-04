@@ -1,6 +1,16 @@
 import Image from 'next/image';
 
-export const EmptyScreen = ({ title, description, subDescription }) => {
+interface EmptyScreenProps {
+  title: string;
+  description: string;
+  subDescription: string;
+}
+
+export const EmptyScreen = ({
+  title,
+  description,
+  subDescription,
+}: EmptyScreenProps) => {
   return (
     <div className="flex flex-col items-center justify-center space-y-2 mt-13.5">
       <Image

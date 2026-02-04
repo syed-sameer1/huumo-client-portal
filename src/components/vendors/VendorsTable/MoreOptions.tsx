@@ -10,13 +10,12 @@ import { useState } from 'react';
 import { EditVendorModal } from '../EditVendorModal';
 import { DeleteVendorModal } from '../DeleteVendorModal';
 
-export const MoreOptions = ({
-  email,
-  vendorName,
-}: {
-  email: string;
+interface MoreOptionsProps {
+  email: string | null;
   vendorName: string;
-}) => {
+}
+
+export const MoreOptions = ({ email, vendorName }: MoreOptionsProps) => {
   const [editVendor, setEditVendor] = useState(false);
   const [deleteVendor, setDeleteVendor] = useState(false);
   return (

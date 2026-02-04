@@ -16,7 +16,7 @@ interface EditVendorModalProps {
   onClose: () => void;
   open: boolean;
   vendorName: string;
-  email: string;
+  email: string | null;
 }
 
 export const EditVendorModal = ({
@@ -34,7 +34,7 @@ export const EditVendorModal = ({
     resolver: zodResolver(addVendorSchema),
     defaultValues: {
       vendorName: vendorName,
-      email: email,
+      email: email || '',
     },
   });
 
