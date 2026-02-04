@@ -4,7 +4,7 @@ import { LoginForm } from '@/components/auth/LoginForm';
 
 export default function Login() {
   return (
-    <div className="relative flex items-center h-screen ">
+    <div className="relative flex items-center h-screen">
       <AuthWrapper
         title="Log In"
         description={
