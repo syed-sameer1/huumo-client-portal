@@ -64,7 +64,7 @@ export default function OnBoardingStepper() {
           <StepperContent
             key={index}
             value={step.id}
-            className="flex items-center justify-center w-238.5 mx-auto mt-10 flex-col space-y-6"
+            className="flex items-center justify-center w-238.5 mx-auto my-10 flex-col space-y-6"
           >
             {step.IntegrationOption && <step.IntegrationOption />}
             <Footer
