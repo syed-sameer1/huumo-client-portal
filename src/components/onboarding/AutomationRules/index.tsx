@@ -1,12 +1,14 @@
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { cn } from '@/lib/utils';
-
-const options = [
-  { label: '2 days', value: '2' },
-  { label: '3 days', value: '3', isDefault: true },
-  { label: '5 days', value: '5' },
-  { label: '7 days', value: '7' },
-];
+import { Field, FieldLabel } from '@/components/ui/field';
+import {
+  Select,
+  SelectContent,
+  SelectTrigger,
+  SelectGroup,
+  SelectItem,
+} from '@/components/ui/select';
+import { Slider } from '@/components/ui/slider';
+import { SelectValue } from '@radix-ui/react-select';
+import { InfoIcon } from 'lucide-react';
 
 export const AutomationRules = () => {
   return (
@@ -15,33 +17,88 @@ export const AutomationRules = () => {
         When should we follow up?
       </div>
       <div className="text-[16px] text-foreground">
-        We’ll handle reminders automatically.
+        We’ll handle reminders automatically. AI can read and scan emails.
       </div>
-      <div className="w-100">
-        <RadioGroup defaultValue="3" className="space-y-2">
-          {options.map((option) => (
-            <label
-              key={option.value}
-              htmlFor={option.value}
-              className={cn(
-                'flex items-center gap-4 rounded-lg border px-4 py-5 cursor-pointer transition',
-                'hover:bg-muted/50',
-              )}
-            >
-              <RadioGroupItem value={option.value} id={option.value} />
+      <div className="w-100 space-y-6">
+        <Field className="gap-2">
+          <FieldLabel className="font-semibold">
+            Follow-up #1 Frequency
+          </FieldLabel>
+          <Select>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="1">1</SelectItem>
+                <SelectItem value="2">2</SelectItem>
+                <SelectItem value="3">3</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </Field>
+        <Field className="gap-2">
+          <FieldLabel className="font-semibold">
+            Follow-up #2 Frequency
+          </FieldLabel>
+          <Select>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="1">1</SelectItem>
+                <SelectItem value="2">2</SelectItem>
+                <SelectItem value="3">3</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </Field>
+        <Field className="gap-2">
+          <FieldLabel className="font-semibold">
+            Final Reminder Frequency
+          </FieldLabel>
+          <Select>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="1">1</SelectItem>
+                <SelectItem value="2">2</SelectItem>
+                <SelectItem value="3">3</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </Field>
+        <Field>
+          <FieldLabel>
+            <div className="flex gap-2 items-center">
+              AI Confidence Threshold <InfoIcon size={18} />
+            </div>
+          </FieldLabel>
+          <div className="w-full space-y-2">
+            <Slider
+              defaultValue={[30]}
+              max={100}
+              step={1}
+              className="
+          [&_.bg-secondary]:bg-[#E4E4E7]
+          [&_.bg-primary]:bg-[#20A665]
+          **:[[role=slider]]:h-5
+          **:[[role=slider]]:w-5
+          **:[[role=slider]]:bg-[#20A665]
+          **:[[role=slider]]:border-none
+        "
+            />
 
-              <div className="flex items-center gap-3">
-                <span className="text-base font-medium">{option.label}</span>
-
-                {option.isDefault && option.value === '3' && (
-                  <span className="rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700">
-                    Default
-                  </span>
-                )}
-              </div>
-            </label>
-          ))}
-        </RadioGroup>
+            {/* Labels */}
+            <div className="flex justify-between text-sm text-foreground">
+              <span>0%</span>
+              <span>100%</span>
+            </div>
+          </div>
+        </Field>
       </div>
     </div>
   );
