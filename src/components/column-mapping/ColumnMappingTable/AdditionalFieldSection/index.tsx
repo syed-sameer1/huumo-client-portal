@@ -15,7 +15,7 @@ import { Plus } from 'lucide-react';
 import { AdditionalFieldDialog } from '../AdditionalFieldDialog';
 import { AddFieldValues } from '@/schema/columnMappingSchema';
 
-export const AdditionalFieldSection = () => {
+export const AdditionalFieldSection = ({ headers }: { headers: any }) => {
   const [additionalFields, setAdditionalFields] =
     useState<MappingField[]>(ADDITIONAL_FIELDS);
   const [open, setOpen] = useState(false);
@@ -60,6 +60,7 @@ export const AdditionalFieldSection = () => {
                 showBorder={index !== additionalFields.length - 1}
                 label={field.label}
                 sample={field.sample}
+                headers={headers}
               />
             ))}
 

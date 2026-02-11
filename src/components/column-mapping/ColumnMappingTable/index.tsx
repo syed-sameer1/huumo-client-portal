@@ -10,8 +10,16 @@ import {
 } from '@/schema/columnMappingSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ColumnMappingFooter } from './ColumnMappingFooter';
+import { useImportColumn } from '@/hooks/csvImports';
+import { useSearchParams } from 'next/navigation';
+import { LoaderDialog } from '@/components/loader';
 
 export const ColumnMappingTable = () => {
+  const importJobId = useSearchParams().get('import_job_id');
+  const { data, isPending } = useImportColumn(importJobId as string);
+  console.log({ importJobId });
+  console.log({ data });
+
   const form = useForm<MappingFormValues>({
     resolver: zodResolver(columnMappingSchema),
     defaultValues: {
@@ -28,13 +36,16 @@ export const ColumnMappingTable = () => {
     console.log('SUBMIT DATA:', data);
   };
 
+  if (isPending)
+    return <LoaderDialog text="Columns are mapping.." open={isPending} />;
+
   return (
     <FormProvider {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <div className="shadow-md border border-[#E4E4E7] p-6 rounded-4xl">
           <ColumnMappingHeader />
-          <RequiredFieldSection />
-          <AdditionalFieldSection />
+          <RequiredFieldSection headers={data?.data?.data?.headers} />
+          <AdditionalFieldSection headers={data?.data?.data?.headers} />
         </div>
         <ColumnMappingFooter />
       </form>

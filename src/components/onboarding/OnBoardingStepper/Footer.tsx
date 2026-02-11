@@ -1,8 +1,14 @@
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { FooterProps } from './types';
+import { LoadingButton } from '@/components/LoadingButton';
 
-export const Footer = ({ showBack, onNextStep, onBackStep }: FooterProps) => {
+export const Footer = ({
+  showBack,
+  onNextStep,
+  onBackStep,
+  loading,
+}: FooterProps) => {
   return (
     <div className="flex justify-between w-full">
       {showBack && (
@@ -23,9 +29,14 @@ export const Footer = ({ showBack, onNextStep, onBackStep }: FooterProps) => {
         >
           <Link href="/purchase-orders">Skip to Dashboard</Link>
         </Button>
-        <Button className="bg-[#20A665] text-white" onClick={onNextStep}>
+        <LoadingButton
+          loading={loading}
+          className="bg-[#20A665] text-white"
+          onClick={onNextStep}
+          type="submit"
+        >
           Save and Continue
-        </Button>
+        </LoadingButton>
       </div>
     </div>
   );

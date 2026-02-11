@@ -3,4 +3,5 @@ export interface IntegrationOptionsProps {
   onConnect: () => void;
   title: string;
   description: string;
+  loading: boolean;
 }

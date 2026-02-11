@@ -1,47 +1,112 @@
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { cn } from '@/lib/utils';
-
-const options = [
-  { label: '2 days', value: '2' },
-  { label: '3 days', value: '3', isDefault: true },
-  { label: '5 days', value: '5' },
-  { label: '7 days', value: '7' },
-];
+import { useFormContext } from 'react-hook-form';
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 export const AutomationRules = () => {
+  const { control } = useFormContext();
+
   return (
     <div className="space-y-6 flex flex-col items-center">
-      <div className="text-[24px] text-[#09090B] font-semibold">
-        When should we follow up?
-      </div>
-      <div className="text-[16px] text-foreground">
-        We’ll handle reminders automatically.
-      </div>
-      <div className="w-100">
-        <RadioGroup defaultValue="3" className="space-y-2">
-          {options.map((option) => (
-            <label
-              key={option.value}
-              htmlFor={option.value}
-              className={cn(
-                'flex items-center gap-4 rounded-lg border px-4 py-5 cursor-pointer transition',
-                'hover:bg-muted/50',
-              )}
-            >
-              <RadioGroupItem value={option.value} id={option.value} />
+      <div className="text-[24px] font-semibold">When should we follow up?</div>
 
-              <div className="flex items-center gap-3">
-                <span className="text-base font-medium">{option.label}</span>
+      <div className="w-100 space-y-6">
+        {/* Follow-up #1 */}
+        <FormField
+          control={control}
+          name="followup1FrequencyDays"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="font-semibold mb-2 block">
+                Follow-up #1 Frequency
+              </FormLabel>
 
-                {option.isDefault && option.value === '3' && (
-                  <span className="rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700">
-                    Default
-                  </span>
-                )}
-              </div>
-            </label>
-          ))}
-        </RadioGroup>
+              <Select
+                value={field.value?.toString()}
+                onValueChange={(v) => field.onChange(Number(v))}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">1</SelectItem>
+                  <SelectItem value="2">2</SelectItem>
+                  <SelectItem value="3">3</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Follow-up #2 */}
+        <FormField
+          control={control}
+          name="followup2FrequencyDays"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="font-semibold mb-2 block">
+                Follow-up #2 Frequency
+              </FormLabel>
+
+              <Select
+                value={field.value?.toString()}
+                onValueChange={(v) => field.onChange(Number(v))}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">1</SelectItem>
+                  <SelectItem value="2">2</SelectItem>
+                  <SelectItem value="3">3</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Follow-up #3 */}
+        <FormField
+          control={control}
+          name="followup3FrequencyDays"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="font-semibold mb-2 block">
+                Final Reminder Frequency
+              </FormLabel>
+
+              <Select
+                value={field.value?.toString()}
+                onValueChange={(v) => field.onChange(Number(v))}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">1</SelectItem>
+                  <SelectItem value="2">2</SelectItem>
+                  <SelectItem value="3">3</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <FormMessage />
+            </FormItem>
+          )}
+        />
       </div>
     </div>
   );

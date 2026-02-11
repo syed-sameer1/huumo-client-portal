@@ -16,10 +16,13 @@ import { LoadingButton } from '@/components/LoadingButton';
 import { useRouter } from 'next/navigation';
 import { UserStatus } from '@/types/user';
 import { routeUrls } from '@/constants/urls';
+import { useCreateSubscription } from '@/hooks/subscriptionPackages';
 
 export const LoginForm = () => {
   const { mutate, isPending } = useLoginAuth();
   const router = useRouter();
+  const { mutate: subscriptionMutate, isPending: subscriptionLoading } =
+    useCreateSubscription();
 
   const form = useForm<LoginFormValues>({
     defaultValues: {
@@ -36,11 +39,11 @@ export const LoginForm = () => {
       onSuccess: (res) => {
         localStorage.setItem('access_token', res.data.accessToken);
         if (res.data.user.client.status === UserStatus.pending) {
-          router.push(routeUrls.otpRoute);
-          return;
-        }
-        if (res.data.user.client.status === UserStatus.verified) {
-          router.push(routeUrls.subscriptionRoute);
+          subscriptionMutate(undefined, {
+            onSuccess: (res) => {
+              router.push(res.data.url);
+            },
+          });
           return;
         }
         router.push(routeUrls.purchaseOrdersRoute);
@@ -105,7 +108,7 @@ export const LoginForm = () => {
             for help resetting your password.
           </div>
           <LoadingButton
-            loading={isPending}
+            loading={isPending || subscriptionLoading}
             type="submit"
             className="bg-accent-foreground h-10 rounded-md"
           >
