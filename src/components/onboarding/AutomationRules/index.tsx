@@ -1,104 +1,112 @@
-import { Field, FieldLabel } from '@/components/ui/field';
+import { useFormContext } from 'react-hook-form';
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import {
   Select,
   SelectContent,
-  SelectTrigger,
-  SelectGroup,
   SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select';
-import { Slider } from '@/components/ui/slider';
-import { SelectValue } from '@radix-ui/react-select';
-import { InfoIcon } from 'lucide-react';
 
 export const AutomationRules = () => {
+  const { control } = useFormContext();
+
   return (
     <div className="space-y-6 flex flex-col items-center">
-      <div className="text-[24px] text-[#09090B] font-semibold">
-        When should we follow up?
-      </div>
-      <div className="text-[16px] text-foreground">
-        We’ll handle reminders automatically. AI can read and scan emails.
-      </div>
-      <div className="w-100 space-y-6">
-        <Field className="gap-2">
-          <FieldLabel className="font-semibold">
-            Follow-up #1 Frequency
-          </FieldLabel>
-          <Select>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="1">1</SelectItem>
-                <SelectItem value="2">2</SelectItem>
-                <SelectItem value="3">3</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </Field>
-        <Field className="gap-2">
-          <FieldLabel className="font-semibold">
-            Follow-up #2 Frequency
-          </FieldLabel>
-          <Select>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="1">1</SelectItem>
-                <SelectItem value="2">2</SelectItem>
-                <SelectItem value="3">3</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </Field>
-        <Field className="gap-2">
-          <FieldLabel className="font-semibold">
-            Final Reminder Frequency
-          </FieldLabel>
-          <Select>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="1">1</SelectItem>
-                <SelectItem value="2">2</SelectItem>
-                <SelectItem value="3">3</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </Field>
-        <Field>
-          <FieldLabel>
-            <div className="flex gap-2 items-center">
-              AI Confidence Threshold <InfoIcon size={18} />
-            </div>
-          </FieldLabel>
-          <div className="w-full space-y-2">
-            <Slider
-              defaultValue={[30]}
-              max={100}
-              step={1}
-              className="
-          [&_.bg-secondary]:bg-[#E4E4E7]
-          [&_.bg-primary]:bg-[#20A665]
-          **:[[role=slider]]:h-5
-          **:[[role=slider]]:w-5
-          **:[[role=slider]]:bg-[#20A665]
-          **:[[role=slider]]:border-none
-        "
-            />
+      <div className="text-[24px] font-semibold">When should we follow up?</div>
 
-            {/* Labels */}
-            <div className="flex justify-between text-sm text-foreground">
-              <span>0%</span>
-              <span>100%</span>
-            </div>
-          </div>
-        </Field>
+      <div className="w-100 space-y-6">
+        {/* Follow-up #1 */}
+        <FormField
+          control={control}
+          name="followup1FrequencyDays"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="font-semibold mb-2 block">
+                Follow-up #1 Frequency
+              </FormLabel>
+
+              <Select
+                value={field.value?.toString()}
+                onValueChange={(v) => field.onChange(Number(v))}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">1</SelectItem>
+                  <SelectItem value="2">2</SelectItem>
+                  <SelectItem value="3">3</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Follow-up #2 */}
+        <FormField
+          control={control}
+          name="followup2FrequencyDays"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="font-semibold mb-2 block">
+                Follow-up #2 Frequency
+              </FormLabel>
+
+              <Select
+                value={field.value?.toString()}
+                onValueChange={(v) => field.onChange(Number(v))}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">1</SelectItem>
+                  <SelectItem value="2">2</SelectItem>
+                  <SelectItem value="3">3</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Follow-up #3 */}
+        <FormField
+          control={control}
+          name="followup3FrequencyDays"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="font-semibold mb-2 block">
+                Final Reminder Frequency
+              </FormLabel>
+
+              <Select
+                value={field.value?.toString()}
+                onValueChange={(v) => field.onChange(Number(v))}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">1</SelectItem>
+                  <SelectItem value="2">2</SelectItem>
+                  <SelectItem value="3">3</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <FormMessage />
+            </FormItem>
+          )}
+        />
       </div>
     </div>
   );

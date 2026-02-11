@@ -9,9 +9,16 @@ import { useForm } from 'react-hook-form';
 import { Form, FormField } from '@/components/ui/form';
 import { InputWithLabel } from '@/components/form-inputs/InputWithLabel';
 import { PasswordInput } from '@/components/form-inputs/PasswordInput';
-import { Button } from '@/components/ui/button';
+import { useClientActivate } from '@/hooks/client';
+import { useRouter } from 'next/navigation';
+import { routeUrls } from '@/constants/urls';
+import { LoadingButton } from '@/components/LoadingButton';
+import { useSearchParams } from 'next/navigation';
 
 export default function ResetPassword() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const form = useForm<ResetPasswordSchemaValues>({
     defaultValues: {
       confirmPassword: '',
@@ -20,17 +27,29 @@ export default function ResetPassword() {
     resolver: zodResolver(resetPasswordSchema),
   });
 
+  const { mutate, isPending } = useClientActivate();
+
   const { handleSubmit } = form;
 
   const onSubmit = (values: ResetPasswordSchemaValues) => {
     console.log('onSubmit', values);
+    const token = searchParams.get('token');
+    mutate(
+      { password: values.password, token },
+      {
+        onSuccess: ({ data }) => {
+          console.log({ data });
+          router.push(routeUrls.loginRoute);
+        },
+      },
+    );
   };
 
   return (
     <AuthWrapper
       header={
         <AuthHeader
-          title="Create a New Password"
+          title="Update your temporary password"
           description="Set a new password to complete your account setup."
         />
       }
@@ -74,12 +93,13 @@ export default function ResetPassword() {
                 />
               )}
             />
-            <Button
+            <LoadingButton
               type="submit"
               className="bg-accent-foreground h-10 rounded-md"
+              loading={isPending}
             >
               Confirm
-            </Button>
+            </LoadingButton>
           </div>
         </form>
       </Form>

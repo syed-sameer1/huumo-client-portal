@@ -8,6 +8,11 @@ export const urls = {
   forgotPassword: '/auth/client/forget-password',
   createSubscription: '/subscription/create',
   subscriptionStatus: '/subscription/subscription-status',
+  clientActivate: '/client/activate',
+  updateFollowUpFrequency: '/client/settings/update-followup-frequency',
+  importCSV: '/imports/csv',
+  gmailConnect: '/google/gmail/connect',
+  columnMapping: '/imports/import-job/{importJobId}',
 };
 
 export const routeUrls = {
@@ -16,4 +21,6 @@ export const routeUrls = {
   purchaseOrdersRoute: '/purchase-orders',
   onboardingRoute: '/onboarding',
   selectImportMethod: '/purchase-orders/select-import-method',
+  loginRoute: '/',
+  columnMapping: '/purchase-orders/select-import-method/column-mapping',
 };

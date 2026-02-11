@@ -19,6 +19,7 @@ type Props = {
   onRemove?: (id: string) => void;
   showBorder?: boolean;
   id: string;
+  headers: any;
 };
 
 export function MappingRow({
@@ -29,6 +30,7 @@ export function MappingRow({
   onRemove,
   id,
   showBorder = true,
+  headers,
 }: Props) {
   const {
     control,
@@ -68,9 +70,14 @@ export function MappingRow({
                   <SelectValue placeholder="Select Column" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="col1">Column 1</SelectItem>
+                  {headers.map((val: string) => (
+                    <SelectItem key={val} value={val}>
+                      {val}
+                    </SelectItem>
+                  ))}
+                  {/* <SelectItem value="col1">Column 1</SelectItem>
                   <SelectItem value="col2">Column 2</SelectItem>
-                  <SelectItem value="col3">Column 3</SelectItem>
+                  <SelectItem value="col3">Column 3</SelectItem> */}
                 </SelectContent>
               </Select>
             </>

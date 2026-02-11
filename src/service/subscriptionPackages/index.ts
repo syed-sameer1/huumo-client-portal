@@ -6,9 +6,6 @@ export interface CreateSubscriptionResponse {
   url: string;
 }
 
-export const createSubscription = ({
-  planId,
-}: {
-  planId: number;
-}): Promise<AxiosResponse<CreateSubscriptionResponse>> =>
-  api.post(urls.createSubscription, { planId });
+export const createSubscription = (): Promise<
+  AxiosResponse<CreateSubscriptionResponse>
+> => api.post(urls.createSubscription);
