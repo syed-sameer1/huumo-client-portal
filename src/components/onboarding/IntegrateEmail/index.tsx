@@ -1,8 +1,21 @@
 import { Info } from 'lucide-react';
 import { IntegrationOption } from './IntegrationOption';
-import { Footer } from '../OnBoardingStepper/Footer';
+import { useGoogleIntegration } from '@/hooks/integration';
+import { useRouter } from 'next/navigation';
 
 export const IntegrateEmail = () => {
+  const { mutate, isPending } = useGoogleIntegration();
+  const router = useRouter();
+  console.log({ isPending });
+
+  const onGmailConnect = () => {
+    mutate(undefined, {
+      onSuccess: (res) => {
+        router.push((res as any).data.url);
+      },
+    });
+  };
+
   return (
     <div className="space-y-6 flex flex-col items-center">
       <div className="text-[24px] text-[#09090B] font-semibold">
@@ -17,13 +30,15 @@ export const IntegrateEmail = () => {
           title="Gmail"
           logo="gmail.svg"
           description="Send follow-ups, receive vendor replies, and track PO responses automatically."
-          onConnect={() => null}
+          onConnect={onGmailConnect}
+          loading={isPending}
         />
         <IntegrationOption
           title="Outlook"
           logo="outlook.svg"
           description="Send follow-ups, receive vendor replies, and track PO responses automatically."
           onConnect={() => null}
+          loading={false}
         />
       </div>
       <div className="flex items-center gap-1.5">
