@@ -1,6 +1,6 @@
 import { SortableHeader } from '@/components/purchase-orders/PurchaseOrdersTable/SortableHeader';
 import { ColumnDef } from '@tanstack/react-table';
-import { POLineItems } from '../types';
+import { POLineItems, POLineItemsColumns } from '../types';
 import { formatDate } from '@/lib/date';
 
 export const tableColumns: ColumnDef<POLineItems>[] = [
@@ -8,7 +8,7 @@ export const tableColumns: ColumnDef<POLineItems>[] = [
     accessorKey: 'name',
     header: ({ column }) => <SortableHeader column={column} title="Name" />,
     cell: ({ row }) => {
-      return row.original.name;
+      return row.original.lineItem;
     },
   },
   {
@@ -28,12 +28,12 @@ export const tableColumns: ColumnDef<POLineItems>[] = [
     },
   },
   {
-    accessorKey: 'remainingQuantity',
+    accessorKey: 'pendingQuantity',
     header: ({ column }) => (
       <SortableHeader column={column} title="Remaining Qty" />
     ),
     cell: ({ row }) => {
-      return row.original.remainingQuantity;
+      return row.original.pendingQuantity;
     },
   },
   {
@@ -45,7 +45,7 @@ export const tableColumns: ColumnDef<POLineItems>[] = [
     accessorKey: 'dueDate',
     header: ({ column }) => <SortableHeader column={column} title="Due Date" />,
     cell: ({ getValue }) => {
-      return formatDate(getValue<string>());
+      return getValue();
     },
   },
 ];

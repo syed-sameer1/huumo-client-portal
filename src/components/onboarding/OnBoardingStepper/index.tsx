@@ -56,10 +56,8 @@ export default function OnBoardingStepper() {
       ]);
 
       if (!isValid) return;
-      console.log('form.getValues', form.getValues());
       mutate(form.getValues(), {
-        onSuccess: (res) => {
-          console.log('res', res);
+        onSuccess: () => {
           setCurrentStep((prev) => Math.min(prev + 1, steps.length));
         },
       });

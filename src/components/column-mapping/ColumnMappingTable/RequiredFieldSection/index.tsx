@@ -2,7 +2,6 @@ import { MappingRow } from '../MappingRow';
 import { REQUIRED_FIELDS } from './constants';
 
 export const RequiredFieldSection = ({ headers }: { headers: any }) => {
-  console.log({ headers });
   return (
     <div>
       {REQUIRED_FIELDS.map((field, index) => (

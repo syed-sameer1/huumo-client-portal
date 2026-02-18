@@ -1,17 +1,14 @@
 import { Info } from 'lucide-react';
 import { IntegrationOption } from './IntegrationOption';
 import { useGoogleIntegration } from '@/hooks/integration';
-import { useRouter } from 'next/navigation';
 
 export const IntegrateEmail = () => {
   const { mutate, isPending } = useGoogleIntegration();
-  const router = useRouter();
-  console.log({ isPending });
 
   const onGmailConnect = () => {
     mutate(undefined, {
       onSuccess: (res) => {
-        router.push((res as any).data.url);
+        window.location.href = (res as any).data.url;
       },
     });
   };

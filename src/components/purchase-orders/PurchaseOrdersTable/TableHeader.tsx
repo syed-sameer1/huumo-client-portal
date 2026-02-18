@@ -40,7 +40,7 @@ export const tableColumns: ColumnDef<PurchaseOrders>[] = [
   },
 
   {
-    accessorKey: 'vendor',
+    accessorKey: 'vendor.name',
     header: ({ column }) => <SortableHeader column={column} title="Vendor" />,
   },
 
@@ -48,7 +48,7 @@ export const tableColumns: ColumnDef<PurchaseOrders>[] = [
     accessorKey: 'email',
     header: 'Email Address',
     cell: ({ row }) => {
-      const email = row.original.email;
+      const email = row.original.vendor.email;
 
       if (!email) {
         return (
@@ -71,7 +71,8 @@ export const tableColumns: ColumnDef<PurchaseOrders>[] = [
   {
     accessorKey: 'poValue',
     header: ({ column }) => <SortableHeader column={column} title="PO Value" />,
-    cell: ({ getValue }) => `$${Number(getValue<number>())?.toFixed(2)}`,
+    // cell: ({ getValue }) => `$${Number(getValue<number>())?.toFixed(2)}`,
+    cell: () => `$240.00`,
   },
 
   {
@@ -79,15 +80,12 @@ export const tableColumns: ColumnDef<PurchaseOrders>[] = [
     header: ({ column }) => (
       <SortableHeader column={column} title="Order Date" />
     ),
-    cell: ({ getValue }) => {
-      return formatDate(getValue<string>());
-    },
   },
   {
     accessorKey: 'deliverDate',
     header: 'Deliver',
-    cell: ({ getValue }) => {
-      return formatDate(getValue<string>());
+    cell: () => {
+      return '9/18/16';
     },
   },
   {
