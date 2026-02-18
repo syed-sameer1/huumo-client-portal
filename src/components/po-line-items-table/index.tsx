@@ -5,10 +5,13 @@ import { Table } from '../ui/table';
 import { POLineItemBody } from './POLineItemBody';
 import { POLineItemHeader } from './POLineItemHeader';
 import { tableColumns } from './constants/table';
+import { usePurchaseOrderDetailsData } from '../purchase-order-details/hooks/usePurchaseOrderDetailsData';
 
-export const POLineItemsTable = ({ data }: { data: any }) => {
+export const POLineItemsTable = () => {
+  const { data: detailsData } = usePurchaseOrderDetailsData();
+  console.log('detailsData', detailsData);
   const table = useReactTable({
-    data: data,
+    data: detailsData?.items || [],
     columns: tableColumns,
     getCoreRowModel: getCoreRowModel(),
   });

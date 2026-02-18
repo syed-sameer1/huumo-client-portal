@@ -15,7 +15,7 @@ export const PurchaseDetailCardConfig = {
     iconColor: '#048CA3',
     formatter: (value: string) => value,
   },
-  vendor: {
+  name: {
     title: 'Vendor',
     Icon: BookUserIcon,
     iconBg: '#F8E2FF',
@@ -27,22 +27,20 @@ export const PurchaseDetailCardConfig = {
     Icon: CalendarIcon,
     iconBg: '#BD21C31A',
     iconColor: '#BD21C3',
-    formatter: (value: string) => {
-      return distanceFromNow(value);
-    },
+    formatter: (value: string) => value,
   },
   lastFollowUpDate: {
     title: 'Last Follow-Up Sent',
     Icon: NotepadText,
     iconBg: '#7CA6201A',
     iconColor: '#7CA620',
-    formatter: (value: string) => formatDate(value),
+    formatter: () => '9/18/16',
   },
   vendorResponseDate: {
     title: 'Last Vendor Response',
     Icon: MessageCircle,
     iconBg: '#A656201A',
     iconColor: '#A65620',
-    formatter: (value: string) => formatDate(value),
+    formatter: () => '9/18/16',
   },
 };

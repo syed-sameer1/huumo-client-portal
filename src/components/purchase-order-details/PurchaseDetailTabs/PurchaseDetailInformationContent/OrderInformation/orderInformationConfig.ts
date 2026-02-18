@@ -23,7 +23,7 @@ export const OrderInformationConfig = {
     Icon: HandCoinsIcon,
     formatter: (value: number) => value,
   },
-  orderedAt: {
+  orderDate: {
     title: 'Order Date',
     Icon: CalendarIcon,
     formatter: (value: string) => formatDate(value),

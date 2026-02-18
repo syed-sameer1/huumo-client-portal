@@ -63,7 +63,7 @@ export function MappingRow({
           const hasError = !!error;
           return (
             <>
-              <Select value={field.value} onValueChange={field.onChange}>
+              <Select onValueChange={field.onChange} {...field}>
                 <SelectTrigger
                   className={`${hasError ? 'border-destructive focus:ring-destructive' : ''}`}
                 >
@@ -75,9 +75,6 @@ export function MappingRow({
                       {val}
                     </SelectItem>
                   ))}
-                  {/* <SelectItem value="col1">Column 1</SelectItem>
-                  <SelectItem value="col2">Column 2</SelectItem>
-                  <SelectItem value="col3">Column 3</SelectItem> */}
                 </SelectContent>
               </Select>
             </>

@@ -31,8 +31,7 @@ export const AddVendorModal = ({ onClose, open }: AddVendorModalProps) => {
     },
   });
 
-  const submitHandler = (data: AddVendorFieldValues) => {
-    console.log({ data });
+  const submitHandler = (_data: AddVendorFieldValues) => {
     reset();
     onClose();
   };

@@ -1,16 +1,16 @@
 export const ADDITIONAL_FIELDS = [
   {
-    id: 'email',
+    id: 'vendorEmail',
     label: 'Email Address',
     sample: 'vendor@gmail.com',
   },
   {
-    id: 'due-date',
+    id: 'dueDate',
     label: 'Due Date',
     sample: '23/09/24',
   },
   {
-    id: 'line-item',
+    id: 'lineItem',
     label: 'Line Item',
     sample: 'Plastic',
   },
@@ -20,17 +20,17 @@ export const ADDITIONAL_FIELDS = [
     sample: '12',
   },
   {
-    id: 'confirmed-qty',
+    id: 'confirmQty',
     label: 'Confirmed Qty',
     sample: '12',
   },
   {
-    id: 'remaining-qty',
+    id: 'remainingQty',
     label: 'Remaining Qty',
     sample: '12',
   },
   {
-    id: 'unit-cost',
+    id: 'unitCost',
     label: 'Unit Cost',
     sample: '$678',
   },

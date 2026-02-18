@@ -31,7 +31,6 @@ export const AdditionalFieldSection = ({ headers }: { headers: any }) => {
       },
     ]);
   };
-  console.log({ additionalFields });
 
   const removeField = (id: string) => {
     setAdditionalFields((prev) => prev.filter((f) => f.id !== id));

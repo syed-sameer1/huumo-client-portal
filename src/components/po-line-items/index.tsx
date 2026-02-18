@@ -1,6 +1,5 @@
 import { PageContainer } from '../layout/PageContainer';
 import { POLineItemsTable } from '../po-line-items-table';
-import { POLineItemsData } from '../purchase-order-details/PurchaseDetailTabs/PurchaseDetailInformationContent/OrderInformation/POLineItems/mockData';
 import { POLineItemsFilters } from './POLineItemsFilters';
 
 export const POLineItems = () => {
@@ -8,7 +7,7 @@ export const POLineItems = () => {
     <PageContainer className="space-y-8">
       <div className="text-2xl font-semibold">PO Line Items</div>
       <POLineItemsFilters />
-      <POLineItemsTable data={POLineItemsData} />
+      <POLineItemsTable />
     </PageContainer>
   );
 };

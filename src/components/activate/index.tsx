@@ -33,13 +33,11 @@ export const ActivateComponent = () => {
   const { handleSubmit } = form;
 
   const onSubmit = (values: ResetPasswordSchemaValues) => {
-    console.log('onSubmit', values);
     const token = searchParams.get('token');
     mutate(
       { password: values.password, token },
       {
-        onSuccess: ({ data }) => {
-          console.log({ data });
+        onSuccess: () => {
           router.push(routeUrls.loginRoute);
         },
       },
