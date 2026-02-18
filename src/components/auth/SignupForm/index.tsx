@@ -59,9 +59,7 @@ export const SignupForm = () => {
                   '&next=purchase-orders',
               );
             },
-            onError: (error) => {
-              console.log({ error });
-            },
+            onError: (_error) => {},
           },
         );
       },

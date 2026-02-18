@@ -7,8 +7,27 @@ import { columns } from './constants';
 import { flexRender } from '@tanstack/react-table';
 import { PurchaseOrdersTableType } from './types';
 import Link from 'next/link';
+import { TableSkeletonRow } from '@/components/TableSkeleton/TableSkeletonRow';
 
-export const TableBody = ({ table }: { table: PurchaseOrdersTableType }) => {
+export const TableBody = ({
+  table,
+  isLoading,
+}: {
+  table: PurchaseOrdersTableType;
+  isLoading: boolean;
+}) => {
+  const columnCount = table.getAllColumns().length;
+
+  if (isLoading) {
+    return (
+      <ShadcnTableBody>
+        {Array.from({ length: 6 }).map((_, i) => (
+          <TableSkeletonRow key={i} columns={columnCount} />
+        ))}
+      </ShadcnTableBody>
+    );
+  }
+
   return (
     <ShadcnTableBody>
       {table.getRowModel().rows?.length ? (
@@ -17,7 +36,7 @@ export const TableBody = ({ table }: { table: PurchaseOrdersTableType }) => {
             {row.getVisibleCells().map((cell) => (
               <TableCell key={cell.id} className="py-4">
                 <Link
-                  href={`/purchase-orders/${row.id}`}
+                  href={`/purchase-orders/${row.original.id}`}
                   className="hover:underline text-primary"
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}

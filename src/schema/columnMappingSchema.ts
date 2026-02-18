@@ -2,9 +2,9 @@ import { z } from 'zod';
 
 export const columnMappingSchema = z.object({
   required: z.object({
-    po: z.string().min(1),
-    date: z.string().min(1, { message: 'Please enter Date' }),
-    vendor: z.string().min(1, { message: 'Please enter Vendor' }),
+    poNumber: z.string().min(1),
+    orderDate: z.string().min(1, { message: 'Please enter Date' }),
+    vendorName: z.string().min(1, { message: 'Please enter Vendor' }),
   }),
   additional: z.record(z.string(), z.string()),
 });

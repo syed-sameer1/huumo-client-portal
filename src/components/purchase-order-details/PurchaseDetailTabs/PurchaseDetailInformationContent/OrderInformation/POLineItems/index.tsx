@@ -1,13 +1,12 @@
 'use client';
 
 import { POLineItemsTable } from '@/components/po-line-items-table';
-import { POLineItemsLimitedData } from './mockData';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 
 export const POLineItems = () => {
   const params = useParams();
-  const { id } = params; // id from route
+  const { id } = params;
 
   return (
     <div className="space-y-3">
@@ -21,7 +20,7 @@ export const POLineItems = () => {
         </Link>
       </div>
 
-      <POLineItemsTable data={POLineItemsLimitedData} />
+      <POLineItemsTable />
     </div>
   );
 };

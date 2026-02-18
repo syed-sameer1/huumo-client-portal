@@ -13,6 +13,9 @@ export const urls = {
   importCSV: '/imports/csv',
   gmailConnect: '/google/gmail/connect',
   columnMapping: '/imports/import-job/{importJobId}',
+  mapping: '/imports/mapping',
+  purchaseOrder: '/purchase-order',
+  purchaseOrderDetails: '/purchase-order/{purchaseOrderId}',
 };
 
 export const routeUrls = {

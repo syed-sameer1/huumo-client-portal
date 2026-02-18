@@ -14,7 +14,7 @@ export const StatusActionDropdown = ({
 }: {
   statusValue: POStatus;
 }) => {
-  const selectedStatus = PurchaseOrdersStatusConfigs[statusValue];
+  const selectedStatus = PurchaseOrdersStatusConfigs[statusValue] || {};
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

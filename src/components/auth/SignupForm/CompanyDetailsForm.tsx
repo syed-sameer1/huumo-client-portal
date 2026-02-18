@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Form, FormField } from '@/components/ui/form';
 import { AuthWrapper } from '../AuthWrapper';
 import { InputWithLabel } from '@/components/form-inputs/InputWithLabel';
@@ -28,9 +29,7 @@ export const CompanyDetailsForm = ({
 
   const { handleSubmit, control } = form;
 
-  const onSubmit = (values: CompanyDetailsFormValues) => {
-    console.log(values, email, name, password);
-  };
+  const onSubmit = (_values: CompanyDetailsFormValues) => {};
 
   return (
     <AuthWrapper

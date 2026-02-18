@@ -23,17 +23,14 @@ export const POOptions = () => {
       fileInputRef.current?.click();
     }
   };
-  console.log({ isPending });
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    console.log('file', file);
     const formData = new FormData();
     formData.append('file', file);
 
     mutate(formData, {
       onSuccess: (res) => {
-        console.log(res);
         router.push(
           `${routeUrls.columnMapping}/?import_job_id=${res.data.importJobId}`,
         );
