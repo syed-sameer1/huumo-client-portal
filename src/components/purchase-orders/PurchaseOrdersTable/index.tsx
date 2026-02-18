@@ -10,7 +10,7 @@ import { DataTablePagination } from './TablePagination';
 
 export const PurchaseOrdersTable = () => {
   const [page, setPage] = useState(0);
-  const { data = [], isLoading } = usePurchaseOrders(page + 1);
+  const { data, isLoading } = usePurchaseOrders(page + 1);
 
   const table = useReactTable({
     data: isLoading ? [] : (data?.data?.purchaseOrders ?? []),
@@ -42,7 +42,7 @@ export const PurchaseOrdersTable = () => {
       </Table>
       <DataTablePagination
         table={table}
-        total={data?.data?.totalPurchaseOrders}
+        total={data?.data?.totalPurchaseOrders ?? 0}
       />
     </div>
   );

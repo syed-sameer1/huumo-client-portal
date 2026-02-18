@@ -1,7 +1,6 @@
 import { SortableHeader } from '@/components/purchase-orders/PurchaseOrdersTable/SortableHeader';
 import { ColumnDef } from '@tanstack/react-table';
-import { POLineItems, POLineItemsColumns } from '../types';
-import { formatDate } from '@/lib/date';
+import { POLineItems } from '../types';
 
 export const tableColumns: ColumnDef<POLineItems>[] = [
   {

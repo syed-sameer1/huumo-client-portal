@@ -1,3 +1,10 @@
+import { POLineItems } from '@/components/po-line-items-table/types';
+
+export type PurchaseOrdersResponse = {
+  purchaseOrders: PurchaseOrders[];
+  totalPurchaseOrders: number;
+};
+
 export type PurchaseOrders = {
   createdAt: string;
   dueDate: string;
@@ -13,16 +20,7 @@ export type PurchaseOrders = {
     updatedAt: string;
     status: VendorStatus;
   };
-  items: {
-    confirmedQuantity: string;
-    createdAt: string;
-    id: number;
-    lineItem: string;
-    pendingQuantity: string;
-    quantity: string;
-    unitCost: string;
-    updatedAt: string;
-  };
+  items: POLineItems[];
 };
 
 export enum POStatus {

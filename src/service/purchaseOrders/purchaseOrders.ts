@@ -1,7 +1,7 @@
 import { urls } from '@/constants/urls';
 import { api } from '../api';
 import { AxiosResponse } from 'axios';
-import { PurchaseOrders } from '@/types/purchaseOrders';
+import { PurchaseOrders, PurchaseOrdersResponse } from '@/types/purchaseOrders';
 
 export const purchaseOrdersService = ({
   limit,
@@ -9,7 +9,7 @@ export const purchaseOrdersService = ({
 }: {
   limit: number;
   pageNumber: number;
-}): Promise<AxiosResponse<PurchaseOrders>> =>
+}): Promise<AxiosResponse<PurchaseOrdersResponse>> =>
   api.get(`${urls.purchaseOrder}/?limit=${limit}&pageNumber=${pageNumber}`);
 
 export const purchaseOrderDetails = (
