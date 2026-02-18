@@ -38,8 +38,7 @@ export const EditVendorModal = ({
     },
   });
 
-  const submitHandler = (data: AddVendorFieldValues) => {
-    console.log({ data });
+  const submitHandler = (_data: AddVendorFieldValues) => {
     reset();
     onClose();
   };
