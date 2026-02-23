@@ -11,7 +11,11 @@ export const ColumnMappingFooter = ({ isLoading }: { isLoading: boolean }) => {
           Save mapping as default for future uploads
         </Label>
       </div>
-      <LoadingButton className="bg-background-secondary" loading={isLoading}>
+      <LoadingButton
+        type="submit"
+        className="bg-background-secondary"
+        loading={isLoading}
+      >
         Save & Continue
       </LoadingButton>
     </div>

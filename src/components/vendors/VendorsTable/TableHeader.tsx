@@ -1,27 +1,26 @@
 import { SortableHeader } from '@/components/purchase-orders/PurchaseOrdersTable/SortableHeader';
 import { ColumnDef, flexRender } from '@tanstack/react-table';
-import { VendorsData } from '../types';
 import { MoreOptions } from './MoreOptions';
 import { VendorsTableType } from './types';
 import {
   TableRow,
   TableHead,
   TableHeader as ShadcnTableHeader,
+  TableCell,
 } from '@/components/ui/table';
 import { CircleQuestionMark, InfoIcon } from 'lucide-react';
 import { PerformanceScoreChip } from '../PerformanceScoreChip';
 import { RiskScoreChip } from '../RiskScoreChip';
+import { RISK_LEVEL, VendorData } from '@/types/vendors';
 
-export const tableColumns: ColumnDef<VendorsData>[] = [
+export const tableColumns: ColumnDef<VendorData>[] = [
   {
     accessorKey: 'vendorName',
     header: ({ column }) => <SortableHeader column={column} title="Vendor" />,
     cell: ({ row }) => {
       return (
         <div className="flex items-center space-x-2">
-          <div className="text-foreground font-medium">
-            {row.original.vendorName}
-          </div>
+          <div className="text-foreground font-medium">{row.original.name}</div>
           {!row.original.email && (
             <InfoIcon size={15} className="text-[#F27712]" />
           )}
@@ -50,7 +49,8 @@ export const tableColumns: ColumnDef<VendorsData>[] = [
       <SortableHeader column={column} title="Total Spend" />
     ),
     cell: ({ row }) => {
-      return <div>${row.original.totalSpend}</div>;
+      // return <div>${row.original.totalSpend}</div>;
+      return <div className="text-center">$ 200</div>;
     },
   },
   {
@@ -59,7 +59,8 @@ export const tableColumns: ColumnDef<VendorsData>[] = [
       <SortableHeader column={column} title="Confirmation Rate" />
     ),
     cell: ({ row }) => {
-      return <div>{row.original.confirmationRate}%</div>;
+      // return <div>{row.original.confirmationRate}%</div>;
+      return <div className="text-center">93 %</div>;
     },
   },
   {
@@ -68,7 +69,12 @@ export const tableColumns: ColumnDef<VendorsData>[] = [
       <SortableHeader column={column} title="Performance Score" />
     ),
     cell: ({ row }) => {
-      return <PerformanceScoreChip value={row.original.performanceScore} />;
+      // return <PerformanceScoreChip value={row.original.performanceScore} />;
+      return (
+        <div className="flex items-center justify-center">
+          <PerformanceScoreChip value={97} />
+        </div>
+      );
     },
   },
   {
@@ -77,17 +83,21 @@ export const tableColumns: ColumnDef<VendorsData>[] = [
       <SortableHeader column={column} title="Risk Level" />
     ),
     cell: ({ row }) => {
-      return <RiskScoreChip value={row.original.riskLevel} />;
+      // return <RiskScoreChip value={row.original.riskLevel} />;
+      return <RiskScoreChip value={RISK_LEVEL.low} />;
     },
   },
   {
     id: 'action',
     header: 'Action',
     cell: ({ row }) => (
-      <MoreOptions
-        email={row.original.email}
-        vendorName={row.original.vendorName}
-      />
+      <TableCell data-no-row-click>
+        <MoreOptions
+          email={row.original.email}
+          vendorName={row.original.name}
+          vendorId={row.original.id}
+        />
+      </TableCell>
     ),
   },
 ];

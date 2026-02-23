@@ -9,7 +9,7 @@ import { usePurchaseOrderDetailsData } from '../purchase-order-details/hooks/use
 
 export const POLineItemsTable = () => {
   const { data: detailsData } = usePurchaseOrderDetailsData();
-  console.log('detailsData', detailsData);
+
   const table = useReactTable({
     data: detailsData?.items || [],
     columns: tableColumns,

@@ -10,6 +10,7 @@ import { VendorDetails } from '../VendorDetails';
 
 export const TableBody = ({ table }: { table: VendorsTableType }) => {
   const [showVendorDetails, setShowVendorDetails] = useState(false);
+  const [selectedVendorId, setSelectedVendorId] = useState<number | null>(null);
   return (
     <>
       <ShadcnTableBody>
@@ -18,7 +19,13 @@ export const TableBody = ({ table }: { table: VendorsTableType }) => {
             <TableRow
               key={row.id}
               data-state={row.getIsSelected() && 'selected'}
-              onClick={() => setShowVendorDetails(true)}
+              onClick={(e) => {
+                if ((e.target as HTMLElement).closest('[data-no-row-click]'))
+                  return;
+
+                setSelectedVendorId(row.original.id);
+                setShowVendorDetails(true);
+              }}
             >
               {row.getVisibleCells().map((cell) => (
                 <TableCell key={cell.id} className="py-4">
@@ -33,10 +40,13 @@ export const TableBody = ({ table }: { table: VendorsTableType }) => {
           </TableRow>
         )}
       </ShadcnTableBody>
-      <VendorDetails
-        open={showVendorDetails}
-        handleClose={() => setShowVendorDetails(false)}
-      />
+      {selectedVendorId && showVendorDetails && (
+        <VendorDetails
+          open={showVendorDetails}
+          handleClose={() => setShowVendorDetails(false)}
+          vendorId={selectedVendorId}
+        />
+      )}
     </>
   );
 };

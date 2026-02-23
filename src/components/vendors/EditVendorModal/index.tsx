@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button';
+import { LoadingButton } from '@/components/LoadingButton';
 import {
   Dialog,
   DialogContent,
@@ -8,15 +8,19 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useUpdateVendor } from '@/hooks/vendors';
 import { AddVendorFieldValues, addVendorSchema } from '@/schema/vendor';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
 interface EditVendorModalProps {
   onClose: () => void;
   open: boolean;
   vendorName: string;
   email: string | null;
+  vendorId: number;
 }
 
 export const EditVendorModal = ({
@@ -24,7 +28,10 @@ export const EditVendorModal = ({
   open,
   vendorName,
   email,
+  vendorId,
 }: EditVendorModalProps) => {
+  const queryClient = useQueryClient();
+  const { mutate, isPending } = useUpdateVendor();
   const {
     register,
     handleSubmit,
@@ -34,18 +41,33 @@ export const EditVendorModal = ({
     resolver: zodResolver(addVendorSchema),
     defaultValues: {
       vendorName: vendorName,
-      email: email || '',
+      vendorEmail: email || '',
     },
   });
 
-  const submitHandler = (_data: AddVendorFieldValues) => {
+  const submitHandler = (data: AddVendorFieldValues) => {
+    mutate(
+      { payload: data, id: vendorId },
+      {
+        onSuccess: () => {
+          toast.success('Vendor successfully updated');
+          queryClient.invalidateQueries({
+            queryKey: ['vendors-data'],
+            exact: false,
+          });
+        },
+        onError: () => {
+          toast.error('Something went wrong please try again');
+        },
+      },
+    );
     reset();
     onClose();
   };
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="p-6">
+      <DialogContent className="p-6" data-no-row-click>
         <DialogHeader>
           <DialogTitle className="text-lg">Edit Vendor Details</DialogTitle>
         </DialogHeader>
@@ -69,12 +91,12 @@ export const EditVendorModal = ({
             <Label htmlFor="email">Email</Label>
             <Input
               placeholder="vendor@example.com"
-              {...register('email')}
+              {...register('vendorEmail')}
               id="email"
             />
-            {errors.email && (
+            {errors.vendorEmail && (
               <p className="text-sm text-destructive mt-1">
-                {errors.email.message}
+                {errors.vendorEmail.message}
               </p>
             )}
           </div>
@@ -83,9 +105,13 @@ export const EditVendorModal = ({
           </div>
 
           <DialogFooter>
-            <Button className="w-33 h-10 bg-background-secondary" type="submit">
+            <LoadingButton
+              loading={isPending}
+              className="w-33 h-10 bg-background-secondary"
+              type="submit"
+            >
               Update
-            </Button>
+            </LoadingButton>
           </DialogFooter>
         </form>
       </DialogContent>

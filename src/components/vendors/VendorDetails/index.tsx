@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { POLinkedItems } from './POLinkedItems';
+import { useVendorDetails } from '@/hooks/vendors';
 
 const responsiveness = [
   {
@@ -68,10 +69,17 @@ const responsiveness = [
 export const VendorDetails = ({
   open,
   handleClose,
+  vendorId,
 }: {
   open: boolean;
   handleClose: () => void;
+  vendorId: number | null;
 }) => {
+  const { data, isPending } = useVendorDetails(vendorId!);
+  console.log({ data, isPending });
+
+  const vendor = data?.vendor;
+
   return (
     <Sheet open={open} onOpenChange={handleClose}>
       <SheetContent
@@ -83,55 +91,58 @@ export const VendorDetails = ({
             Vendor Details
           </SheetTitle>
         </SheetHeader>
-
-        <div className="py-4 space-y-6 overflow-y-auto">
-          <Field orientation="horizontal" className="w-fit">
-            <Switch id="automation" />
-            <FieldLabel htmlFor="automation" className="text-[16px]">
-              Automation
-            </FieldLabel>
-          </Field>
-          <div className="flex justify-between items-center">
-            <div className="space-y-1">
-              <div className="font-semibold text-[16px]">ABC Suppliers</div>
-              <div>abcsuppliers@gmail.com</div>
+        {isPending ? (
+          <div>Loading..</div>
+        ) : (
+          <div className="py-4 space-y-6 overflow-y-auto">
+            <Field orientation="horizontal" className="w-fit">
+              <Switch id="automation" />
+              <FieldLabel htmlFor="automation" className="text-[16px]">
+                Automation
+              </FieldLabel>
+            </Field>
+            <div className="flex justify-between items-center">
+              <div className="space-y-1">
+                <div className="font-semibold text-[16px]">{vendor?.name}</div>
+                <div>{vendor?.email ? vendor?.email : '-'}</div>
+              </div>
+              <div className="space-y-1">
+                <div className="font-semibold text-[16px]">$450</div>
+                <div>Total Spend</div>
+              </div>
             </div>
-            <div className="space-y-1">
-              <div className="font-semibold text-[16px]">$450</div>
-              <div>Total Spend</div>
-            </div>
-          </div>
-          <div className="space-y-4">
-            {responsiveness.map(({ title, sections }) => (
-              <div key={title} className="space-y-2">
-                <div className="text-secondary-foreground">{title}</div>
-                <div className="flex">
-                  {sections.map(({ description, Icon, value }) => (
-                    <div
-                      key={value}
-                      className="b-[#E4E4E7] border p-3 space-y-1 rounded-[6px] flex-1"
-                    >
-                      <Icon className="text-[#20A665]" size={20} />
-                      <div className="text-[16px] font-semibold">{value}</div>
-                      <div>{description}</div>
-                    </div>
-                  ))}
+            <div className="space-y-4">
+              {responsiveness.map(({ title, sections }) => (
+                <div key={title} className="space-y-2">
+                  <div className="text-secondary-foreground">{title}</div>
+                  <div className="flex">
+                    {sections.map(({ description, Icon, value }) => (
+                      <div
+                        key={value}
+                        className="b-[#E4E4E7] border p-3 space-y-1 rounded-[6px] flex-1"
+                      >
+                        <Icon className="text-[#20A665]" size={20} />
+                        <div className="text-[16px] font-semibold">{value}</div>
+                        <div>{description}</div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="text-[18px] font-semibold">
-                POs linked to vendor
-              </div>
-              <Link href="#" className="text-[#20A665] text-[14px]">
-                View All
-              </Link>
+              ))}
             </div>
-            <POLinkedItems />
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="text-[18px] font-semibold">
+                  POs linked to vendor
+                </div>
+                <Link href="#" className="text-[#20A665] text-[14px]">
+                  View All
+                </Link>
+              </div>
+              <POLinkedItems />
+            </div>
           </div>
-        </div>
+        )}
       </SheetContent>
     </Sheet>
   );
