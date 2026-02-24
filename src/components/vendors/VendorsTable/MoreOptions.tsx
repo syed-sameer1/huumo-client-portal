@@ -13,16 +13,23 @@ import { DeleteVendorModal } from '../DeleteVendorModal';
 interface MoreOptionsProps {
   email: string | null;
   vendorName: string;
+  vendorId: number;
 }
 
-export const MoreOptions = ({ email, vendorName }: MoreOptionsProps) => {
+export const MoreOptions = ({
+  email,
+  vendorName,
+  vendorId,
+}: MoreOptionsProps) => {
   const [editVendor, setEditVendor] = useState(false);
   const [deleteVendor, setDeleteVendor] = useState(false);
   return (
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
+          {/* <button onClick={(e) => e.stopPropagation()}> */}
           <EllipsisVertical />
+          {/* </button> */}
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-49 mr-4 mt-5">
           <DropdownMenuGroup>
@@ -52,11 +59,13 @@ export const MoreOptions = ({ email, vendorName }: MoreOptionsProps) => {
         open={editVendor}
         email={email}
         vendorName={vendorName}
+        vendorId={vendorId}
       />
       <DeleteVendorModal
         onClose={() => setDeleteVendor(false)}
         open={deleteVendor}
         vendorName={vendorName}
+        vendorId={vendorId}
       />
     </>
   );

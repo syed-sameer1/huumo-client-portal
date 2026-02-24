@@ -10,12 +10,17 @@ export const urls = {
   subscriptionStatus: '/subscription/subscription-status',
   clientActivate: '/client/activate',
   updateFollowUpFrequency: '/client/settings/update-followup-frequency',
-  importCSV: '/imports/csv',
+  importCSV: '/imports/csv/purchaseOrder',
   gmailConnect: '/google/gmail/connect',
   columnMapping: '/imports/import-job/{importJobId}',
-  mapping: '/imports/mapping',
+  mapping: '/imports/mapping/purchaseOrder',
   purchaseOrder: '/purchase-order',
   purchaseOrderDetails: '/purchase-order/{purchaseOrderId}',
+  vendors: '/vendor',
+  vendor: `/vendor/{id}`,
+  deleteVendor: `/vendor/{id}`,
+  importVendorCSV: '/imports/csv/vendor',
+  vendorMapping: '/imports/mapping/vendor',
 };
 
 export const routeUrls = {
@@ -26,4 +31,5 @@ export const routeUrls = {
   selectImportMethod: '/purchase-orders/select-import-method',
   loginRoute: '/',
   columnMapping: '/purchase-orders/select-import-method/column-mapping',
+  vendorColumnMapping: '/vendors/column-mapping',
 };

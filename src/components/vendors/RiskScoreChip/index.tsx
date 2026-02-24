@@ -1,4 +1,4 @@
-import { RISK_LEVEL } from '../types';
+import { RISK_LEVEL } from '@/types/vendors';
 
 export const RiskScoreChip = ({ value }: { value: RISK_LEVEL }) => {
   if (value === RISK_LEVEL.low) {

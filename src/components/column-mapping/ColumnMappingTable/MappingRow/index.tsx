@@ -20,6 +20,7 @@ type Props = {
   showBorder?: boolean;
   id: string;
   headers: any;
+  errors: any;
 };
 
 export function MappingRow({
@@ -31,15 +32,11 @@ export function MappingRow({
   id,
   showBorder = true,
   headers,
+  errors,
 }: Props) {
-  const {
-    control,
-    formState: { errors },
-  } = useFormContext();
+  const { control } = useFormContext();
 
-  const error = required
-    ? id.split('.').reduce((acc: any, key) => acc?.[key], errors.required)
-    : undefined;
+  const error = required ? errors[id] : undefined;
 
   return (
     <div

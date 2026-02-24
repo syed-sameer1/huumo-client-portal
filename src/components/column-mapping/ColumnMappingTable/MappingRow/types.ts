@@ -4,4 +4,5 @@ export type MappingField = {
   required?: boolean;
   sample: string;
   removable?: boolean;
+  name: string;
 };

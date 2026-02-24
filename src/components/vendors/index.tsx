@@ -1,9 +1,16 @@
+'use client';
+
+import { useVendorsData } from '@/hooks/vendors';
 import { EmptyScreen } from '../empty-screen';
 import { VendorFilters } from './VendorFilters';
 import { VendorsTable } from './VendorsTable';
 
 export const VendorsSection = () => {
-  const isEmpty = false;
+  const { data, isLoading } = useVendorsData(1);
+  const isEmpty = !data?.vendors.length;
+
+  if (isLoading) return <div>Loading...</div>;
+
   if (isEmpty) {
     return (
       <EmptyScreen

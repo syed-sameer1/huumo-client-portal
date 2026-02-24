@@ -15,6 +15,7 @@ import { useImportColumn } from '@/hooks/csvImports';
 import { useSearchParams } from 'next/navigation';
 import { LoaderDialog } from '@/components/loader';
 import { useColumnMapping } from '@/hooks/purchaseOrders';
+import { REQUIRED_FIELDS } from './RequiredFieldSection/constants';
 
 export const ColumnMappingTable = () => {
   const importJobId = useSearchParams().get('import_job_id');
@@ -67,7 +68,11 @@ export const ColumnMappingTable = () => {
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <div className="shadow-md border border-[#E4E4E7] p-6 rounded-4xl">
           <ColumnMappingHeader />
-          <RequiredFieldSection headers={data?.data?.data?.headers} />
+          <RequiredFieldSection
+            requiredFields={REQUIRED_FIELDS}
+            headers={data?.data?.data?.headers}
+            errors={form.formState?.errors?.required || {}}
+          />
           <AdditionalFieldSection headers={data?.data?.data?.headers} />
         </div>
         <ColumnMappingFooter isLoading={isMappingPending} />

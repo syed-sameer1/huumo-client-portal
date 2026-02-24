@@ -17,3 +17,10 @@ export const addFieldSchema = z.object({
 export type AddFieldValues = z.infer<typeof addFieldSchema>;
 
 export type MappingFormValues = z.infer<typeof columnMappingSchema>;
+
+export const vendorColumnMappingSchema = z.object({
+  vendorEmail: z.string().min(1, { message: 'Please enter Vendor Email' }),
+  vendorName: z.string().min(1, { message: 'Please enter Vendor Name' }),
+});
+
+export type MappingVendorFormValues = z.infer<typeof vendorColumnMappingSchema>;
