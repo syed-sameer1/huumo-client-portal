@@ -6,3 +6,5 @@ export const activateClient = (payload: any) =>
 
 export const updateFollowUpFrequency = (payload: any) =>
   api.patch(urls.updateFollowUpFrequency, payload);
+
+export const createUser = (payload: any) => api.post(urls.user, payload);

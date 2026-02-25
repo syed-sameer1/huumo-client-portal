@@ -1,6 +1,18 @@
+'use client';
+
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button } from '@/components/ui/button';
+import { Info } from 'lucide-react';
+import { toast } from 'sonner';
+
+import { LoadingButton } from '@/components/LoadingButton';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -11,71 +23,78 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Info } from 'lucide-react'; // For the (i) icons
 import { AddRoleFormValues, addRoleSchema } from '@/schema/role';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { useCreateUser } from '@/hooks/client';
-import { toast } from 'sonner';
-import { LoadingButton } from '@/components/LoadingButton';
+import { useUpdateUser } from '@/hooks/client';
 import { useQueryClient } from '@tanstack/react-query';
 
-interface AddRoleModalProps {
+interface EditRoleModalProps {
   open: boolean;
   onClose: () => void;
+  initialName: string;
+  initialEmail: string;
 }
 
-export function AddRoleModal({ open, onClose }: AddRoleModalProps) {
+export function EditRoleModal({
+  open,
+  onClose,
+  initialName,
+  initialEmail,
+}: EditRoleModalProps) {
   const queryClient = useQueryClient();
-  const { mutate: createUser, isPending } = useCreateUser();
+  const { mutate: updateUser, isPending } = useUpdateUser();
 
   const form = useForm<AddRoleFormValues>({
     resolver: zodResolver(addRoleSchema),
     mode: 'onChange',
     defaultValues: {
-      name: '',
-      email: '',
+      name: initialName ?? '',
+      email: initialEmail ?? '',
       role: 'admin',
     },
   });
 
-  const onSubmit = (values: AddRoleFormValues) => {
-    const payload = {
-      name: values.name,
-      email: values.email,
-      password: 'HardcodedPassword123!', // hardcoded for now
-      role: values.role,
-    };
-
-    createUser(payload, {
-      onSuccess: () => {
-        toast.success('User created successfully');
-        queryClient.invalidateQueries({
-          queryKey: ['users-data'],
-          exact: false,
-        });
-        onClose();
-      },
-      onError: () => {
-        toast.error('Failed to create user, please try again');
-      },
+  useEffect(() => {
+    if (!open) return;
+    form.reset({
+      name: initialName ?? '',
+      email: initialEmail ?? '',
+      role: 'admin',
     });
+  }, [open, initialName, initialEmail, form]);
+
+  const onSubmit = (values: AddRoleFormValues) => {
+    updateUser(
+      {
+        name: values.name,
+        email: values.email,
+        role: values.role,
+        status: 'pending',
+      },
+      {
+        onSuccess: () => {
+          toast.success('Changes saved');
+          queryClient.invalidateQueries({
+            queryKey: ['users-data'],
+            exact: false,
+          });
+          onClose();
+        },
+        onError: () => {
+          toast.error('Failed to save changes, please try again');
+        },
+      },
+    );
   };
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[480px] p-8 gap-0">
         <DialogHeader className="mb-6">
-          <DialogTitle className="text-2xl font-semibold">Add Role</DialogTitle>
+          <DialogTitle className="text-2xl font-semibold">Edit Role</DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-            {/* Name Field */}
             <FormField
               control={form.control}
               name="name"
@@ -96,7 +115,6 @@ export function AddRoleModal({ open, onClose }: AddRoleModalProps) {
               )}
             />
 
-            {/* Email Field */}
             <FormField
               control={form.control}
               name="email"
@@ -117,7 +135,6 @@ export function AddRoleModal({ open, onClose }: AddRoleModalProps) {
               )}
             />
 
-            {/* Role Selection */}
             <FormField
               control={form.control}
               name="role"
@@ -135,11 +152,11 @@ export function AddRoleModal({ open, onClose }: AddRoleModalProps) {
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem
                           value="admin"
-                          id="admin"
+                          id="edit-admin"
                           className="h-5 w-5 border-2  border-[#A1A1AA] [&_svg]:fill-[#20A665] [&_svg]:text-[#20A665] [&_svg]:w-[12px]"
                         />
                         <label
-                          htmlFor="admin"
+                          htmlFor="edit-admin"
                           className="flex items-center gap-1.5 cursor-pointer text-sm font-medium"
                         >
                           Admin{' '}
@@ -150,11 +167,11 @@ export function AddRoleModal({ open, onClose }: AddRoleModalProps) {
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem
                           value="member"
-                          id="member"
+                          id="edit-member"
                           className="h-5 w-5 border-2  border-[#A1A1AA] [&_svg]:fill-[#20A665] [&_svg]:text-[#20A665] [&_svg]:w-[12px]"
                         />
                         <label
-                          htmlFor="member"
+                          htmlFor="edit-member"
                           className="flex items-center gap-1.5 cursor-pointer text-sm font-medium"
                         >
                           Member{' '}
@@ -168,7 +185,6 @@ export function AddRoleModal({ open, onClose }: AddRoleModalProps) {
               )}
             />
 
-            {/* Submit Button */}
             <div className="flex justify-end pt-4">
               <LoadingButton
                 type="submit"
@@ -176,7 +192,7 @@ export function AddRoleModal({ open, onClose }: AddRoleModalProps) {
                 loading={isPending}
                 className="bg-[#52a46d] hover:bg-[#438e5b] text-white px-10 h-11 transition-colors"
               >
-                Add
+                Save changes
               </LoadingButton>
             </div>
           </form>
@@ -185,3 +201,4 @@ export function AddRoleModal({ open, onClose }: AddRoleModalProps) {
     </Dialog>
   );
 }
+
