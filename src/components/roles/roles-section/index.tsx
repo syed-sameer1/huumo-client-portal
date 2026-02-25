@@ -1,3 +1,31 @@
+'use client';
+
+import { RolesFilters } from '../RolesFilters';
+import { RolesTable } from '../RolesTable';
+import { EmptyScreen } from '@/components/empty-screen';
+import { useUsersData } from '@/hooks/client';
+
 export const RolesSection = () => {
-  return <div>Roles section</div>;
+  const { data, isLoading } = useUsersData(1);
+  const isEmpty = !data?.users.length;
+
+  if (isLoading) return <div>Loading...</div>;
+
+  if (isEmpty) {
+    return (
+      <EmptyScreen
+        title="No Roles Right Now"
+        description="You have nothing on your list yet."
+        subDescription="Add new role"
+      />
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <RolesFilters />
+      <RolesTable />
+    </div>
+  );
 };
+
