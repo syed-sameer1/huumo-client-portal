@@ -8,7 +8,7 @@ export const urls = {
   forgotPassword: '/auth/client/forget-password',
   createSubscription: '/subscription/create',
   subscriptionStatus: '/subscription/subscription-status',
-  clientActivate: '/client/activate',
+  userActivate: '/user/activate',
   updateFollowUpFrequency: '/client/settings/update-followup-frequency',
   importCSV: '/imports/csv/purchaseOrder',
   gmailConnect: '/google/gmail/connect',
