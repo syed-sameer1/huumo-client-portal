@@ -4,7 +4,6 @@ import { useImportColumn } from '@/hooks/csvImports';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { FormProvider, useForm } from 'react-hook-form';
 import { LoaderDialog } from '../loader';
-import { useColumnMapping } from '@/hooks/purchaseOrders';
 import { ColumnMappingFooter } from '../column-mapping/ColumnMappingTable/ColumnMappingFooter';
 import {
   MappingVendorFormValues,
