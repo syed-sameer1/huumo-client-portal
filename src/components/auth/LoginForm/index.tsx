@@ -14,7 +14,7 @@ import { useLoginAuth } from '@/hooks/auth';
 import { toast } from 'sonner';
 import { LoadingButton } from '@/components/LoadingButton';
 import { useRouter } from 'next/navigation';
-import { UserStatus } from '@/types/user';
+import { UserRole, ClientStatus } from '@/types/user';
 import { routeUrls } from '@/constants/urls';
 import { useCreateSubscription } from '@/hooks/subscriptionPackages';
 
@@ -38,7 +38,10 @@ export const LoginForm = () => {
     mutate(values, {
       onSuccess: (res) => {
         localStorage.setItem('access_token', res.data.accessToken);
-        if (res.data.user.client.status === UserStatus.pending) {
+        const subscriptionCheck =
+          res.data.user.role === UserRole.owner &&
+          res.data.user.client.status === ClientStatus.pending;
+        if (subscriptionCheck) {
           subscriptionMutate(undefined, {
             onSuccess: (res) => {
               router.push(res.data.url);

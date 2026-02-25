@@ -1,5 +1,5 @@
 import { SubscriptionType } from '@/types/subscription';
-import { UserStatus } from '@/types/user';
+import { ClientStatus, UserStatus } from '@/types/user';
 
 export interface AuthResponse {
   user: {
@@ -8,7 +8,7 @@ export interface AuthResponse {
     updatedAt: string;
     email: string;
     name: string;
-    status: string;
+    status: UserStatus;
     role: string;
     refreshTokenHash: null;
     refreshTokenExpiresAt: null;
@@ -24,7 +24,7 @@ export interface AuthResponse {
       country: string;
       state: string;
       city: string;
-      status: UserStatus;
+      status: ClientStatus;
       stripCustomerId: string;
       subscriptionId: string;
       subscriptionStatus: SubscriptionType;
