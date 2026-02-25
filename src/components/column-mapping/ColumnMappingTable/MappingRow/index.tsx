@@ -20,7 +20,7 @@ type Props = {
   showBorder?: boolean;
   id: string;
   headers: any;
-  errors: any;
+  errors?: any;
 };
 
 export function MappingRow({
