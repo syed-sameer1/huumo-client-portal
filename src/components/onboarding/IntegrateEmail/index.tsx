@@ -8,7 +8,8 @@ export const IntegrateEmail = () => {
   const onGmailConnect = () => {
     mutate(undefined, {
       onSuccess: (res) => {
-        window.location.href = (res as any).data.url;
+        console.log('res', res);
+        window.location.href = (res as any)?.url;
       },
     });
   };
