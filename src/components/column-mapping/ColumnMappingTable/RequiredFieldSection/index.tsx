@@ -10,12 +10,13 @@ export const RequiredFieldSection = ({
   requiredFields: MappingField[];
   errors: any;
 }) => {
+  console.log('errors', errors);
   return (
     <div>
       {requiredFields.map((field, index) => (
         <MappingRow
           key={field.id}
-          name={field.id}
+          name={field.name || ''}
           label={field.label}
           sample={field.sample}
           id={field.id}

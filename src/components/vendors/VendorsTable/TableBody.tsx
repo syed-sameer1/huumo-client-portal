@@ -19,6 +19,7 @@ export const TableBody = ({ table }: { table: VendorsTableType }) => {
             <TableRow
               key={row.id}
               data-state={row.getIsSelected() && 'selected'}
+              className="even:bg-[#20A6650D]"
               onClick={(e) => {
                 if ((e.target as HTMLElement).closest('[data-no-row-click]'))
                   return;

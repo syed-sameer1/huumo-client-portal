@@ -11,7 +11,7 @@ export const POLineItemBody = ({ table }: { table: POLineItemsTableType }) => {
           <TableRow
             key={row.id}
             data-state={row.getIsSelected() && 'selected'}
-            className="even:bg-[#F4FBF7]"
+            className="even:bg-[#20A6650D]"
           >
             {row.getVisibleCells().map((cell) => (
               <TableCell key={cell.id} className="py-4">
