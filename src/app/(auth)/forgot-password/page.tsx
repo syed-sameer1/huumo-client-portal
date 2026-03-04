@@ -26,7 +26,7 @@ export default function ForgotPassword() {
 
   const { handleSubmit } = form;
 
-  const onSubmit = (values: ForgotPasswordFormValues) => {
+  const onSubmit = (_values: ForgotPasswordFormValues) => {
     setFormType('otp');
   };
 

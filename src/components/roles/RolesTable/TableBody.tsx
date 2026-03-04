@@ -14,6 +14,7 @@ export const TableBody = ({ table }: { table: RolesTableType }) => {
           <TableRow
             key={row.id}
             data-state={row.getIsSelected() && 'selected'}
+            className="even:bg-[#20A6650D]"
           >
             {row.getVisibleCells().map((cell) => (
               <TableCell key={cell.id} className="py-4">
