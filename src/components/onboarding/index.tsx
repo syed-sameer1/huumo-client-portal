@@ -3,9 +3,13 @@
 import { useState } from 'react';
 import OnBoardingStepper from './OnBoardingStepper';
 import { WelcomeHuumoModal } from './WelcomeHuumoModal';
+import { useSearchParams } from 'next/navigation';
 
 export const Onboarding = () => {
-  const [open, setShowModal] = useState(true);
+  const searchParams = useSearchParams();
+  const gmailStatus = searchParams.get('gmail');
+
+  const [open, setShowModal] = useState(gmailStatus ? false : true);
 
   const onClose = () => {
     setShowModal(false);
