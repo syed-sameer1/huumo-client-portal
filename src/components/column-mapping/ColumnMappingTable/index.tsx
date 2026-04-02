@@ -18,11 +18,7 @@ import { useColumnMapping } from '@/hooks/purchaseOrders';
 import { REQUIRED_FIELDS } from './RequiredFieldSection/constants';
 import { AnalyticsDialog } from './AnalyticsDialog';
 
-export const ColumnMappingTable = ({
-  headerIncluded = false,
-}: {
-  headerIncluded?: boolean;
-}) => {
+export const ColumnMappingTable = () => {
   const importJobId = useSearchParams().get('import_job_id');
   const [previewDialogOpen, setPreviewDialogOpen] = useState(false);
 
@@ -54,7 +50,6 @@ export const ColumnMappingTable = ({
     mutate(
       {
         ImportJobId: Number(importJobId),
-        headerIncluded,
         mapping: {
           ...data.additional,
           ...data.required,
