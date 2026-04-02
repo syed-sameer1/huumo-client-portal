@@ -8,18 +8,18 @@ export type PurchaseOrdersResponse = {
 export type PurchaseOrders = {
   createdAt: string;
   dueDate: string;
+  dueIn: string;
+  lastUpdate: string;
+  overdueBy: string | null;
   id: number;
   orderDate: string;
   poNumber: string;
+  poValue: number;
+  quantity: number;
   status: POStatus;
-  vendor: {
-    createdAt: string;
-    email: string | null;
-    id: number;
-    name: string;
-    updatedAt: string;
-    status: VendorStatus;
-  };
+  vendorEmail: string | null;
+  vendorId: number;
+  vendorName: string;
   items: POLineItems[];
 };
 
@@ -29,8 +29,5 @@ export enum POStatus {
   FOLLOW_UP = 'follow-up',
   OVER_DUE = 'overdue',
   ESCALATED = 'escalated',
-}
-
-enum VendorStatus {
-  ACTIVE = 'active',
+  CREATED = 'created',
 }
