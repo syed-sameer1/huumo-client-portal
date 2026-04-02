@@ -22,4 +22,25 @@ export const REQUIRED_FIELDS: MappingField[] = [
     required: true,
     sample: 'Nvidia Corp',
   },
+  {
+    id: 'dueDate',
+    name: 'required.dueDate',
+    label: 'Due Date',
+    required: true,
+    sample: '12/06/25',
+  },
+  {
+    id: 'lineItem',
+    name: 'required.lineItem',
+    label: 'Line Item',
+    required: true,
+    sample: 'Plastic',
+  },
+  {
+    id: 'quantity',
+    name: 'required.quantity',
+    label: 'Quantity',
+    required: true,
+    sample: '12',
+  },
 ];
