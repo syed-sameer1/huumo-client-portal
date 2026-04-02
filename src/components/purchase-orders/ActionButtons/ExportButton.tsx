@@ -71,7 +71,14 @@ export const ExporetButton = () => {
     });
   };
 
-  return <Button onClick={handleExportCsv}>Export</Button>;
+  return (
+    <Button
+      onClick={handleExportCsv}
+      className="bg-[#FAFAFA] text-[#20A665] hover:bg-background-secondary/90 hover:text-white"
+    >
+      Export
+    </Button>
+  );
 
   return (
     <DropdownMenu>

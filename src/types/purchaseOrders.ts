@@ -16,6 +16,7 @@ export type PurchaseOrders = {
   poNumber: string;
   poValue: number;
   quantity: number;
+  site?: string | null;
   status: POStatus;
   vendorEmail: string | null;
   vendorId: number;

@@ -55,6 +55,7 @@ export const tableColumns: ColumnDef<PurchaseOrders>[] = [
       <Checkbox
         checked={table.getIsAllPageRowsSelected()}
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        className="data-[state=checked]:bg-[#FAFAFA] data-[state=checked]:text-[#20A665] data-[state=checked]:border-[#A1A1AA]"
       />
     ),
     cell: ({ row }) => (
@@ -62,6 +63,7 @@ export const tableColumns: ColumnDef<PurchaseOrders>[] = [
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
         onClick={(e) => e.stopPropagation()}
+        className="data-[state=checked]:bg-[#E0FEED] data-[state=checked]:text-[#20A665] data-[state=checked]:border-[#A1A1AA]"
       />
     ),
     enableSorting: false,
