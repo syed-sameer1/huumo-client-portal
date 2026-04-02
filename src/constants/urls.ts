@@ -24,6 +24,8 @@ export const urls = {
   deleteVendor: `/vendor/{id}`,
   importVendorCSV: '/imports/csv/vendor',
   vendorMapping: '/imports/mapping/vendor',
+  purchaseOrderStats: '/purchase-order/stats',
+  purchaseOrderExport: '/purchase-order/export',
 };
 
 export const routeUrls = {
@@ -35,4 +37,5 @@ export const routeUrls = {
   loginRoute: '/',
   columnMapping: '/purchase-orders/select-import-method/column-mapping',
   vendorColumnMapping: '/vendors/column-mapping',
+  manualPurchaseOrder: '/purchase-orders/manual-purchase-order',
 };
