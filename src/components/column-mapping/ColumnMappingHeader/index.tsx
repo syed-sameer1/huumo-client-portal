@@ -2,7 +2,13 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Info } from 'lucide-react';
 
-export const ColumnMappingHeader = () => {
+export const ColumnMappingHeader = ({
+  headerIncluded = false,
+  onHeaderIncludedChange,
+}: {
+  headerIncluded?: boolean;
+  onHeaderIncludedChange?: (checked: boolean) => void;
+}) => {
   return (
     <div className="flex justify-between items-center">
       <div className="space-y-3">
@@ -17,7 +23,11 @@ export const ColumnMappingHeader = () => {
         <Label className="text-foreground text-sm font-normal">
           Headers are included
         </Label>
-        <Switch className="text-[#34C759] data-[state=checked]:bg-[#34C759]" />
+        <Switch
+          checked={headerIncluded}
+          onCheckedChange={onHeaderIncludedChange}
+          className="text-[#34C759] data-[state=checked]:bg-[#34C759]"
+        />
       </div>
     </div>
   );
