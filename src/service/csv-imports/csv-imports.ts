@@ -14,8 +14,6 @@ export const columnMapping = (id: string) =>
 export const processImport = (payload: { id: string | number }) =>
   api.post(`/imports/process/${payload.id}`, payload);
 
-/** CSV of vendors missing email for this import job — adjust path if your API differs */
-export const downloadMissingVendorEmailCsv = (importJobId: string) =>
-  api.get(`/imports/import-job/${importJobId}/missing-vendor-emails/csv`, {
-    responseType: 'blob',
-  });
+/** CSV of vendors missing email for the given import job */
+export const downloadMissingVendorEmailCsv = () =>
+  api.get(urls.downloadMissingVendorEmailCsv, { responseType: 'blob' });

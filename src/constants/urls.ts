@@ -26,6 +26,7 @@ export const urls = {
   vendorMapping: '/imports/mapping/vendor',
   purchaseOrderStats: '/purchase-order/stats',
   purchaseOrderExport: '/purchase-order/export',
+  downloadMissingVendorEmailCsv: '/vendor/export-missing-email',
 };
 
 export const routeUrls = {

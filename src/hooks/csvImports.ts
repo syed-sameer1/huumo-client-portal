@@ -3,6 +3,7 @@ import {
   importCSV,
   importVendorCSV,
   processImport,
+  downloadMissingVendorEmailCsv,
 } from '@/service/csv-imports/csv-imports';
 import { useApiMutation, useApiQuery } from './query';
 import type { UseQueryOptions } from '@tanstack/react-query';
@@ -56,4 +57,8 @@ export const useImportColumn = (
 
 export const useImportVendorCSV = (options?: any) => {
   return useApiMutation(importVendorCSV, options);
+};
+
+export const useDownloadMissingVendorEmailCsv = (options?: any) => {
+  return useApiMutation(downloadMissingVendorEmailCsv, options);
 };
