@@ -50,7 +50,8 @@ export const DeleteRoleModal = ({
 
         <div className="text-muted-foreground space-y-1 pb-2">
           <div>
-            Are you sure you want to delete this role? User will lose all access.
+            Are you sure you want to delete this role? User will lose all
+            access.
           </div>
         </div>
 
@@ -70,4 +71,3 @@ export const DeleteRoleModal = ({
     </Dialog>
   );
 };
-

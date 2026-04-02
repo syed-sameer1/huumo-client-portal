@@ -4,10 +4,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { PurchaseOrdersFilters } from '../PurchaseOrdersFilters';
 import { PurchaseOrdersTable } from '../PurchaseOrdersTable';
-import {
-  usePurchaseOrders,
-  useBulkDeletePurchaseOrder,
-} from '@/hooks/purchaseOrders';
+import { usePurchaseOrders } from '@/hooks/purchaseOrders';
 import { LoadingSkeleton } from './LoadingSkeleton';
 import { NoPurchaseOrder } from '../EmptyPurchaseOrders/NoPurchaseOrder';
 import { PurchaseOrderBanner } from '../PurchaseOrderHeader/PurchaseOrderBanner';
@@ -17,23 +14,13 @@ import {
   type PurchaseOrderFilters as Filters,
 } from '../PurchaseOrdersFilters/constants';
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
 import { type RowSelectionState } from '@tanstack/react-table';
+import { DeletePurchaseOrderModal } from './DeletePurchaseOrderModal';
 
 export const PurchaseOrdersSection = () => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const queryClient = useQueryClient();
 
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -71,9 +58,6 @@ export const PurchaseOrdersSection = () => {
       .filter((n) => Number.isFinite(n));
   }, [rowSelection]);
 
-  const { mutate: bulkDelete, isPending: isDeleting } =
-    useBulkDeletePurchaseOrder();
-
   if (loading) {
     return <LoadingSkeleton text="Loading Purchase Orders.." />;
   }
@@ -101,8 +85,8 @@ export const PurchaseOrdersSection = () => {
         actionsBeforeFilters={
           selectedPoIds.length > 0 ? (
             <Button
-              variant="destructive"
-              className="shrink-0"
+              variant="ghost"
+              className="shrink-0 text-[#EF4444]"
               onClick={() => setDeleteOpen(true)}
             >
               Delete
@@ -115,58 +99,12 @@ export const PurchaseOrdersSection = () => {
         rowSelection={rowSelection}
         onRowSelectionChange={setRowSelection}
       />
-
-      <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-        <DialogContent className="sm:max-w-[520px]">
-          <DialogHeader>
-            <DialogTitle>
-              {selectedPoIds.length === 1
-                ? `Delete ${selectedPoIds[0]}`
-                : 'Delete Purchase Orders'}
-            </DialogTitle>
-            <DialogDescription>
-              Are you sure you want to delete this Purchase Order?
-            </DialogDescription>
-          </DialogHeader>
-
-          <DialogFooter className="gap-2 sm:gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setDeleteOpen(false)}
-              disabled={isDeleting}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="button"
-              variant="destructive"
-              onClick={() => {
-                bulkDelete(
-                  { poIds: selectedPoIds, force: true },
-                  {
-                    onSuccess: () => {
-                      toast.success('Purchase order(s) deleted');
-                      queryClient.invalidateQueries({
-                        queryKey: ['purchase-orders'],
-                        exact: false,
-                      });
-                      setRowSelection({});
-                      setDeleteOpen(false);
-                    },
-                    onError: () => {
-                      toast.error('Delete failed. Please try again.');
-                    },
-                  },
-                );
-              }}
-              disabled={selectedPoIds.length === 0 || isDeleting}
-            >
-              Delete
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <DeletePurchaseOrderModal
+        deleteOpen={deleteOpen}
+        setDeleteOpen={setDeleteOpen}
+        selectedPoIds={selectedPoIds}
+        setRowSelection={setRowSelection}
+      />
     </div>
   );
 };
