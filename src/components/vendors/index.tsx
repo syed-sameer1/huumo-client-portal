@@ -4,12 +4,13 @@ import { useVendorsData } from '@/hooks/vendors';
 import { EmptyScreen } from '../empty-screen';
 import { VendorFilters } from './VendorFilters';
 import { VendorsTable } from './VendorsTable';
+import { LoadingSkeleton } from '../purchase-orders/PurchaseOrdersSection/LoadingSkeleton';
 
 export const VendorsSection = () => {
   const { data, isLoading } = useVendorsData(1);
   const isEmpty = !data?.vendors.length;
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <LoadingSkeleton text="Loading Vendors.." />;
 
   if (isEmpty) {
     return (

@@ -55,6 +55,10 @@ export const EditVendorModal = ({
             queryKey: ['vendors-data'],
             exact: false,
           });
+          queryClient.invalidateQueries({
+            queryKey: ['purchase-orders'],
+            exact: false,
+          });
         },
         onError: () => {
           toast.error('Something went wrong please try again');
