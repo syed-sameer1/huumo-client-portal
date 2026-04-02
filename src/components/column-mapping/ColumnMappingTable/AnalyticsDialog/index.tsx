@@ -15,7 +15,6 @@ import {
   useProcessImport,
   useImportVendorCSV,
 } from '@/hooks/csvImports';
-import { downloadMissingVendorEmailCsv } from '@/service/csv-imports/csv-imports';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { AxiosResponse } from 'axios';
@@ -88,27 +87,6 @@ export const AnalyticsDialog = ({
   const { mutate: processImport, isPending: isProcessing } = useProcessImport();
 
   const previewSummary = data?.data.data?.previewSummary;
-
-  const handleDownloadCsv = async () => {
-    if (!importJobId) return;
-    try {
-      const res = await downloadMissingVendorEmailCsv(importJobId);
-      const blob =
-        res.data instanceof Blob
-          ? res.data
-          : new Blob([res.data as BlobPart], { type: 'text/csv' });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'missing-vendor-emails.csv';
-      a.click();
-      window.URL.revokeObjectURL(url);
-    } catch {
-      toast.error(
-        'Could not download CSV. Check the API path if this persists.',
-      );
-    }
-  };
 
   const onImport = () => {
     if (!importJobId) return;
@@ -267,9 +245,9 @@ export const AnalyticsDialog = ({
         open={showEmailMissingModal}
         onOpenChange={setShowEmailMissingModal}
         missingCount={missingEmailModalCount}
+        importJobId={importJobId ?? ''}
         onContinueWithoutEmail={goToPurchaseOrders}
         onProceed={handleProceedWithVendorCsv}
-        onDownloadCsv={handleDownloadCsv}
         isUploading={isVendorCsvUploading}
       />
 
