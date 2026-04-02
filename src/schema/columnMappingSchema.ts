@@ -5,6 +5,9 @@ export const columnMappingSchema = z.object({
     poNumber: z.string().min(1),
     orderDate: z.string().min(1, { message: 'Please enter Date' }),
     vendorName: z.string().min(1, { message: 'Please enter Vendor' }),
+    dueDate: z.string().min(1, { message: 'Please enter Due Date' }),
+    lineItem: z.string().min(1, { message: 'Please enter line item' }),
+    quantity: z.string().min(1, { message: 'Please enter quantity' }),
   }),
   additional: z.record(z.string(), z.string()),
 });
