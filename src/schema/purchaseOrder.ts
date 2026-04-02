@@ -2,6 +2,17 @@ import { z } from 'zod';
 
 const vendorModeSchema = z.enum(['select', 'manual']);
 
+/** DNS hostname: ASCII labels + TLD (e.g. example.com, sub.vendor.co.uk). No scheme, path, or port. */
+const SITE_DOMAIN_REGEX =
+  /^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,63}$/;
+
+function isOptionalStrictSiteDomain(val: string): boolean {
+  const t = val.trim();
+  if (t.length === 0) return true;
+  if (t.length > 253) return false;
+  return SITE_DOMAIN_REGEX.test(t);
+}
+
 export const lineItemSchema = z.object({
   lineItem: z.string().min(1, 'Line Item name is required'),
   quantity: z.coerce.number().min(1, 'Quantity is required'),
@@ -13,6 +24,9 @@ export const manualPurchaseOrderSchema = z
     poNumber: z.string().min(1, 'PO Number is required'),
     orderDate: z.string().min(1, 'Order Date is required'),
     dueDate: z.string().optional(),
+    site: z.string().refine(isOptionalStrictSiteDomain, {
+      message: 'Enter a valid domain (e.g. example.com)',
+    }),
     vendorMode: vendorModeSchema,
     vendorId: z.string().optional(),
     vendorName: z.string().optional(),

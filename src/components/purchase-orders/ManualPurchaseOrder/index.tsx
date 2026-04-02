@@ -64,6 +64,7 @@ export const ManualPurchaseOrder = () => {
       poNumber: '',
       orderDate: '',
       dueDate: '',
+      site: '',
       vendorMode: 'select',
       vendorId: undefined,
       vendorName: '',
@@ -103,12 +104,16 @@ export const ManualPurchaseOrder = () => {
     const orderDate = toMMDDYYYY(values.orderDate);
     const dueDate = values.dueDate ? toMMDDYYYY(values.dueDate) : undefined;
 
+    const siteTrimmed = values.site.trim();
+    const sitePayload = siteTrimmed ? { site: siteTrimmed } : {};
+
     const payload =
       values.vendorMode === 'select'
         ? {
             poNumber: values.poNumber,
             orderDate,
             dueDate,
+            ...sitePayload,
             vendorId: Number(values.vendorId),
             items: values.items,
           }
@@ -116,13 +121,14 @@ export const ManualPurchaseOrder = () => {
             poNumber: values.poNumber,
             orderDate,
             dueDate,
+            ...sitePayload,
             vendorName: values.vendorName?.trim(),
             vendorEmail: values.vendorEmail?.trim(),
             items: values.items,
           };
 
     console.log('manual PO payload', payload);
-    mutate(payload, {
+    mutate(payload as any, {
       onSuccess: () => {
         toast.success('Manual purchase order created successfully');
         router.push(routeUrls.purchaseOrdersRoute);
@@ -155,7 +161,7 @@ export const ManualPurchaseOrder = () => {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="p-6 space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <FormField
                 control={form.control}
                 name="poNumber"
@@ -189,6 +195,26 @@ export const ManualPurchaseOrder = () => {
                         placeholder="mm/dd/yyyy"
                         format="short"
                         inputClassName="h-11 w-full"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="site"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="font-medium mb-3 block">
+                      Site
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="example.com"
+                        className="h-11"
+                        {...field}
                       />
                     </FormControl>
                     <FormMessage />
