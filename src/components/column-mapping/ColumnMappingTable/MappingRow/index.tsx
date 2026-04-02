@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { Controller, useFormContext } from 'react-hook-form';
+import { humanizeHeader } from './helpers';
 
 type Props = {
   name: string;
@@ -37,7 +38,6 @@ export function MappingRow({
   const { control } = useFormContext();
 
   const error = required ? errors[id] : undefined;
-
   return (
     <div
       className={cn(
@@ -66,12 +66,14 @@ export function MappingRow({
                 >
                   <SelectValue placeholder="Select Column" />
                 </SelectTrigger>
-                <SelectContent>
-                  {headers.map((val: string) => (
-                    <SelectItem key={val} value={val}>
-                      {val}
-                    </SelectItem>
-                  ))}
+                <SelectContent className="max-h-64 overflow-auto">
+                  {headers.map((val: string) => {
+                    return (
+                      <SelectItem key={val} value={val}>
+                        {humanizeHeader(val)}
+                      </SelectItem>
+                    );
+                  })}
                 </SelectContent>
               </Select>
             </>
