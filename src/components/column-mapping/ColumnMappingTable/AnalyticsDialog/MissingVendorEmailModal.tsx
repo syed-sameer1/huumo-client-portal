@@ -12,6 +12,9 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { LoadingButton } from '@/components/LoadingButton';
+import { MissingVendorEmailModalProps } from './types';
+import { useDownloadMissingVendorEmailCsv } from '@/hooks/csvImports';
+import type { AxiosResponse } from 'axios';
 
 function formatFileSize(bytes: number) {
   if (bytes < 1024) return `${bytes} B`;
@@ -20,28 +23,50 @@ function formatFileSize(bytes: number) {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-interface MissingVendorEmailModalProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  missingCount: number;
-  onContinueWithoutEmail: () => void;
-  onProceed: (file: File | null) => void;
-  onDownloadCsv?: () => void;
-  isUploading?: boolean;
+function filenameFromContentDisposition(header: string | undefined) {
+  if (!header) return null;
+  const match = /filename\*?=(?:UTF-8''|")?([^\";]+)"?/i.exec(header);
+  if (!match?.[1]) return null;
+  try {
+    return decodeURIComponent(match[1]);
+  } catch {
+    return match[1];
+  }
+}
+
+function triggerCsvDownload(res: AxiosResponse<Blob>, fallbackName: string) {
+  const blob =
+    res.data instanceof Blob
+      ? res.data
+      : new Blob([res.data as unknown as BlobPart], { type: 'text/csv' });
+  const headers = res.headers as Record<string, string | undefined>;
+  const cd = headers['content-disposition'] ?? headers['Content-Disposition'];
+  const filename = filenameFromContentDisposition(cd) ?? fallbackName;
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  // Defer revoke so the browser can start reading the blob on repeat downloads.
+  window.setTimeout(() => window.URL.revokeObjectURL(url), 100);
 }
 
 export function MissingVendorEmailModal({
   open,
   onOpenChange,
   missingCount,
+  importJobId,
   onContinueWithoutEmail,
   onProceed,
-  onDownloadCsv,
   isUploading = false,
 }: MissingVendorEmailModalProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const { mutate: downloadCsv, isPending: isDownloadingCsv } =
+    useDownloadMissingVendorEmailCsv();
 
   const resetFile = useCallback(() => {
     setFile(null);
@@ -94,14 +119,23 @@ export function MissingVendorEmailModal({
             type="button"
             variant="secondary"
             className="shrink-0 bg-zinc-700 text-white hover:bg-zinc-800"
-            disabled={isUploading}
+            disabled={isUploading || isDownloadingCsv || !importJobId}
             onClick={() => {
-              if (onDownloadCsv) onDownloadCsv();
-              else
-                toast.info('Download will be available when the API is wired');
+              if (!importJobId) {
+                toast.error('Missing import job.');
+                return;
+              }
+              downloadCsv(undefined, {
+                onSuccess: (res) => {
+                  triggerCsvDownload(res, 'missing-vendor-emails.csv');
+                },
+                onError: () => {
+                  toast.error('Could not download CSV. Please try again.');
+                },
+              });
             }}
           >
-            Download CSV file
+            {isDownloadingCsv ? 'Downloading…' : 'Download CSV file'}
           </Button>
         </div>
 
