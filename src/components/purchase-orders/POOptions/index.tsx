@@ -1,41 +1,35 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { PO_OPTIONS, PO_VALUES } from './constants';
 import { POOptionsCard } from './POOptionsCard';
-import { useImportCSV } from '@/hooks/csvImports';
-import { LoaderDialog } from '@/components/loader';
-import { useRouter } from 'next/navigation';
-import { routeUrls } from '@/constants/urls';
 
-export const POOptions = () => {
-  const router = useRouter();
-  const [selectPurchaseOption, setPurchaseOption] = useState(
-    PO_VALUES.UPLOAD_CSV,
-  );
-  const { mutate, isPending } = useImportCSV();
+export const POOptions = ({
+  selectedPurchaseOption,
+  setSelectedPurchaseOption,
+  selectedFile,
+  onFileSelected,
+}: {
+  selectedPurchaseOption: PO_VALUES;
+  setSelectedPurchaseOption: (purchaseOption: PO_VALUES) => void;
+  selectedFile: File | null;
+  onFileSelected: (file: File | null) => void;
+}) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const onSelectPurchaseOption = (purchaseOption: PO_VALUES) => {
-    setPurchaseOption(purchaseOption);
+    setSelectedPurchaseOption(purchaseOption);
 
     if (purchaseOption === PO_VALUES.UPLOAD_CSV) {
       fileInputRef.current?.click();
     }
   };
+
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
-    const formData = new FormData();
-    formData.append('file', file);
-
-    mutate(formData, {
-      onSuccess: (res) => {
-        router.push(
-          `${routeUrls.columnMapping}/?import_job_id=${res.data.importJobId}`,
-        );
-      },
-    });
+    onFileSelected(file ?? null);
+    // allow re-selecting same file
+    e.target.value = '';
   };
 
   return (
@@ -52,12 +46,17 @@ export const POOptions = () => {
           <POOptionsCard
             key={purchaseOption.id}
             purchaseOption={purchaseOption}
-            selectedPurchaseOption={selectPurchaseOption}
+            selectedPurchaseOption={selectedPurchaseOption}
             onSelectPurchaseOption={onSelectPurchaseOption}
           />
         ))}
       </div>
-      {isPending && <LoaderDialog open={isPending} />}
+      {selectedPurchaseOption === PO_VALUES.UPLOAD_CSV && selectedFile && (
+        <div className="text-sm text-muted-foreground">
+          Selected file:{' '}
+          <span className="font-medium">{selectedFile.name}</span>
+        </div>
+      )}
     </>
   );
 };

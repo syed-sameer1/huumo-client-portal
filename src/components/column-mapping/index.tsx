@@ -1,3 +1,5 @@
+'use client';
+
 import { Suspense } from 'react';
 import { ColumnContainer } from './ColumnContainer';
 import { ColumnMappingHeader } from './ColumnMappingHeader';

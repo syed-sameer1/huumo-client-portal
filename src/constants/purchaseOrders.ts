@@ -26,4 +26,9 @@ export const PurchaseOrdersStatusConfigs = {
     bgColor: '#FFEEEE',
     textColor: '#C94040',
   },
+  [POStatus.CREATED]: {
+    label: 'Created',
+    bgColor: '#DEFFDF',
+    textColor: '#10834B',
+  },
 };

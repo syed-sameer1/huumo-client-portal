@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { POStatus, PurchaseOrders } from '@/types/purchaseOrders';
 import { ColumnDef, flexRender } from '@tanstack/react-table';
@@ -9,7 +10,43 @@ import {
 } from '@/components/ui/table';
 import { PurchaseOrdersTableType } from './types';
 import { StatusActionDropdown } from './StatusActionDropdown';
-import { formatDate } from '@/lib/date';
+import { EditVendorModal } from '@/components/vendors/EditVendorModal';
+
+function EmailCell({ row }: { row: PurchaseOrders }) {
+  const [open, setOpen] = useState(false);
+  const email = row.vendorEmail;
+
+  if (!email) {
+    const onClick = (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setOpen(true);
+    };
+    return (
+      <>
+        <span className="text-red-500 flex items-center gap-1">
+          ⦿ Missing email ·
+          <button
+            type="button"
+            className="text-green-600 underline"
+            onClick={onClick}
+          >
+            Add
+          </button>
+        </span>
+        <EditVendorModal
+          open={open}
+          onClose={() => setOpen(false)}
+          vendorName={row.vendorName}
+          email={email}
+          vendorId={row.vendorId}
+        />
+      </>
+    );
+  }
+
+  return <>{email}</>;
+}
 
 export const tableColumns: ColumnDef<PurchaseOrders>[] = [
   {
@@ -24,6 +61,7 @@ export const tableColumns: ColumnDef<PurchaseOrders>[] = [
       <Checkbox
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
+        onClick={(e) => e.stopPropagation()}
       />
     ),
     enableSorting: false,
@@ -38,29 +76,18 @@ export const tableColumns: ColumnDef<PurchaseOrders>[] = [
       return row.original.poNumber;
     },
   },
-
   {
-    accessorKey: 'vendor.name',
+    accessorKey: 'vendorName',
     header: ({ column }) => <SortableHeader column={column} title="Vendor" />,
   },
-
   {
-    accessorKey: 'email',
+    accessorKey: 'site',
+    header: ({ column }) => <SortableHeader column={column} title="Site" />,
+  },
+  {
+    accessorKey: 'vendorEmail',
     header: 'Email Address',
-    cell: ({ row }) => {
-      const email = row.original.vendor.email;
-
-      if (!email) {
-        return (
-          <span className="text-red-500 flex items-center gap-1">
-            ⦿ Missing email ·
-            <button className="text-green-600 underline">Add</button>
-          </span>
-        );
-      }
-
-      return email;
-    },
+    cell: ({ row }) => <EmailCell row={row.original} />,
   },
 
   {
@@ -71,8 +98,7 @@ export const tableColumns: ColumnDef<PurchaseOrders>[] = [
   {
     accessorKey: 'poValue',
     header: ({ column }) => <SortableHeader column={column} title="PO Value" />,
-    // cell: ({ getValue }) => `$${Number(getValue<number>())?.toFixed(2)}`,
-    cell: () => `$240.00`,
+    cell: ({ getValue }) => `$${Number(getValue<number>())?.toFixed(2)}`,
   },
 
   {
@@ -82,11 +108,27 @@ export const tableColumns: ColumnDef<PurchaseOrders>[] = [
     ),
   },
   {
-    accessorKey: 'deliverDate',
+    accessorKey: 'dueDate',
     header: 'Deliver',
-    cell: () => {
-      return '9/18/16';
+  },
+  {
+    accessorKey: 'dueIn',
+    header: ({ column }) => <SortableHeader column={column} title="Due In" />,
+    cell: ({ getValue }) => {
+      return getValue() ? String(getValue()) : '-';
     },
+  },
+  {
+    accessorKey: 'overdueBy',
+    header: ({ column }) => (
+      <SortableHeader column={column} title="Overdue By" />
+    ),
+  },
+  {
+    accessorKey: 'lastUpdate',
+    header: ({ column }) => (
+      <SortableHeader column={column} title="Last Update" />
+    ),
   },
   {
     accessorKey: 'status',

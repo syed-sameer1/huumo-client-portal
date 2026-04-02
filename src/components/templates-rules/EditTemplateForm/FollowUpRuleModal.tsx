@@ -31,7 +31,10 @@ interface FollowUpRuleModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function FollowUpRuleModal({ open, onOpenChange }: FollowUpRuleModalProps) {
+export function FollowUpRuleModal({
+  open,
+  onOpenChange,
+}: FollowUpRuleModalProps) {
   const [frequency, setFrequency] = useState('3');
   const [threshold, setThreshold] = useState([60]);
 

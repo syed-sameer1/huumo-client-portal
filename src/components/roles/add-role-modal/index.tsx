@@ -1,6 +1,5 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -11,7 +10,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Info } from 'lucide-react'; // For the (i) icons
+import { Info } from 'lucide-react';
 import { AddRoleFormValues, addRoleSchema } from '@/schema/role';
 import {
   Dialog,
@@ -75,7 +74,6 @@ export function AddRoleModal({ open, onClose }: AddRoleModalProps) {
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-            {/* Name Field */}
             <FormField
               control={form.control}
               name="name"
@@ -96,7 +94,6 @@ export function AddRoleModal({ open, onClose }: AddRoleModalProps) {
               )}
             />
 
-            {/* Email Field */}
             <FormField
               control={form.control}
               name="email"
@@ -117,7 +114,6 @@ export function AddRoleModal({ open, onClose }: AddRoleModalProps) {
               )}
             />
 
-            {/* Role Selection */}
             <FormField
               control={form.control}
               name="role"
@@ -168,7 +164,6 @@ export function AddRoleModal({ open, onClose }: AddRoleModalProps) {
               )}
             />
 
-            {/* Submit Button */}
             <div className="flex justify-end pt-4">
               <LoadingButton
                 type="submit"

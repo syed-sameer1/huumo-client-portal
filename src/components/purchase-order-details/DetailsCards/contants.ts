@@ -1,4 +1,3 @@
-import { distanceFromNow, formatDate } from '@/lib/date';
 import {
   BookUserIcon,
   CalendarIcon,
@@ -15,7 +14,7 @@ export const PurchaseDetailCardConfig = {
     iconColor: '#048CA3',
     formatter: (value: string) => value,
   },
-  name: {
+  vendorName: {
     title: 'Vendor',
     Icon: BookUserIcon,
     iconBg: '#F8E2FF',
