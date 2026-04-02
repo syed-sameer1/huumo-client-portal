@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { useImportColumn } from '@/hooks/csvImports';
+import { useImportColumn, useProcessImport } from '@/hooks/csvImports';
 import { useVendorColumnMapping } from '@/hooks/vendors';
 import {
   MappingVendorFormValues,
@@ -41,6 +41,8 @@ export function VendorEmailColumnMappingModal({
     enabled: open && !!importJobId,
   });
   const { mutate, isPending: isMappingPending } = useVendorColumnMapping();
+  const { mutate: processImportMutate, isPending: isProcessingImport } =
+    useProcessImport();
 
   const form = useForm<MappingVendorFormValues>({
     resolver: zodResolver(
@@ -62,16 +64,30 @@ export function VendorEmailColumnMappingModal({
       },
       {
         onSuccess: () => {
-          queryClient.invalidateQueries({
-            queryKey: ['purchase-orders'],
-            exact: false,
-          });
-          queryClient.invalidateQueries({
-            queryKey: ['vendors-data'],
-            exact: false,
-          });
-          onOpenChange(false);
-          onMappingSuccess();
+          processImportMutate(
+            { id: importJobId },
+            {
+              onSuccess: () => {
+                queryClient.invalidateQueries({
+                  queryKey: ['purchase-orders'],
+                  exact: false,
+                });
+                queryClient.invalidateQueries({
+                  queryKey: ['vendors-data'],
+                  exact: false,
+                });
+                queryClient.invalidateQueries({
+                  queryKey: ['column-mapping'],
+                  exact: false,
+                });
+                onOpenChange(false);
+                onMappingSuccess();
+              },
+              onError: () => {
+                toast.error('Could not start import. Please try again.');
+              },
+            },
+          );
         },
         onError: () => {
           toast.error('Could not save mapping. Please try again.');
@@ -107,7 +123,9 @@ export function VendorEmailColumnMappingModal({
                     errors={form.formState.errors}
                   />
                 </div>
-                <ColumnMappingFooter isLoading={isMappingPending} />
+                <ColumnMappingFooter
+                  isLoading={isMappingPending || isProcessingImport}
+                />
               </form>
             </FormProvider>
           )}
