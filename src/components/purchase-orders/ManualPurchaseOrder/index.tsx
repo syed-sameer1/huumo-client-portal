@@ -127,7 +127,6 @@ export const ManualPurchaseOrder = () => {
             items: values.items,
           };
 
-    console.log('manual PO payload', payload);
     mutate(payload as any, {
       onSuccess: () => {
         toast.success('Manual purchase order created successfully');

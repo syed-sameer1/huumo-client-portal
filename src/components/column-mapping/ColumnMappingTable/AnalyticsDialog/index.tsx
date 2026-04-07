@@ -145,7 +145,6 @@ export const AnalyticsDialog = ({
       },
     });
   };
-  console.log('isPending', { isPending, isFetching, isRefetching });
 
   return (
     <>
