@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { POOptions } from '../POOptions';
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { PO_VALUES } from '../POOptions/constants';
 import { useGoogleSheetCSVImport, useImportCSV } from '@/hooks/csvImports';
 import { useGoogleSheetFiles, useGoogleSheetTabs } from '@/hooks/importPo';
@@ -93,7 +93,7 @@ export const AddPurchaseOrderOptions = () => {
   };
 
   return (
-    <>
+    <Suspense fallback={<></>}>
       <div className="w-238.5 mx-auto space-y-6 mt-25">
         <div className="space-y-4 text-center">
           <h3 className="text-foreground text-[24px] font-semibold">
@@ -173,6 +173,6 @@ export const AddPurchaseOrderOptions = () => {
         isFetchingPreview={isFetchingGoogleSheetPurchaseOrder}
       />
       {isPending && <LoaderDialog open={isPending} />}
-    </>
+    </Suspense>
   );
 };
