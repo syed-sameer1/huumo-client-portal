@@ -4,6 +4,7 @@ import {
   importVendorCSV,
   processImport,
   downloadMissingVendorEmailCsv,
+  googleSheetCSVImport,
 } from '@/service/csv-imports/csv-imports';
 import { useApiMutation, useApiQuery } from './query';
 import type { UseQueryOptions } from '@tanstack/react-query';
@@ -61,4 +62,8 @@ export const useImportVendorCSV = (options?: any) => {
 
 export const useDownloadMissingVendorEmailCsv = (options?: any) => {
   return useApiMutation(downloadMissingVendorEmailCsv, options);
+};
+
+export const useGoogleSheetCSVImport = (options?: any) => {
+  return useApiMutation(googleSheetCSVImport, options);
 };

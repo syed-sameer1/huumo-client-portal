@@ -27,6 +27,11 @@ export const urls = {
   purchaseOrderStats: '/purchase-order/stats',
   purchaseOrderExport: '/purchase-order/export',
   downloadMissingVendorEmailCsv: '/vendor/export-missing-email',
+  connectGoogleSheet: '/google/sheet/connect',
+  googleSheetFiles: '/google/sheet/files',
+  googleSheetTabs: '/google/sheet/tabs',
+  googleSheetPreview: '/google/sheet/preview',
+  googleSheetPurchaseOrder: '/imports/googleSheet/purchaseOrder',
 };
 
 export const routeUrls = {

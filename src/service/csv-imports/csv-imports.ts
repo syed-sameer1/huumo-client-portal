@@ -1,7 +1,12 @@
 import { urls } from '@/constants/urls';
 import { api } from '../api';
+import { AxiosResponse } from 'axios';
+import { ImportCSVResponse } from './types';
 
-export const importCSV = (payload: any) => api.post(urls.importCSV, payload);
+export const importCSV = (
+  payload: any,
+): Promise<AxiosResponse<ImportCSVResponse>> =>
+  api.post(urls.importCSV, payload);
 
 export const importVendorCSV = (payload: any) =>
   api.post(urls.importVendorCSV, payload);
@@ -17,3 +22,10 @@ export const processImport = (payload: { id: string | number }) =>
 /** CSV of vendors missing email for the given import job */
 export const downloadMissingVendorEmailCsv = () =>
   api.get(urls.downloadMissingVendorEmailCsv, { responseType: 'blob' });
+
+export const googleSheetCSVImport = async (params: {
+  spreadsheetId: string;
+  sheetName: string;
+}) => {
+  return api.post(urls.googleSheetPurchaseOrder, { ...params });
+};

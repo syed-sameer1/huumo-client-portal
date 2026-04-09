@@ -10,7 +10,6 @@ export const RequiredFieldSection = ({
   requiredFields: MappingField[];
   errors: any;
 }) => {
-  console.log('errors', errors);
   return (
     <div>
       {requiredFields.map((field, index) => (

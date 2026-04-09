@@ -56,8 +56,7 @@ export const ColumnMappingTable = () => {
         },
       },
       {
-        onSuccess: (res) => {
-          console.log({ res });
+        onSuccess: () => {
           setPreviewDialogOpen(true);
         },
       },

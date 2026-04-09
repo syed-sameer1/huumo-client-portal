@@ -53,9 +53,8 @@ export const SetRulesModal = ({ open, onClose }: SetRulesModalProps) => {
     },
   });
 
-  const onSubmit = (values: SetRulesFormValues) => {
+  const onSubmit = (_values: SetRulesFormValues) => {
     toast.success('Rules saved successfully');
-    console.log('Set rules payload', values);
     onClose();
   };
 

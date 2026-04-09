@@ -5,7 +5,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 export const PurchaseOrderBanner = () => {
   const { isPending, data } = usePurchaseOrdersStats();
-  console.log({ data });
   if (isPending) return <Skeleton className="h-12 w-full" />;
   if (!data?.data) return null;
   const statsData = data.data;

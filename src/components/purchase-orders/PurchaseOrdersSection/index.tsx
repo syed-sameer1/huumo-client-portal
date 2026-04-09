@@ -49,7 +49,6 @@ export const PurchaseOrdersSection = () => {
   };
 
   const { data, loading } = usePurchaseOrders(1, filterParams);
-  console.log('loading', loading);
 
   const selectedPoIds = useMemo(() => {
     return Object.entries(rowSelection)

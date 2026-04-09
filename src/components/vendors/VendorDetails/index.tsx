@@ -76,7 +76,6 @@ export const VendorDetails = ({
   vendorId: number | null;
 }) => {
   const { data, isPending } = useVendorDetails(vendorId!);
-  console.log({ data, isPending });
 
   const vendor = data?.vendor;
 
