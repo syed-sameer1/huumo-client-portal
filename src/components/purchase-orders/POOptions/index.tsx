@@ -9,11 +9,13 @@ export const POOptions = ({
   setSelectedPurchaseOption,
   selectedFile,
   onFileSelected,
+  onImportCsvClick,
 }: {
   selectedPurchaseOption: PO_VALUES;
   setSelectedPurchaseOption: (purchaseOption: PO_VALUES) => void;
   selectedFile: File | null;
   onFileSelected: (file: File | null) => void;
+  onImportCsvClick?: () => void;
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -23,12 +25,15 @@ export const POOptions = ({
     if (purchaseOption === PO_VALUES.UPLOAD_CSV) {
       fileInputRef.current?.click();
     }
+
+    if (purchaseOption === PO_VALUES.GOOGLE_SHEET) {
+      onImportCsvClick?.();
+    }
   };
 
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     onFileSelected(file ?? null);
-    // allow re-selecting same file
     e.target.value = '';
   };
 
