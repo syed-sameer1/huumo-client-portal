@@ -37,6 +37,7 @@ export const LoginForm = () => {
   const onSubmit = (values: LoginFormValues) => {
     mutate(values, {
       onSuccess: (res) => {
+        localStorage.setItem('user', JSON.stringify(res.data.user));
         localStorage.setItem('access_token', res.data.accessToken);
         const subscriptionCheck =
           res.data.user.role === UserRole.owner &&
