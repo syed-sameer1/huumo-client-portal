@@ -18,12 +18,6 @@ export const ADDITIONAL_FIELDS = [
     name: 'a',
   },
   {
-    id: 'unitCost',
-    label: 'Unit Cost',
-    sample: '$678',
-    name: 'a',
-  },
-  {
     id: 'site',
     label: 'Site',
     sample: 'Site 1',

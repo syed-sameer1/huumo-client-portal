@@ -12,7 +12,7 @@ import { PurchaseOrdersTableType } from './types';
 import { StatusActionDropdown } from './StatusActionDropdown';
 import { EditVendorModal } from '@/components/vendors/EditVendorModal';
 
-function EmailCell({ row }: { row: PurchaseOrders }) {
+export function EmailCell({ row }: { row: PurchaseOrders }) {
   const [open, setOpen] = useState(false);
   const email = row.vendorEmail;
 

@@ -37,6 +37,12 @@ export const REQUIRED_FIELDS: MappingField[] = [
     sample: 'Plastic',
   },
   {
+    id: 'unitCost',
+    label: 'Unit Cost',
+    sample: '$678',
+    name: 'a',
+  },
+  {
     id: 'quantity',
     name: 'required.quantity',
     label: 'Quantity',

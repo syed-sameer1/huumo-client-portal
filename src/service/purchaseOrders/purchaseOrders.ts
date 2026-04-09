@@ -1,7 +1,10 @@
 import { urls } from '@/constants/urls';
 import { api } from '../api';
 import { AxiosResponse } from 'axios';
-import { PurchaseOrders, PurchaseOrdersResponse } from '@/types/purchaseOrders';
+import {
+  PurchaseOrdersResponse,
+  PurchaseOrdersDetailsResponse,
+} from '@/types/purchaseOrders';
 import { ManualPurchaseOrderValues } from '@/schema/purchaseOrder';
 
 export interface CreatePurchaseOrderResponse {
@@ -38,7 +41,7 @@ export const purchaseOrdersService = (
 
 export const purchaseOrderDetails = (
   purchaseOrderId: string,
-): Promise<AxiosResponse<{ purchaseOrder: PurchaseOrders }>> =>
+): Promise<AxiosResponse<PurchaseOrdersDetailsResponse>> =>
   api.get(
     urls.purchaseOrderDetails.replace('{purchaseOrderId}', purchaseOrderId),
   );
