@@ -14,7 +14,7 @@ export const PurchaseDetailCardConfig = {
     iconColor: '#048CA3',
     formatter: (value: string) => value,
   },
-  vendorName: {
+  name: {
     title: 'Vendor',
     Icon: BookUserIcon,
     iconBg: '#F8E2FF',
@@ -33,13 +33,13 @@ export const PurchaseDetailCardConfig = {
     Icon: NotepadText,
     iconBg: '#7CA6201A',
     iconColor: '#7CA620',
-    formatter: () => '9/18/16',
+    formatter: (value: string) => (value ? value : '-'),
   },
   vendorResponseDate: {
     title: 'Last Vendor Response',
     Icon: MessageCircle,
     iconBg: '#A656201A',
     iconColor: '#A65620',
-    formatter: () => '9/18/16',
+    formatter: () => '-',
   },
 };

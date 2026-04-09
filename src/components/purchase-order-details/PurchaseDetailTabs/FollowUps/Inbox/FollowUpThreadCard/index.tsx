@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { FollowUpStatusChipConfig } from '../../constants/followUpStatusChip';
 import { Badge } from '@/components/ui/badge';
+import { formatDate } from '@/lib/date';
 
 type FollowUpStatusKey = keyof typeof FollowUpStatusChipConfig;
 
@@ -14,9 +15,11 @@ export const FollowUpThreadCard = ({
   selectedMessage: any;
   onSetSelectedMessage: any;
 }) => {
-  const { date, subject, preview, id, status } = message;
+  const { subject, id, body } = message?.emailTemplate;
   const { label, bgColor } =
-    FollowUpStatusChipConfig[status as FollowUpStatusKey];
+    FollowUpStatusChipConfig[message?.status as FollowUpStatusKey] ?? {};
+  console.log('message', { message, status });
+
   return (
     <Button
       onClick={() => onSetSelectedMessage(message.id)}
@@ -28,7 +31,9 @@ export const FollowUpThreadCard = ({
     >
       <div className="flex justify-between w-full">
         <div className="space-y-1">
-          <div className="text-xs text-muted-foreground">{date}</div>
+          <div className="text-xs text-muted-foreground">
+            {formatDate(message?.scheduledAt, 'dd-MM-yyyy')}
+          </div>
           <div className="font-medium text-accent-foreground text-xs">
             {subject}
           </div>
@@ -42,9 +47,10 @@ export const FollowUpThreadCard = ({
         </Badge>
       </div>
 
-      <div className="text-muted-foreground line-clamp-2 overflow-hidden whitespace-break-spaces font-normal mt-2 text-xs">
-        {preview}
-      </div>
+      <div
+        dangerouslySetInnerHTML={{ __html: body }}
+        className="text-muted-foreground line-clamp-2 overflow-hidden whitespace-break-spaces font-normal mt-2 text-xs"
+      />
     </Button>
   );
 };

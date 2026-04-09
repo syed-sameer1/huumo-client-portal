@@ -12,6 +12,7 @@ import { useUpdateVendor } from '@/hooks/vendors';
 import { AddVendorFieldValues, addVendorSchema } from '@/schema/vendor';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQueryClient } from '@tanstack/react-query';
+import { useParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
@@ -45,6 +46,9 @@ export const EditVendorModal = ({
     },
   });
 
+  const params = useParams();
+  const orderId = params.id as string;
+
   const submitHandler = (data: AddVendorFieldValues) => {
     mutate(
       { payload: data, id: vendorId },
@@ -57,6 +61,10 @@ export const EditVendorModal = ({
           });
           queryClient.invalidateQueries({
             queryKey: ['purchase-orders'],
+            exact: false,
+          });
+          queryClient.invalidateQueries({
+            queryKey: ['purchase-orders-details', orderId],
             exact: false,
           });
         },
