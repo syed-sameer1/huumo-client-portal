@@ -2,6 +2,7 @@ import {
   activateClient,
   updateFollowUpFrequency,
   createUser,
+  clientSettings,
 } from '@/service/client/client';
 import { deleteUser, getUsers, updateUser } from '@/service/users';
 import { useApiMutation, useApiQuery } from './query';
@@ -26,6 +27,14 @@ export const useUpdateUser = (options?: any) => {
 
 export const useDeleteUser = (options?: any) => {
   return useApiMutation(deleteUser, options);
+};
+
+export const useClientSettings = () => {
+  return useApiQuery({
+    queryKey: ['client-settings'],
+    queryFn: () => clientSettings(),
+    retry: false,
+  });
 };
 
 export const useUsersData = (page: number) => {
