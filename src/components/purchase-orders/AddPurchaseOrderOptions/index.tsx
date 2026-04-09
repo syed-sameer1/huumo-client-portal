@@ -4,18 +4,43 @@ import { Button } from '@/components/ui/button';
 import { POOptions } from '../POOptions';
 import { useState } from 'react';
 import { PO_VALUES } from '../POOptions/constants';
-import { useImportCSV } from '@/hooks/csvImports';
-import { useRouter } from 'next/navigation';
+import { useGoogleSheetCSVImport, useImportCSV } from '@/hooks/csvImports';
+import { useGoogleSheetFiles, useGoogleSheetTabs } from '@/hooks/importPo';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { routeUrls } from '@/constants/urls';
 import { LoaderDialog } from '@/components/loader';
 import { toast } from 'sonner';
+import {
+  ImportPOModal,
+  type GoogleSheetFile,
+  type GoogleSheetTab,
+} from './ImportPOModal';
+import { ImportCSVResponse } from '@/service/csv-imports/types';
+import { AxiosResponse } from 'axios';
 
 export const AddPurchaseOrderOptions = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [selectedPurchaseOption, setSelectedPurchaseOption] =
     useState<PO_VALUES>(PO_VALUES.UPLOAD_CSV);
+  const [isImportCsvModalOpen, setIsImportCsvModalOpen] = useState(
+    () => searchParams.get('google_sheet_connected') === 'true',
+  );
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const { mutate, isPending } = useImportCSV();
+  const [sheetFiles, setSheetFiles] = useState<GoogleSheetFile[] | undefined>();
+  const [sheetTabs, setSheetTabs] = useState<GoogleSheetTab[] | undefined>();
+  const [selectedSpreadsheetId, setSelectedSpreadsheetId] = useState<
+    string | null
+  >(null);
+  const { mutate: fetchSheetFiles, isPending: isFetchingSheetFiles } =
+    useGoogleSheetFiles();
+  const { mutate: fetchSheetTabs, isPending: isFetchingTabs } =
+    useGoogleSheetTabs();
+  const {
+    mutate: fetchGoogleSheetPurchaseOrder,
+    isPending: isFetchingGoogleSheetPurchaseOrder,
+  } = useGoogleSheetCSVImport();
 
   const continueActions: Record<PO_VALUES, () => void> = {
     [PO_VALUES.UPLOAD_CSV]: () => {
@@ -50,6 +75,23 @@ export const AddPurchaseOrderOptions = () => {
     continueActions[selectedPurchaseOption]?.();
   };
 
+  const onTabSelect = (tab: GoogleSheetTab) => {
+    if (!selectedSpreadsheetId) return;
+    fetchGoogleSheetPurchaseOrder(
+      { spreadsheetId: selectedSpreadsheetId, sheetName: tab.title },
+      {
+        onSuccess: (res: AxiosResponse<ImportCSVResponse>) => {
+          router.push(
+            `${routeUrls.columnMapping}/?import_job_id=${res.data.importJobId}`,
+          );
+        },
+        onError: () => {
+          toast.error('Could not fetch sheet preview. Please try again.');
+        },
+      },
+    );
+  };
+
   return (
     <>
       <div className="w-238.5 mx-auto space-y-6 mt-25">
@@ -70,6 +112,7 @@ export const AddPurchaseOrderOptions = () => {
           }}
           selectedFile={selectedFile}
           onFileSelected={setSelectedFile}
+          onImportCsvClick={() => setIsImportCsvModalOpen(true)}
         />
         <Button
           className="justify-self-end flex bg-background-secondary w-30"
@@ -79,6 +122,56 @@ export const AddPurchaseOrderOptions = () => {
           Continue
         </Button>
       </div>
+      <ImportPOModal
+        open={isImportCsvModalOpen}
+        onOpenChange={(next) => {
+          setIsImportCsvModalOpen(next);
+          if (!next) {
+            setSheetFiles(undefined);
+            setSheetTabs(undefined);
+            setSelectedSpreadsheetId(null);
+          }
+        }}
+        isFetchingFiles={isFetchingSheetFiles}
+        sheetFiles={sheetFiles}
+        onContinue={(selectedOption) => {
+          if (selectedOption === 'google-sheets') {
+            fetchSheetFiles(undefined, {
+              onSuccess: (res) => {
+                setSheetFiles(res.data as GoogleSheetFile[]);
+              },
+              onError: () => {
+                toast.error(
+                  'Could not fetch Google Sheet files. Please try again.',
+                );
+              },
+            });
+            return;
+          }
+          toast.message('Microsoft Sheet import coming soon');
+        }}
+        onFileSelect={(file) => {
+          setSelectedSpreadsheetId(file.id);
+          fetchSheetTabs(file.id, {
+            onSuccess: (res) => {
+              setSheetTabs(res.data as GoogleSheetTab[]);
+            },
+            onError: () => {
+              toast.error('Could not fetch sheet tabs. Please try again.');
+            },
+          });
+        }}
+        onClearFiles={() => {
+          setSheetFiles(undefined);
+          setSheetTabs(undefined);
+          setSelectedSpreadsheetId(null);
+        }}
+        isFetchingTabs={isFetchingTabs}
+        sheetTabs={sheetTabs}
+        onTabSelect={onTabSelect}
+        onClearTabs={() => setSheetTabs(undefined)}
+        isFetchingPreview={isFetchingGoogleSheetPurchaseOrder}
+      />
       {isPending && <LoaderDialog open={isPending} />}
     </>
   );
