@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import {
   SidebarHeader,
@@ -17,8 +19,11 @@ import Image from 'next/image';
 import { getRoutes } from './routes';
 import { Button } from '../ui/button';
 import { Progress } from '../ui/progress';
+import { useClientSettings } from '@/hooks/client';
 
 export const Sidebar = () => {
+  const { data } = useClientSettings();
+  console.log('data', data);
   return (
     <ShadcnSidebar className="gap-4">
       <SidebarHeader>
@@ -67,10 +72,10 @@ export const Sidebar = () => {
           </div>
           <div className="space-y-1.5">
             <div className="text-[12px] text-secondary-foreground">
-              30 of 200 used
+              {data?.data?.activePoCount} of {data?.data.maxPoLimit} used
             </div>
             <Progress
-              value={20}
+              value={data?.data?.activePoCount / 2}
               className="bg-[#EDFFF6] [&>div]:bg-[#20A665]"
             />
           </div>

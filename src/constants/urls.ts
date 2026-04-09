@@ -10,6 +10,7 @@ export const urls = {
   subscriptionStatus: '/subscription/subscription-status',
   userActivate: '/user/activate',
   user: '/user',
+  settings: '/client/settings',
   updateFollowUpFrequency: '/client/settings/update-followup-frequency',
   importCSV: '/imports/csv/purchaseOrder',
   gmailConnect: '/google/gmail/connect',
