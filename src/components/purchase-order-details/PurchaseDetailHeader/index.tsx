@@ -13,9 +13,11 @@ export const PurchaseDetailHeader = () => {
     <div className="flex justify-between items-center">
       <div className="text-[24px] font-semibold">Purchase Order Details</div>
       <div className="space-x-3 flex items-center">
-        <PurchaseOrderStatusBadge
-          purchaseOrderStatus={data?.data?.purchaseOrder?.status}
-        />
+        {data?.data?.purchaseOrder?.status && (
+          <PurchaseOrderStatusBadge
+            purchaseOrderStatus={data.data.purchaseOrder.status}
+          />
+        )}
         <SendFollowUpButton />
         <MoreOptions />
       </div>
