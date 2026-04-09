@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { usePurchaseOrderDetailsData } from '../../hooks/usePurchaseOrderDetailsData';
 import { FollowUpBox } from './FollowUpBox';
 import { Inbox } from './Inbox';
+import { NoResultFound } from '@/components/no-results-found';
 
 export const FollowUps = () => {
   const { data } = usePurchaseOrderDetailsData();
@@ -21,6 +22,11 @@ export const FollowUps = () => {
   const selectedFollowUp = sortedFollowups.find(
     (followup) => followup.id === selectedMessageId,
   );
+  if (!data?.followups.length)
+    return (
+      <NoResultFound message="No follow-ups found" showDescription={false} />
+    );
+
   return (
     <div className="flex gap-5">
       <Inbox
