@@ -1,26 +1,37 @@
 import {
   createVendor,
   deleteVendor,
+  exportCsvVendors,
   getVendors,
   updateVendor,
   vendorDetails,
+  type ExportVendorsCsvParams,
 } from '@/service/vendors';
+import { vendorFiltersToApiQuery } from '@/components/vendors/VendorFilters/constants';
+import type { VendorFiltersState } from '@/components/vendors/VendorFilters/constants';
 import { useApiMutation, useApiQuery } from './query';
 import { PAGE_SIZE } from './purchaseOrders';
-import {
-  keepPreviousData,
-  MutationOptions,
-  UseQueryResult,
-} from '@tanstack/react-query';
+import { MutationOptions } from '@/types/query';
+import { keepPreviousData, UseQueryResult } from '@tanstack/react-query';
 import { AddVendorFieldValues } from '@/schema/vendor';
 import { VendorDetailsRespone } from '@/types/vendors';
 import { vendorMappingSubmit } from '@/service/purchaseOrders/columnMapping';
+import { AxiosError } from 'axios';
 
-export const useVendorsData = (page: number) => {
+export const useVendorsData = (
+  page: number,
+  filters?: VendorFiltersState,
+  pageSize: number = PAGE_SIZE,
+) => {
+  const apiFilters = filters ? vendorFiltersToApiQuery(filters) : {};
   return useApiQuery({
-    queryKey: ['vendors-data', page],
+    queryKey: ['vendors-data', page, pageSize, apiFilters],
     queryFn: async () => {
-      const res = await getVendors({ pageNumber: page, limit: PAGE_SIZE });
+      const res = await getVendors({
+        pageNumber: page,
+        limit: pageSize,
+        ...apiFilters,
+      });
       return res.data;
     },
     placeholderData: keepPreviousData,
@@ -62,4 +73,14 @@ export const useVendorDetails = (
       return res.data; // res.data has type VendorDetailsRespone
     },
   });
+};
+
+export const useExportCsvVendors = (
+  options?: MutationOptions<
+    Blob,
+    AxiosError<{ message?: string }>,
+    ExportVendorsCsvParams | undefined
+  >,
+) => {
+  return useApiMutation(exportCsvVendors, options);
 };
