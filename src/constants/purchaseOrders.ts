@@ -31,4 +31,9 @@ export const PurchaseOrdersStatusConfigs = {
     bgColor: '#DEFFDF',
     textColor: '#10834B',
   },
+  [POStatus.CLOSED]: {
+    label: 'Closed',
+    bgColor: '#F5F5F5',
+    textColor: '#71717A',
+  },
 };

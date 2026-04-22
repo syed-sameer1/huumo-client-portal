@@ -12,7 +12,7 @@ export const urls = {
   user: '/user',
   settings: '/client/settings',
   updateFollowUpFrequency: '/client/settings/update-followup-frequency',
-  importCSV: '/imports/csv/purchaseOrder',
+  importCSV: '/imports/csv/purchaseOrder/',
   gmailConnect: '/google/gmail/connect',
   columnMapping: '/imports/import-job/{importJobId}',
   mapping: '/imports/mapping/purchaseOrder',
@@ -21,6 +21,7 @@ export const urls = {
   users: '/user',
   deleteUser: '/user/{id}',
   vendors: '/vendor',
+  vendorExport: '/vendor/export',
   vendor: `/vendor/{id}`,
   deleteVendor: `/vendor/{id}`,
   importVendorCSV: '/imports/csv/vendor',
@@ -33,6 +34,9 @@ export const urls = {
   googleSheetTabs: '/google/sheet/tabs',
   googleSheetPreview: '/google/sheet/preview',
   googleSheetPurchaseOrder: '/imports/googleSheet/purchaseOrder',
+  /** @deprecated Prefer `purchaseOrderBulkAction` with `action: 'delete'`. */
+  bulkDeletePurchaseOrders: '/purchase-order/bulk-delete',
+  purchaseOrderBulkAction: '/purchase-order/bulk-action',
 };
 
 export const routeUrls = {
