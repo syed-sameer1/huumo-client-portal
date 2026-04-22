@@ -21,7 +21,7 @@ export const PurchaseDetailCardConfig = {
     iconColor: '#9925BD',
     formatter: (value: string) => value,
   },
-  dueDate: {
+  dueIn: {
     title: 'Due In',
     Icon: CalendarIcon,
     iconBg: '#BD21C31A',

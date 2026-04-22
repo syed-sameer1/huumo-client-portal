@@ -23,7 +23,6 @@ const vendorInformationDetails: {
 
 export const VendorInformation = () => {
   const { data } = usePurchaseOrderDetailsData();
-  console.log(data?.vendor);
   const renderValue = (key: keyof PurchaseOrderVendor) => {
     if (key === 'email') {
       if (data?.vendor?.email) return data?.vendor?.[key];

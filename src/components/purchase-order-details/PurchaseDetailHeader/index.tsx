@@ -8,7 +8,6 @@ export const PurchaseDetailHeader = () => {
   const params = useParams();
   const orderId = params.id as string;
   const { data } = usePurchaseOrdersDetails(orderId);
-  console.log(data);
   return (
     <div className="flex justify-between items-center">
       <div className="text-[24px] font-semibold">Purchase Order Details</div>
