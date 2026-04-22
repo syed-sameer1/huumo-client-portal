@@ -16,10 +16,11 @@ export const StatusActionDropdown = ({
 }) => {
   const selectedStatus = PurchaseOrdersStatusConfigs[statusValue] || {};
   return (
-    <DropdownMenu>
+    <DropdownMenu data-no-row-click>
       <DropdownMenuTrigger asChild>
         <Button
-          className={`bg-[${selectedStatus.bgColor}] text-[${selectedStatus.textColor}] gap-1 h-6 text-[12px] py-1 px-2 rounded-full`}
+          data-no-row-click
+          className={`bg-[${selectedStatus.bgColor}] text-[${selectedStatus.textColor}] gap-1 h-6 text-[12px] py-1 px-2 rounded-full h-fit`}
           style={{
             backgroundColor: selectedStatus.bgColor,
             color: selectedStatus.textColor,
@@ -29,11 +30,13 @@ export const StatusActionDropdown = ({
           <ChevronDown size={16} />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
+      <DropdownMenuContent data-no-row-click>
         {Object.values(PurchaseOrdersStatusConfigs)
           .filter(({ label }) => label !== selectedStatus.label)
           .map(({ label }) => (
-            <DropdownMenuItem key={label}>{label}</DropdownMenuItem>
+            <DropdownMenuItem key={label} data-no-row-click>
+              {label}
+            </DropdownMenuItem>
           ))}
       </DropdownMenuContent>
     </DropdownMenu>

@@ -26,3 +26,5 @@ export const columns: ColumnDef<PurchaseOrderData>[] = [
     enableHiding: false,
   },
 ];
+
+export const PAGE_SIZE_OPTIONS = [50, 100, 200];
