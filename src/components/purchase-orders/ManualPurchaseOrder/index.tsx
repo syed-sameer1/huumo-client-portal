@@ -65,6 +65,8 @@ export const ManualPurchaseOrder = () => {
       orderDate: '',
       dueDate: '',
       site: '',
+      buyer: '',
+      account: '',
       vendorMode: 'select',
       vendorId: undefined,
       vendorName: '',
@@ -106,6 +108,15 @@ export const ManualPurchaseOrder = () => {
 
     const siteTrimmed = values.site.trim();
     const sitePayload = siteTrimmed ? { site: siteTrimmed } : {};
+    const buyer = values.buyer;
+    const buyerPayload = buyer ? { buyer } : {};
+    const account = values.account;
+    const accountPayload = account ? { account } : {};
+    const optionalFields = {
+      ...sitePayload,
+      ...buyerPayload,
+      ...accountPayload,
+    };
 
     const payload =
       values.vendorMode === 'select'
@@ -113,7 +124,7 @@ export const ManualPurchaseOrder = () => {
             poNumber: values.poNumber,
             orderDate,
             dueDate,
-            ...sitePayload,
+            ...optionalFields,
             vendorId: Number(values.vendorId),
             items: values.items,
           }
@@ -121,7 +132,7 @@ export const ManualPurchaseOrder = () => {
             poNumber: values.poNumber,
             orderDate,
             dueDate,
-            ...sitePayload,
+            ...optionalFields,
             vendorName: values.vendorName?.trim(),
             vendorEmail: values.vendorEmail?.trim(),
             items: values.items,
@@ -212,6 +223,47 @@ export const ManualPurchaseOrder = () => {
                     <FormControl>
                       <Input
                         placeholder="example.com"
+                        className="h-11"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <FormField
+                control={form.control}
+                name="buyer"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="font-medium mb-3 block">
+                      Buyer (Optional)
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Buyer name"
+                        className="h-11"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="account"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="font-medium mb-3 block">
+                      Account (Optional)
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Account name"
                         className="h-11"
                         {...field}
                       />

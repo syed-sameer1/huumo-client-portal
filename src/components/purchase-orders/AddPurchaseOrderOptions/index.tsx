@@ -56,6 +56,9 @@ export const AddPurchaseOrderOptions = () => {
             `${routeUrls.columnMapping}/?import_job_id=${res.data.importJobId}`,
           );
         },
+        onError: () => {
+          toast.error('Something went wrong, try uploading another csv');
+        },
       });
     },
     [PO_VALUES.TEXT_MANUAL]: () => {
