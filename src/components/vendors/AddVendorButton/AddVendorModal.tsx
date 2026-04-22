@@ -40,6 +40,8 @@ export const AddVendorModal = ({ onClose, open }: AddVendorModalProps) => {
   const submitHandler = (data: AddVendorFieldValues) => {
     mutate(data, {
       onSuccess: () => {
+        reset();
+        onClose();
         toast.success('Vendor added success');
         queryClient.invalidateQueries({
           queryKey: ['vendors-data'],
@@ -50,8 +52,6 @@ export const AddVendorModal = ({ onClose, open }: AddVendorModalProps) => {
         toast.error('Something went wrong please try again');
       },
     });
-    reset();
-    onClose();
   };
 
   return (
