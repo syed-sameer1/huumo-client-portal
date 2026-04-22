@@ -43,9 +43,10 @@ export default function OnBoardingStepper() {
     resolver: zodResolver(followUpFrequencySchema),
     mode: 'onChange',
     defaultValues: {
-      followup1FrequencyDays: undefined,
-      followup2FrequencyDays: undefined,
-      followup3FrequencyDays: undefined,
+      followup1FrequencyDays: 1,
+      followup2FrequencyDays: 1,
+      followup3FrequencyDays: 1,
+      aiConfidenceThreshold: 0,
     },
   });
 
@@ -73,10 +74,10 @@ export default function OnBoardingStepper() {
         'followup1FrequencyDays',
         'followup2FrequencyDays',
         'followup3FrequencyDays',
+        'aiConfidenceThreshold',
       ]);
 
       if (!isValid) return;
-
       mutate(form.getValues(), {
         onSuccess: () => {
           setCurrentStep((prev) => Math.min(prev + 1, steps.length));
