@@ -42,6 +42,8 @@ export const ColumnMappingTable = () => {
         confirmQty: '',
         remainingQty: '',
         unitCost: '',
+        buyer: '',
+        account: '',
       },
     },
   });

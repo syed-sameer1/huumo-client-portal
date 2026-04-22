@@ -1,7 +1,7 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @plugin "tailwindcss-animate";
-@import "tw-animate-css";
+@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -49,14 +49,14 @@
 }
 
 :root {
-  --foreground-default: #09090B;
-  --background-secondary: #20A665;
-  --background-primary-light: #FAFAFA;
-  --accent-foreground: #20A665;
-  --muted-foreground: #71717A;
+  --foreground-default: #09090b;
+  --background-secondary: #20a665;
+  --background-primary-light: #fafafa;
+  --accent-foreground: #20a665;
+  --muted-foreground: #71717a;
   --radius: 0.625rem;
   --background: oklch(1 0 0);
-  --foreground: #09090B;
+  --foreground: #09090b;
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
@@ -64,11 +64,11 @@
   --primary: oklch(0.205 0 0);
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
-  --secondary-foreground: #3F3F46;
-  --muted: #F4F4F5;
+  --secondary-foreground: #3f3f46;
+  --muted: #f4f4f5;
   --accent: oklch(0.97 0 0);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: #E4E4E7;
+  --border: #e4e4e7;
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
   --chart-1: oklch(0.646 0.222 41.116);
@@ -123,8 +123,31 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    overflow-x: hidden;
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .import-success-modal-scroll {
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #888 #f1f1f1;
+  }
+
+  .import-success-modal-scroll::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .import-success-modal-scroll::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+  }
+
+  .import-success-modal-scroll::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
   }
 }
