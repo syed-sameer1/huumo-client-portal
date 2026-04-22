@@ -23,7 +23,7 @@ import { useClientSettings } from '@/hooks/client';
 
 export const Sidebar = () => {
   const { data } = useClientSettings();
-  console.log('data', data);
+
   return (
     <ShadcnSidebar className="gap-4">
       <SidebarHeader>
