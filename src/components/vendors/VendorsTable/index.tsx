@@ -4,51 +4,82 @@ import { Table } from '@/components/ui/table';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { tableColumns, TableHeader } from './TableHeader';
 import { TableBody } from './TableBody';
-import { useState } from 'react';
 import { useVendorsData } from '@/hooks/vendors';
-import { PAGE_SIZE } from '@/hooks/purchaseOrders';
-import { DataTablePagination } from '@/components/TablePagination';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { DataTablePagination } from '@/components/purchase-orders/PurchaseOrdersTable/TablePagination';
+import { NoResultFound } from '@/components/no-results-found';
+import type { VendorFiltersState } from '@/components/vendors/VendorFilters';
+import { hasVendorSearchOrFilters } from '@/components/vendors/VendorFilters/constants';
+import { PAGE_SIZE_OPTIONS } from './constants';
 
-export const VendorsTable = () => {
-  const searchParams = useSearchParams();
-  const initialPage = Number(searchParams.get('page') ?? 1) - 1;
-  const router = useRouter();
+interface VendorsTableProps {
+  filters: VendorFiltersState;
+  pageIndex: number;
+  pageSize: number;
+  onPageChange: (pageIndex: number) => void;
+  onPageSizeChange: (pageSize: number) => void;
+}
 
-  const [page, setPage] = useState(initialPage);
-  const { data, isLoading } = useVendorsData(page + 1);
+export const VendorsTable = ({
+  filters,
+  pageIndex,
+  pageSize,
+  onPageChange,
+  onPageSizeChange,
+}: VendorsTableProps) => {
+  const { data, isLoading } = useVendorsData(
+    pageIndex + 1,
+    filters,
+    pageSize,
+  );
+
+  const vendors = isLoading ? [] : (data?.vendors ?? []);
 
   const table = useReactTable({
-    data: isLoading ? [] : (data?.vendors ?? []),
+    data: vendors,
     columns: tableColumns,
-    pageCount: Math.ceil((data?.totalVendors ?? 0) / PAGE_SIZE),
+    pageCount: Math.max(1, Math.ceil((data?.totalVendors ?? 0) / pageSize)),
     state: {
       pagination: {
-        pageIndex: page,
-        pageSize: PAGE_SIZE,
+        pageIndex,
+        pageSize,
       },
     },
     manualPagination: true,
     onPaginationChange: (updater) => {
       const next =
         typeof updater === 'function'
-          ? updater({ pageIndex: page, pageSize: PAGE_SIZE })
+          ? updater({ pageIndex, pageSize })
           : updater;
 
-      setPage(next.pageIndex);
-
-      router.push(`?page=${next.pageIndex + 1}`, { scroll: true });
+      if (next.pageSize !== pageSize) {
+        onPageSizeChange(next.pageSize);
+      } else {
+        onPageChange(next.pageIndex);
+      }
     },
     getCoreRowModel: getCoreRowModel(),
   });
 
+  const noResultsWithFilters =
+    !isLoading &&
+    hasVendorSearchOrFilters(filters) &&
+    (data?.totalVendors ?? 0) === 0;
+
+  if (noResultsWithFilters) {
+    return <NoResultFound />;
+  }
+
   return (
-    <div className="overflow-hidden rounded-md border">
-      <Table>
+    <div className="overflow-hidden">
+      <Table className="border">
         <TableHeader table={table} />
         <TableBody table={table} />
-        <DataTablePagination table={table} total={data?.totalVendors ?? 0} />
       </Table>
+      <DataTablePagination
+        table={table}
+        total={data?.totalVendors ?? 0}
+        pageSizeOptions={PAGE_SIZE_OPTIONS}
+      />
     </div>
   );
 };
