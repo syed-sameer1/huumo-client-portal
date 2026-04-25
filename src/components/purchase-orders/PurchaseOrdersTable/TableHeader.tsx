@@ -167,8 +167,11 @@ export const tableColumns: ColumnDef<PurchaseOrders>[] = [
     accessorKey: 'status',
     meta: { width: 148 },
     header: 'Status',
-    cell: ({ getValue }) => (
-      <StatusActionDropdown statusValue={getValue() as POStatus} />
+    cell: ({ row, getValue }) => (
+      <StatusActionDropdown
+        poId={row.original.id}
+        statusValue={getValue() as POStatus}
+      />
     ),
   },
 ];

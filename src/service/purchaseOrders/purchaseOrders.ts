@@ -2,6 +2,7 @@ import { urls } from '@/constants/urls';
 import { api } from '../api';
 import { AxiosResponse } from 'axios';
 import {
+  POStatus,
   PurchaseOrdersResponse,
   PurchaseOrdersDetailsResponse,
 } from '@/types/purchaseOrders';
@@ -62,7 +63,7 @@ export const createPurchaseOrder = (
 ): Promise<AxiosResponse<CreatePurchaseOrderResponse>> =>
   api.post(urls.purchaseOrder, purchaseOrder);
 
-export type PurchaseOrderBulkAction = 'close' | 'delete';
+export type PurchaseOrderBulkAction = 'close' | 'delete' | POStatus;
 
 export type PurchaseOrderBulkActionPayload = {
   poIds: number[];

@@ -36,6 +36,31 @@ export const DeletePurchaseOrderModal = ({
 
   const selectedIds = selectedPurchaseOrders.map((po) => po.id);
 
+  const onDelete = () => {
+    bulkAction(
+      { poIds: selectedIds, action: 'delete' },
+      {
+        onSuccess: () => {
+          toast.success('Purchase order(s) deleted');
+          queryClient.invalidateQueries({
+            queryKey: ['purchase-orders'],
+            exact: false,
+          });
+          queryClient.invalidateQueries({
+            queryKey: ['client-settings'],
+            exact: false,
+          });
+          setRowSelection({});
+          setSelectedPurchaseOrders([]);
+          setDeleteOpen(false);
+        },
+        onError: () => {
+          toast.error('Delete failed. Please try again.');
+        },
+      },
+    );
+  };
+
   return (
     <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
       <DialogContent className="sm:max-w-[520px] p-[24px]">
@@ -70,30 +95,7 @@ export const DeletePurchaseOrderModal = ({
           <LoadingButton
             type="button"
             variant="destructive"
-            onClick={() => {
-              bulkAction(
-                { poIds: selectedIds, action: 'delete' },
-                {
-                  onSuccess: () => {
-                    toast.success('Purchase order(s) deleted');
-                    queryClient.invalidateQueries({
-                      queryKey: ['purchase-orders'],
-                      exact: false,
-                    });
-                    queryClient.invalidateQueries({
-                      queryKey: ['client-settings'],
-                      exact: false,
-                    });
-                    setRowSelection({});
-                    setSelectedPurchaseOrders([]);
-                    setDeleteOpen(false);
-                  },
-                  onError: () => {
-                    toast.error('Delete failed. Please try again.');
-                  },
-                },
-              );
-            }}
+            onClick={onDelete}
             loading={isDeleting}
             className="bg-[#DC2626] text-white hover:bg-[#DC2626]/90 h-[44px]"
             disabled={selectedIds.length === 0 || isDeleting}
