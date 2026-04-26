@@ -11,7 +11,7 @@ import {
 import { CircleQuestionMark, InfoIcon } from 'lucide-react';
 import { PerformanceScoreChip } from '../PerformanceScoreChip';
 import { RiskScoreChip } from '../RiskScoreChip';
-import { RISK_LEVEL, VendorData } from '@/types/vendors';
+import { VendorData } from '@/types/vendors';
 
 export const tableColumns: ColumnDef<VendorData>[] = [
   {
@@ -49,8 +49,7 @@ export const tableColumns: ColumnDef<VendorData>[] = [
       <SortableHeader column={column} title="Total Spend" />
     ),
     cell: ({ row }) => {
-      // return <div>${row.original.totalSpend}</div>;
-      return <div className="text-center">$ 200</div>;
+      return <div>${row.original.totalSpend}</div>;
     },
   },
   {
@@ -59,8 +58,7 @@ export const tableColumns: ColumnDef<VendorData>[] = [
       <SortableHeader column={column} title="Confirmation Rate" />
     ),
     cell: ({ row }) => {
-      // return <div>{row.original.confirmationRate}%</div>;
-      return <div className="text-center">93 %</div>;
+      return <div>{row.original.confirmationRate}%</div>;
     },
   },
   {
@@ -69,12 +67,7 @@ export const tableColumns: ColumnDef<VendorData>[] = [
       <SortableHeader column={column} title="Performance Score" />
     ),
     cell: ({ row }) => {
-      // return <PerformanceScoreChip value={row.original.performanceScore} />;
-      return (
-        <div className="flex items-center justify-center">
-          <PerformanceScoreChip value={97} />
-        </div>
-      );
+      return <PerformanceScoreChip value={row.original.performanceScore} />;
     },
   },
   {
@@ -83,8 +76,7 @@ export const tableColumns: ColumnDef<VendorData>[] = [
       <SortableHeader column={column} title="Risk Level" />
     ),
     cell: ({ row }) => {
-      // return <RiskScoreChip value={row.original.riskLevel} />;
-      return <RiskScoreChip value={RISK_LEVEL.low} />;
+      return <RiskScoreChip value={row.original.riskLevel} />;
     },
   },
   {
