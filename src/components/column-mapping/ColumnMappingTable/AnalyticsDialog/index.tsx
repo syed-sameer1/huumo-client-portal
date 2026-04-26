@@ -14,6 +14,7 @@ import {
   useImportVendorCSV,
   useProcessImport,
 } from '@/hooks/csvImports';
+import { useQueryClient } from '@tanstack/react-query';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { toast } from 'sonner';
@@ -26,12 +27,16 @@ import { getImportJobIdFromVendorCsvResponse } from '../SuccessModal/helpers';
 export const AnalyticsDialog = ({
   open,
   onClose,
+  flow = 'purchase-order',
 }: {
   open: boolean;
   onClose: Dispatch<SetStateAction<boolean>>;
+  flow?: 'purchase-order' | 'vendor';
 }) => {
   const importJobId = useSearchParams().get('import_job_id');
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const isPurchaseOrderFlow = flow === 'purchase-order';
   const [showEmailMissingModal, setShowEmailMissingModal] = useState(false);
   const [vendorSupplementJobId, setVendorSupplementJobId] = useState<
     string | null
@@ -104,6 +109,12 @@ export const AnalyticsDialog = ({
       { id: importJobId },
       {
         onSuccess: () => {
+          if (flow === 'vendor') {
+            queryClient.invalidateQueries({
+              queryKey: ['vendors-data'],
+              exact: false,
+            });
+          }
           setShowSuccessModal(true);
           onClose(false);
         },
@@ -121,7 +132,11 @@ export const AnalyticsDialog = ({
             {isRefetching || isPending ? (
               <div className="flex items-center flex-col gap-[40px]">
                 <GradientRingSpinner size={100} />
-                <div className="font-semibold">PO details analyzing...</div>
+                <div className="font-semibold">
+                  {flow === 'vendor'
+                    ? 'Vendor file analyzing…'
+                    : 'PO details analyzing…'}
+                </div>
               </div>
             ) : (
               <div className="space-y-8">
@@ -158,37 +173,41 @@ export const AnalyticsDialog = ({
                       {previewSummary?.duplicateRows}
                     </span>
                   </div>
-                  <div className="text-[#3F3F46]">
-                    Total POs :{' '}
-                    <span className="font-semibold text-[#09090B]">
-                      {previewSummary?.uniquePOs}
-                    </span>
-                  </div>
-                  <div className="text-[#3F3F46]">
-                    POs to create :{' '}
-                    <span className="font-semibold text-[#09090B]">
-                      {previewSummary?.newPOs}
-                    </span>
-                  </div>
-                  <div className="text-[#3F3F46]">
-                    POs to update :{' '}
-                    <span className="font-semibold text-[#09090B]">
-                      {previewSummary?.existingPOs}
-                    </span>
-                  </div>
-                  <div className="text-[#3F3F46]">
-                    Missing vendor emails:{' '}
-                    <span className="font-semibold text-[#09090B]">
-                      {previewSummary?.missingVendorEmailCount}
-                    </span>
-                  </div>
+                  {isPurchaseOrderFlow && (
+                    <>
+                      <div className="text-[#3F3F46]">
+                        Total POs :{' '}
+                        <span className="font-semibold text-[#09090B]">
+                          {previewSummary?.uniquePOs}
+                        </span>
+                      </div>
+                      <div className="text-[#3F3F46]">
+                        POs to create :{' '}
+                        <span className="font-semibold text-[#09090B]">
+                          {previewSummary?.newPOs}
+                        </span>
+                      </div>
+                      <div className="text-[#3F3F46]">
+                        POs to update :{' '}
+                        <span className="font-semibold text-[#09090B]">
+                          {previewSummary?.existingPOs}
+                        </span>
+                      </div>
+                      <div className="text-[#3F3F46]">
+                        Missing vendor emails:{' '}
+                        <span className="font-semibold text-[#09090B]">
+                          {previewSummary?.missingVendorEmailCount}
+                        </span>
+                      </div>
 
-                  <div className="text-[#3F3F46]">
-                    Overdue POs:{' '}
-                    <span className="font-semibold text-[#09090B]">
-                      {previewSummary?.overdueCount}
-                    </span>
-                  </div>
+                      <div className="text-[#3F3F46]">
+                        Overdue POs:{' '}
+                        <span className="font-semibold text-[#09090B]">
+                          {previewSummary?.overdueCount}
+                        </span>
+                      </div>
+                    </>
+                  )}
                   <div className="text-[#3F3F46]">
                     Errors :{' '}
                     <span className="font-semibold text-[#09090B]">
@@ -221,11 +240,17 @@ export const AnalyticsDialog = ({
                 )}
 
                 <div className="flex justify-between gap-12">
-                  <Button className="flex-1" variant="ghost">
+                  <Button
+                    className="flex-1"
+                    variant="ghost"
+                    type="button"
+                    onClick={() => onClose(false)}
+                  >
                     Cancel
                   </Button>
                   <Button
                     className="flex-1"
+                    type="button"
                     disabled={!importJobId || isProcessing}
                     onClick={onImport}
                   >
@@ -238,34 +263,41 @@ export const AnalyticsDialog = ({
         </DialogContent>
       </Dialog>
 
-      <MissingVendorEmailModal
-        open={showEmailMissingModal}
-        onOpenChange={setShowEmailMissingModal}
-        missingCount={previewSummary.missingVendorEmailCount}
-        importJobId={importJobId ?? ''}
-        onContinueWithoutEmail={goToPurchaseOrders}
-        onProceed={handleProceedWithVendorCsv}
-        isUploading={isVendorCsvUploading}
-      />
+      {isPurchaseOrderFlow && (
+        <>
+          <MissingVendorEmailModal
+            open={showEmailMissingModal}
+            onOpenChange={setShowEmailMissingModal}
+            missingCount={previewSummary.missingVendorEmailCount}
+            importJobId={importJobId ?? ''}
+            onContinueWithoutEmail={goToPurchaseOrders}
+            onProceed={handleProceedWithVendorCsv}
+            isUploading={isVendorCsvUploading}
+          />
 
-      {vendorSupplementJobId && (
-        <VendorEmailColumnMappingModal
-          key={vendorSupplementJobId}
-          open={showVendorColumnMappingModal}
-          importJobId={vendorSupplementJobId}
-          onOpenChange={(next) => {
-            setShowVendorColumnMappingModal(next);
-            if (!next) setVendorSupplementJobId(null);
-          }}
-          onMappingSuccess={goToPurchaseOrders}
-        />
+          {vendorSupplementJobId && (
+            <VendorEmailColumnMappingModal
+              key={vendorSupplementJobId}
+              open={showVendorColumnMappingModal}
+              importJobId={vendorSupplementJobId}
+              onOpenChange={(next) => {
+                setShowVendorColumnMappingModal(next);
+                if (!next) setVendorSupplementJobId(null);
+              }}
+              onMappingSuccess={goToPurchaseOrders}
+            />
+          )}
+        </>
       )}
       {showSuccessModal && (
         <SuccessModal
           previewSummary={previewSummary}
           open={showSuccessModal}
           onClose={() => setShowSuccessModal(false)}
-          setShowEmailMissingModal={setShowEmailMissingModal}
+          setShowEmailMissingModal={
+            isPurchaseOrderFlow ? setShowEmailMissingModal : undefined
+          }
+          flow={flow}
         />
       )}
     </>

@@ -42,6 +42,7 @@ export const urls = {
 export const routeUrls = {
   otpRoute: '/verify-email/otp',
   subscriptionRoute: '/subscription',
+  vendorsRoute: '/vendors',
   purchaseOrdersRoute: '/purchase-orders',
   onboardingRoute: '/onboarding',
   selectImportMethod: '/purchase-orders/select-import-method',

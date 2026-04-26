@@ -16,17 +16,24 @@ export const SuccessModal = ({
   open,
   onClose,
   setShowEmailMissingModal,
+  flow = 'purchase-order',
 }: {
   previewSummary: PreviewSummaryType;
   open: boolean;
   onClose: () => void;
-  setShowEmailMissingModal: (show: boolean) => void;
+  setShowEmailMissingModal?: (show: boolean) => void;
+  flow?: 'purchase-order' | 'vendor';
 }) => {
   const router = useRouter();
 
   const onContinue = () => {
+    if (flow === 'vendor') {
+      onClose();
+      router.push(routeUrls.vendorsRoute);
+      return;
+    }
     const isVendorEmailMissing = !!previewSummary.missingVendorEmailCount;
-    if (isVendorEmailMissing) {
+    if (isVendorEmailMissing && setShowEmailMissingModal) {
       setShowEmailMissingModal(true);
       onClose();
     } else {
@@ -52,7 +59,13 @@ export const SuccessModal = ({
                   Data has been imported successfully
                 </div>
               </div>
-              <div className="import-success-modal-scroll space-y-2 h-[252px]">
+              <div
+                className={
+                  flow === 'vendor'
+                    ? 'import-success-modal-scroll max-h-[252px] space-y-2 overflow-y-auto'
+                    : 'import-success-modal-scroll h-[252px] space-y-2'
+                }
+              >
                 <div className="text-[#3F3F46]">
                   Total records :{' '}
                   <span className="font-semibold text-[#09090B]">
@@ -77,37 +90,41 @@ export const SuccessModal = ({
                     {previewSummary?.duplicateRows}
                   </span>
                 </div>
-                <div className="text-[#3F3F46]">
-                  Total POs :{' '}
-                  <span className="font-semibold text-[#09090B]">
-                    {previewSummary?.uniquePOs}
-                  </span>
-                </div>
-                <div className="text-[#3F3F46]">
-                  POs to create :{' '}
-                  <span className="font-semibold text-[#09090B]">
-                    {previewSummary?.newPOs}
-                  </span>
-                </div>
-                <div className="text-[#3F3F46]">
-                  POs to update :{' '}
-                  <span className="font-semibold text-[#09090B]">
-                    {previewSummary?.existingPOs}
-                  </span>
-                </div>
-                <div className="text-[#3F3F46]">
-                  Missing vendor emails:{' '}
-                  <span className="font-semibold text-[#09090B]">
-                    {previewSummary?.missingVendorEmailCount}
-                  </span>
-                </div>
+                {flow === 'purchase-order' && (
+                  <>
+                    <div className="text-[#3F3F46]">
+                      Total POs :{' '}
+                      <span className="font-semibold text-[#09090B]">
+                        {previewSummary?.uniquePOs}
+                      </span>
+                    </div>
+                    <div className="text-[#3F3F46]">
+                      POs to create :{' '}
+                      <span className="font-semibold text-[#09090B]">
+                        {previewSummary?.newPOs}
+                      </span>
+                    </div>
+                    <div className="text-[#3F3F46]">
+                      POs to update :{' '}
+                      <span className="font-semibold text-[#09090B]">
+                        {previewSummary?.existingPOs}
+                      </span>
+                    </div>
+                    <div className="text-[#3F3F46]">
+                      Missing vendor emails:{' '}
+                      <span className="font-semibold text-[#09090B]">
+                        {previewSummary?.missingVendorEmailCount}
+                      </span>
+                    </div>
 
-                <div className="text-[#3F3F46]">
-                  Overdue POs:{' '}
-                  <span className="font-semibold text-[#09090B]">
-                    {previewSummary?.overdueCount}
-                  </span>
-                </div>
+                    <div className="text-[#3F3F46]">
+                      Overdue POs:{' '}
+                      <span className="font-semibold text-[#09090B]">
+                        {previewSummary?.overdueCount}
+                      </span>
+                    </div>
+                  </>
+                )}
                 <div className="text-[#3F3F46]">
                   Errors :{' '}
                   <span className="font-semibold text-[#09090B]">
