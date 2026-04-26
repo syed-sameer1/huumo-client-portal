@@ -15,6 +15,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { FollowUpRuleModal } from './FollowUpRuleModal';
+import { routeUrls } from '@/constants/urls';
 
 /** Renders text with content inside {} (including the braces) in bold */
 function formatWithBoldPlaceholders(text: string) {
@@ -71,12 +72,12 @@ export const EditTemplateForm = ({ templateId }: EditTemplateFormProps) => {
   const [followUpModalOpen, setFollowUpModalOpen] = useState(false);
 
   const handleCancel = () => {
-    router.push(`/templates/${templateId}`);
+    router.push(`${routeUrls.templateRulesRoute}/${templateId}`);
   };
 
   const handleSave = () => {
     // TODO: persist when API is ready
-    router.push(`/templates/${templateId}`);
+    router.push(`${routeUrls.templateRulesRoute}/${templateId}`);
   };
 
   return (
