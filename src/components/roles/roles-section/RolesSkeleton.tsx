@@ -11,9 +11,9 @@ export const RolesSkeleton = () => {
   return (
     <div className="min-w-0 space-y-4">
       <Skeleton className="h-5 w-full max-w-2xl rounded-md" />
-      <div className="flex items-center justify-between gap-3 w-full">
-        <Skeleton className="h-[40px] w-[320px] rounded-md" />
-        <Skeleton className="w-[100px] h-[35px] rounded-md" />
+      <div className="flex min-w-0 flex-1 flex-wrap items-center gap-3 w-full">
+        <Skeleton className="h-10 w-[100px] shrink-0 rounded-md" />
+        <Skeleton className="h-10 w-full max-w-md flex-1 rounded-md" />
       </div>
 
       <div className="w-full min-w-0 max-w-full">

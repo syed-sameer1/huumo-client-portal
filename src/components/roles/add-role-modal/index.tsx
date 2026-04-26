@@ -59,7 +59,6 @@ export function AddRoleModal({ open, onClose }: AddRoleModalProps) {
           queryKey: ['users-data'],
           exact: false,
         });
-        form.reset();
         onClose();
         setInviteSuccessOpen(true);
       },
