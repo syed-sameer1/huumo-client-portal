@@ -4,12 +4,13 @@ import { RolesFilters } from '../RolesFilters';
 import { RolesTable } from '../RolesTable';
 import { EmptyScreen } from '@/components/empty-screen';
 import { useUsersData } from '@/hooks/client';
+import { RolesSkeleton } from './RolesSkeleton';
 
 export const RolesSection = () => {
   const { data, isLoading } = useUsersData(1);
   const isEmpty = !data?.users.length;
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <RolesSkeleton />;
 
   if (isEmpty) {
     return (
@@ -28,4 +29,3 @@ export const RolesSection = () => {
     </div>
   );
 };
-

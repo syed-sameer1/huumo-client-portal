@@ -90,7 +90,9 @@ export function EditRoleModal({
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[480px] p-8 gap-0">
         <DialogHeader className="mb-6">
-          <DialogTitle className="text-2xl font-semibold">Edit Role</DialogTitle>
+          <DialogTitle className="text-2xl font-semibold">
+            Edit Role
+          </DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
@@ -105,7 +107,7 @@ export function EditRoleModal({
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Big Kahuna Burger Ltd."
+                      placeholder="Role Name"
                       {...field}
                       className="h-11"
                     />
@@ -201,4 +203,3 @@ export function EditRoleModal({
     </Dialog>
   );
 }
-

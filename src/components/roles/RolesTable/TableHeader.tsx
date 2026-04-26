@@ -89,4 +89,3 @@ export const TableHeader = ({ table }: { table: RolesTableType }) => {
     </ShadcnTableHeader>
   );
 };
-

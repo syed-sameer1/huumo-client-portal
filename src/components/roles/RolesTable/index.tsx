@@ -6,9 +6,9 @@ import { tableColumns, TableHeader } from './TableHeader';
 import { TableBody } from './TableBody';
 import { useState } from 'react';
 import { useUsersData } from '@/hooks/client';
-import { PAGE_SIZE } from '@/hooks/purchaseOrders';
-import { DataTablePagination } from '@/components/TablePagination';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { DataTablePagination } from '@/components/TablePagination';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS } from './constants';
 
 export const RolesTable = () => {
   const searchParams = useSearchParams();
@@ -19,7 +19,7 @@ export const RolesTable = () => {
   const { data, isLoading } = useUsersData(page + 1);
 
   const table = useReactTable({
-    data: isLoading ? [] : data?.users ?? [],
+    data: isLoading ? [] : (data?.users ?? []),
     columns: tableColumns,
     pageCount: Math.ceil((data?.totalUsers ?? 0) / PAGE_SIZE),
     state: {
@@ -43,13 +43,16 @@ export const RolesTable = () => {
   });
 
   return (
-    <div className="overflow-hidden rounded-md border">
-      <Table>
+    <div className="w-full min-w-0 max-w-full">
+      <Table className="w-full">
         <TableHeader table={table} />
         <TableBody table={table} />
-        <DataTablePagination table={table} total={data?.totalUsers ?? 0} />
       </Table>
+      <DataTablePagination
+        table={table}
+        total={data?.totalUsers ?? 0}
+        pageSizeOptions={PAGE_SIZE_OPTIONS}
+      />
     </div>
   );
 };
-
