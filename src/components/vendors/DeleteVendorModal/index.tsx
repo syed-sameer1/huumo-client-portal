@@ -29,11 +29,12 @@ export const DeleteVendorModal = ({
   const handleDeleteVendor = () => {
     deleteVendor(vendorId.toString(), {
       onSuccess: () => {
-        toast.success('Vendor deleted');
         queryClient.invalidateQueries({
           queryKey: ['vendors-data'],
           exact: false,
         });
+        toast.success('Vendor deleted');
+        onClose();
       },
       onError: () => {
         toast.error('Something went wrong please try again');

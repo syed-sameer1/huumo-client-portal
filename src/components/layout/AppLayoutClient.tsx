@@ -10,9 +10,9 @@ export const AppLayoutClient = ({
   return (
     <SidebarProvider>
       <Sidebar />
-      <SidebarInset id="inset-app-layout-client">
+      <SidebarInset id="inset-app-layout-client" className="min-w-0">
         <Header />
-        <div>{children}</div>
+        <div className="min-w-0">{children}</div>
       </SidebarInset>
     </SidebarProvider>
   );

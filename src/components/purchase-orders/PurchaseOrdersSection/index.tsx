@@ -113,7 +113,7 @@ export const PurchaseOrdersSection = () => {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 min-w-0">
       <div className="text-muted-foreground text-sm">
         HUUMO automatically follows up on unacknowledged POs using the rules and
         templates you define.

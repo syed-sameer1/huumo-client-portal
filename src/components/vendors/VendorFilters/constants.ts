@@ -89,7 +89,11 @@ export function vendorFiltersToSearchParams(
   page?: number,
 ): URLSearchParams {
   const params = new URLSearchParams();
-  if (page !== undefined) params.set('page', String(page));
+  if (page === 1) {
+    params.delete('page');
+  } else {
+    params.set('page', String(page));
+  }
   if (f.searchValue) params.set('searchValue', f.searchValue);
   if (f.confirmationRateMin !== 0 || f.confirmationRateMax !== 100) {
     params.set('crMin', String(f.confirmationRateMin));

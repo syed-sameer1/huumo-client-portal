@@ -20,9 +20,11 @@ import { getRoutes } from './routes';
 import { Button } from '../ui/button';
 import { Progress } from '../ui/progress';
 import { useClientSettings } from '@/hooks/client';
+import { usePathname } from 'next/navigation';
 
 export const Sidebar = () => {
   const { data } = useClientSettings();
+  const path = usePathname();
 
   return (
     <ShadcnSidebar className="gap-4">
@@ -35,29 +37,39 @@ export const Sidebar = () => {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {getRoutes().map(({ href, Icon, label, subRoutes }) => (
-                <SidebarMenuItem key={href}>
-                  <SidebarMenuButton className="h-13" asChild>
-                    <Link href={href}>
-                      <div className="flex items-center gap-2">
-                        <Icon width={20} height={20} />
-                        <span>{label}</span>
-                      </div>
-                    </Link>
-                  </SidebarMenuButton>
-                  {subRoutes && (
-                    <SidebarMenuSub>
-                      {subRoutes.map(({ href, label }) => (
-                        <SidebarMenuSubItem key={href}>
-                          <SidebarMenuSubButton asChild>
-                            <Link href={href}>{label}</Link>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-                      ))}
-                    </SidebarMenuSub>
-                  )}
-                </SidebarMenuItem>
-              ))}
+              {getRoutes().map(({ href, Icon, label, subRoutes }) => {
+                const isActive = path === href;
+                return (
+                  <SidebarMenuItem key={href}>
+                    <SidebarMenuButton
+                      className="h-13"
+                      asChild
+                      isActive={isActive}
+                    >
+                      <Link href={href}>
+                        <div className="flex items-center gap-2">
+                          <Icon width={20} height={20} />
+                          <span>{label}</span>
+                        </div>
+                      </Link>
+                    </SidebarMenuButton>
+                    {subRoutes && (
+                      <SidebarMenuSub>
+                        {subRoutes.map(({ href, label }) => {
+                          const isActive = path === href;
+                          return (
+                            <SidebarMenuSubItem key={href}>
+                              <SidebarMenuSubButton asChild isActive={isActive}>
+                                <Link href={href}>{label}</Link>
+                              </SidebarMenuSubButton>
+                            </SidebarMenuSubItem>
+                          );
+                        })}
+                      </SidebarMenuSub>
+                    )}
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

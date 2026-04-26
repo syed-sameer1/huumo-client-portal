@@ -26,11 +26,7 @@ export const VendorsTable = ({
   onPageChange,
   onPageSizeChange,
 }: VendorsTableProps) => {
-  const { data, isLoading } = useVendorsData(
-    pageIndex + 1,
-    filters,
-    pageSize,
-  );
+  const { data, isLoading } = useVendorsData(pageIndex + 1, filters, pageSize);
 
   const vendors = isLoading ? [] : (data?.vendors ?? []);
 

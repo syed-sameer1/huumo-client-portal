@@ -93,7 +93,7 @@ export const PurchaseOrdersTable = ({
   }
 
   return (
-    <div className="w-full min-w-0">
+    <div className="w-full min-w-0 max-w-full">
       <Table className="table-fixed w-max min-w-full border-collapse border">
         <TableHeader table={table} />
         <TableBody table={table} isLoading={isFetching} />

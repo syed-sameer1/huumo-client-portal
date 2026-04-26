@@ -5,10 +5,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useVendorsData } from '@/hooks/vendors';
 import { PAGE_SIZE } from '@/hooks/purchaseOrders';
 import { EmptyScreen } from '../empty-screen';
-import {
-  VendorFilters,
-  type VendorFiltersState,
-} from './VendorFilters';
+import { VendorFilters, type VendorFiltersState } from './VendorFilters';
 import {
   hasVendorSearchOrFilters,
   searchParamsToVendorFilters,
@@ -61,8 +58,7 @@ export const VendorsSection = () => {
 
   const { data, isLoading } = useVendorsData(page, filters, pageSize);
   const hasFilters = hasVendorSearchOrFilters(filters);
-  const isEmptyUnfiltered =
-    !data?.vendors.length && !hasFilters && !isLoading;
+  const isEmptyUnfiltered = !data?.vendors.length && !hasFilters && !isLoading;
 
   if (isLoading) {
     return <LoadingSkeleton text="Loading Vendors.." />;
