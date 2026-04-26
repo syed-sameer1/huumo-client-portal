@@ -6,8 +6,8 @@ import {
 import { flexRender } from '@tanstack/react-table';
 import { PurchaseOrdersTableType } from './types';
 import { useRouter } from 'next/navigation';
-import { Skeleton } from '@/components/ui/skeleton';
 import { purchaseOrderColumnWidthStyle } from './columnLayout';
+import { PurchaseOrderTableSkeleton } from './PurchaseOrderSkeleton/PurchaseOrderTableSkeleton';
 
 export const TableBody = ({
   table,
@@ -20,23 +20,7 @@ export const TableBody = ({
   const visibleColumns = table.getVisibleLeafColumns();
 
   if (isLoading) {
-    return (
-      <ShadcnTableBody>
-        {Array.from({ length: 6 }).map((_, i) => (
-          <TableRow key={i}>
-            {visibleColumns.map((col) => (
-              <TableCell
-                key={col.id}
-                className="py-4"
-                style={purchaseOrderColumnWidthStyle(col.columnDef)}
-              >
-                <Skeleton className="h-4 w-full max-w-full rounded-md" />
-              </TableCell>
-            ))}
-          </TableRow>
-        ))}
-      </ShadcnTableBody>
-    );
+    return <PurchaseOrderTableSkeleton />;
   }
 
   return (

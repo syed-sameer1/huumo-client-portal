@@ -11,11 +11,11 @@ import { tableColumns, TableHeader } from './TableHeader';
 import { TableBody } from './TableBody';
 import { usePurchaseOrders } from '@/hooks/purchaseOrders';
 import { useCallback, useMemo, useState } from 'react';
-import { DataTablePagination } from './TablePagination';
 import { type PurchaseOrdersParams } from '@/service/purchaseOrders/purchaseOrders';
 import { NoResultFound } from '@/components/no-results-found';
 import type { PurchaseOrders } from '@/types/purchaseOrders';
 import { PAGE_SIZE_OPTIONS } from './constants';
+import { DataTablePagination } from '@/components/TablePagination';
 
 interface PurchaseOrdersTableProps {
   filterParams?: Omit<PurchaseOrdersParams, 'limit' | 'pageNumber'>;

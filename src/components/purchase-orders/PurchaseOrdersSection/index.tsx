@@ -11,7 +11,6 @@ import {
   usePurchaseOrders,
   usePurchaseOrderBulkAction,
 } from '@/hooks/purchaseOrders';
-import { LoadingSkeleton } from './LoadingSkeleton';
 import { NoPurchaseOrder } from '../EmptyPurchaseOrders/NoPurchaseOrder';
 import { PurchaseOrderBanner } from '../PurchaseOrderHeader/PurchaseOrderBanner';
 import {
@@ -24,6 +23,7 @@ import { type RowSelectionState } from '@tanstack/react-table';
 import type { PurchaseOrders } from '@/types/purchaseOrders';
 import { DeletePurchaseOrderModal } from './DeletePurchaseOrderModal';
 import { cn } from '@/lib/utils';
+import { PurchaseOrdersSkeleton } from '../PurchaseOrdersTable/PurchaseOrderSkeleton';
 
 function filterMatchMessage(totalPurchaseOrders: number): string {
   if (totalPurchaseOrders === 1) {
@@ -95,7 +95,7 @@ export const PurchaseOrdersSection = () => {
   );
 
   if (loading) {
-    return <LoadingSkeleton text="Loading Purchase Orders.." />;
+    return <PurchaseOrdersSkeleton />;
   }
 
   const hasAnyFilter =
