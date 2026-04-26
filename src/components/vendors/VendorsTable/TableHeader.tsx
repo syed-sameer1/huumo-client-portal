@@ -1,3 +1,4 @@
+import { Checkbox } from '@/components/ui/checkbox';
 import { SortableHeader } from '@/components/purchase-orders/PurchaseOrdersTable/SortableHeader';
 import { ColumnDef, flexRender } from '@tanstack/react-table';
 import { MoreOptions } from './MoreOptions';
@@ -6,16 +7,37 @@ import {
   TableRow,
   TableHead,
   TableHeader as ShadcnTableHeader,
-  TableCell,
 } from '@/components/ui/table';
 import { CircleQuestionMark, InfoIcon } from 'lucide-react';
 import { PerformanceScoreChip } from '../PerformanceScoreChip';
 import { RiskScoreChip } from '../RiskScoreChip';
 import { VendorData } from '@/types/vendors';
+import { vendorColumnWidthStyle } from './columnLayout';
 
 export const tableColumns: ColumnDef<VendorData>[] = [
   {
-    accessorKey: 'vendorName',
+    id: 'select',
+    meta: { width: 48 },
+    header: ({ table }) => (
+      <Checkbox
+        checked={table.getIsAllPageRowsSelected()}
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        className="data-[state=checked]:bg-[#FAFAFA] data-[state=checked]:text-[#20A665] data-[state=checked]:border-[#A1A1AA]"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        onClick={(e) => e.stopPropagation()}
+        className="data-[state=checked]:bg-[#E0FEED] data-[state=checked]:text-[#20A665] data-[state=checked]:border-[#A1A1AA]"
+      />
+    ),
+    enableSorting: false,
+  },
+  {
+    accessorKey: 'name',
+    meta: { width: 200 },
     header: ({ column }) => <SortableHeader column={column} title="Vendor" />,
     cell: ({ row }) => {
       return (
@@ -30,6 +52,7 @@ export const tableColumns: ColumnDef<VendorData>[] = [
   },
   {
     accessorKey: 'email',
+    meta: { width: 220 },
     header: ({ column }) => <SortableHeader column={column} title="Email" />,
     cell: ({ row }) => {
       if (row.original.email) {
@@ -45,6 +68,7 @@ export const tableColumns: ColumnDef<VendorData>[] = [
   },
   {
     accessorKey: 'totalSpend',
+    meta: { width: 120 },
     header: ({ column }) => (
       <SortableHeader column={column} title="Total Spend" />
     ),
@@ -54,6 +78,7 @@ export const tableColumns: ColumnDef<VendorData>[] = [
   },
   {
     accessorKey: 'confirmationRate',
+    meta: { width: 160 },
     header: ({ column }) => (
       <SortableHeader column={column} title="Confirmation Rate" />
     ),
@@ -63,6 +88,7 @@ export const tableColumns: ColumnDef<VendorData>[] = [
   },
   {
     accessorKey: 'performanceScore',
+    meta: { width: 170 },
     header: ({ column }) => (
       <SortableHeader column={column} title="Performance Score" />
     ),
@@ -72,6 +98,7 @@ export const tableColumns: ColumnDef<VendorData>[] = [
   },
   {
     accessorKey: 'riskLevel',
+    meta: { width: 130 },
     header: ({ column }) => (
       <SortableHeader column={column} title="Risk Level" />
     ),
@@ -81,15 +108,17 @@ export const tableColumns: ColumnDef<VendorData>[] = [
   },
   {
     id: 'action',
+    meta: { width: 72 },
     header: 'Action',
+    enableSorting: false,
     cell: ({ row }) => (
-      <TableCell data-no-row-click>
+      <div data-no-row-click className="flex justify-end">
         <MoreOptions
           email={row.original.email}
           vendorName={row.original.name}
           vendorId={row.original.id}
         />
-      </TableCell>
+      </div>
     ),
   },
 ];
@@ -101,7 +130,11 @@ export const TableHeader = ({ table }: { table: VendorsTableType }) => {
         <TableRow key={headerGroup.id}>
           {headerGroup.headers.map((header) => {
             return (
-              <TableHead key={header.id} className="h-12">
+              <TableHead
+                key={header.id}
+                className="h-12"
+                style={vendorColumnWidthStyle(header.column.columnDef)}
+              >
                 {header.isPlaceholder
                   ? null
                   : flexRender(

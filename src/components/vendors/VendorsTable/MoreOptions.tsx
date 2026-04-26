@@ -5,6 +5,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
 import { EllipsisVertical } from 'lucide-react';
 import { useState } from 'react';
 import { EditVendorModal } from '../EditVendorModal';
@@ -27,9 +28,16 @@ export const MoreOptions = ({
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          {/* <button onClick={(e) => e.stopPropagation()}> */}
-          <EllipsisVertical />
-          {/* </button> */}
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            data-no-row-click
+            onClick={(e) => e.stopPropagation()}
+          >
+            <EllipsisVertical className="h-4 w-4" />
+          </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-49 mr-4 mt-5">
           <DropdownMenuGroup>

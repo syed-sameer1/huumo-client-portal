@@ -1,15 +1,22 @@
 'use client';
 
 import { Table } from '@/components/ui/table';
-import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import {
+  getCoreRowModel,
+  type OnChangeFn,
+  type RowSelectionState,
+  useReactTable,
+} from '@tanstack/react-table';
 import { tableColumns, TableHeader } from './TableHeader';
 import { TableBody } from './TableBody';
 import { useVendorsData } from '@/hooks/vendors';
-import { DataTablePagination } from '@/components/purchase-orders/PurchaseOrdersTable/TablePagination';
+import { useCallback } from 'react';
 import { NoResultFound } from '@/components/no-results-found';
 import type { VendorFiltersState } from '@/components/vendors/VendorFilters';
 import { hasVendorSearchOrFilters } from '@/components/vendors/VendorFilters/constants';
 import { PAGE_SIZE_OPTIONS } from './constants';
+import type { VendorData } from '@/types/vendors';
+import { DataTablePagination } from '@/components/TablePagination';
 
 interface VendorsTableProps {
   filters: VendorFiltersState;
@@ -17,6 +24,11 @@ interface VendorsTableProps {
   pageSize: number;
   onPageChange: (pageIndex: number) => void;
   onPageSizeChange: (pageSize: number) => void;
+  rowSelection: RowSelectionState;
+  onRowSelectionChange: (
+    selection: RowSelectionState,
+    selectedRows: VendorData[],
+  ) => void;
 }
 
 export const VendorsTable = ({
@@ -25,10 +37,26 @@ export const VendorsTable = ({
   pageSize,
   onPageChange,
   onPageSizeChange,
+  rowSelection,
+  onRowSelectionChange,
 }: VendorsTableProps) => {
-  const { data, isLoading } = useVendorsData(pageIndex + 1, filters, pageSize);
+  const { data, isLoading, isFetching } = useVendorsData(
+    pageIndex + 1,
+    filters,
+    pageSize,
+  );
 
-  const vendors = isLoading ? [] : (data?.vendors ?? []);
+  const vendors = data?.vendors ?? [];
+
+  const handleRowSelectionChange: OnChangeFn<RowSelectionState> = useCallback(
+    (updater) => {
+      const next =
+        typeof updater === 'function' ? updater(rowSelection) : updater;
+      const selectedRows = vendors.filter((row) => next[String(row.id)]);
+      onRowSelectionChange(next, selectedRows);
+    },
+    [rowSelection, vendors, onRowSelectionChange],
+  );
 
   const table = useReactTable({
     data: vendors,
@@ -39,7 +67,11 @@ export const VendorsTable = ({
         pageIndex,
         pageSize,
       },
+      rowSelection,
     },
+    enableRowSelection: true,
+    onRowSelectionChange: handleRowSelectionChange,
+    getRowId: (row) => String(row.id),
     manualPagination: true,
     onPaginationChange: (updater) => {
       const next =
@@ -66,10 +98,10 @@ export const VendorsTable = ({
   }
 
   return (
-    <div className="overflow-hidden">
-      <Table className="border">
+    <div className="w-full min-w-0 max-w-full">
+      <Table className="table-fixed w-max min-w-full border-collapse border">
         <TableHeader table={table} />
-        <TableBody table={table} />
+        <TableBody table={table} isLoading={isFetching} />
       </Table>
       <DataTablePagination
         table={table}

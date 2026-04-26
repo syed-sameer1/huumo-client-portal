@@ -12,13 +12,20 @@ import {
   vendorFiltersToSearchParams,
 } from './VendorFilters/constants';
 import { VendorsTable } from './VendorsTable';
-import { LoadingSkeleton } from '../purchase-orders/PurchaseOrdersSection/LoadingSkeleton';
+import { Button } from '@/components/ui/button';
+import { BulkDeleteVendorsModal } from './BulkDeleteVendorsModal';
+import type { VendorData } from '@/types/vendors';
+import type { RowSelectionState } from '@tanstack/react-table';
+import { VendorsSkeleton } from './VendorsTable/VendorsSkeleton';
 
 export const VendorsSection = () => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [pageSize, setPageSize] = useState(PAGE_SIZE);
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const [selectedVendors, setSelectedVendors] = useState<VendorData[]>([]);
+  const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
 
   const filters: VendorFiltersState = useMemo(
     () => searchParamsToVendorFilters(searchParams),
@@ -60,8 +67,12 @@ export const VendorsSection = () => {
   const hasFilters = hasVendorSearchOrFilters(filters);
   const isEmptyUnfiltered = !data?.vendors.length && !hasFilters && !isLoading;
 
+  const selectedCount = Object.keys(rowSelection).filter(
+    (id) => rowSelection[id],
+  ).length;
+
   if (isLoading) {
-    return <LoadingSkeleton text="Loading Vendors.." />;
+    return <VendorsSkeleton />;
   }
 
   if (isEmptyUnfiltered) {
@@ -75,14 +86,43 @@ export const VendorsSection = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="min-w-0 space-y-6">
       <VendorFilters filters={filters} onFiltersChange={setVendorFilters} />
+      {selectedCount > 0 && (
+        <div className="flex flex-wrap items-center gap-3 text-sm">
+          <span className="font-medium text-foreground">
+            {selectedCount === 1 ? '1 selected' : `${selectedCount} selected`}
+          </span>
+          <Button
+            variant="ghost"
+            className="shrink-0 text-[#EF4444]"
+            type="button"
+            onClick={() => setBulkDeleteOpen(true)}
+          >
+            Delete
+          </Button>
+        </div>
+      )}
       <VendorsTable
         filters={filters}
         pageIndex={page - 1}
         pageSize={pageSize}
         onPageChange={handlePageChange}
         onPageSizeChange={handlePageSizeChange}
+        rowSelection={rowSelection}
+        onRowSelectionChange={(next, rows) => {
+          setRowSelection(next);
+          setSelectedVendors(rows);
+        }}
+      />
+      <BulkDeleteVendorsModal
+        open={bulkDeleteOpen}
+        onOpenChange={setBulkDeleteOpen}
+        selectedVendors={selectedVendors}
+        onSuccess={() => {
+          setRowSelection({});
+          setSelectedVendors([]);
+        }}
       />
     </div>
   );

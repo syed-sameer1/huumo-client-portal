@@ -66,7 +66,7 @@ export const AddVendorModal = ({ onClose, open }: AddVendorModalProps) => {
             <Label htmlFor="name">Vendor</Label>
             <Input
               id="name"
-              placeholder="Big Kahuna Burger Ltd."
+              placeholder="Vendor Name"
               {...register('vendorName')}
             />
             {errors.vendorName && (
