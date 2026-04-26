@@ -14,9 +14,8 @@ export const POLineItemsTable = () => {
     data: detailsData?.items || [],
     columns: tableColumns,
     getCoreRowModel: getCoreRowModel(),
-    meta:
-      detailsData?.id != null ? { purchaseOrderId: detailsData.id } : undefined,
   });
+
   return (
     <div className="overflow-hidden rounded-md border">
       <Table>
