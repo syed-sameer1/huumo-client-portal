@@ -36,14 +36,16 @@ export const tableColumns: ColumnDef<VendorData>[] = [
     enableSorting: false,
   },
   {
-    accessorKey: 'name',
+    accessorKey: 'vendorName',
     meta: { width: 200 },
     header: ({ column }) => <SortableHeader column={column} title="Vendor" />,
     cell: ({ row }) => {
       return (
         <div className="flex items-center space-x-2">
-          <div className="text-foreground font-medium">{row.original.name}</div>
-          {!row.original.email && (
+          <div className="text-foreground font-medium">
+            {row.original.vendorName}
+          </div>
+          {!row.original.vendorEmail && (
             <InfoIcon size={15} className="text-[#F27712]" />
           )}
         </div>
@@ -55,8 +57,8 @@ export const tableColumns: ColumnDef<VendorData>[] = [
     meta: { width: 220 },
     header: ({ column }) => <SortableHeader column={column} title="Email" />,
     cell: ({ row }) => {
-      if (row.original.email) {
-        return <div className="font-medium">{row.original.email}</div>;
+      if (row.original.vendorEmail) {
+        return <div className="font-medium">{row.original.vendorEmail}</div>;
       }
       return (
         <div className="flex items-center space-x-2">
@@ -114,8 +116,8 @@ export const tableColumns: ColumnDef<VendorData>[] = [
     cell: ({ row }) => (
       <div data-no-row-click className="flex justify-end">
         <MoreOptions
-          email={row.original.email}
-          vendorName={row.original.name}
+          email={row.original.vendorEmail}
+          vendorName={row.original.vendorName}
           vendorId={row.original.id}
         />
       </div>

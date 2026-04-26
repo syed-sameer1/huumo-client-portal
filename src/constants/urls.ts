@@ -50,4 +50,5 @@ export const routeUrls = {
   columnMapping: '/purchase-orders/select-import-method/column-mapping',
   vendorColumnMapping: '/vendors/column-mapping',
   manualPurchaseOrder: '/purchase-orders/manual-purchase-order',
+  templateRulesRoute: '/templates-rules/',
 };

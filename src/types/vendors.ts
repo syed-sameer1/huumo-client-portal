@@ -2,8 +2,8 @@ export type VendorData = {
   id: number;
   createdAt: string;
   updatedAt: string;
-  name: string;
-  email: null | string;
+  vendorName: string;
+  vendorEmail: null | string;
   totalSpend: string;
   confirmationRate: string;
   performanceScore: number;
