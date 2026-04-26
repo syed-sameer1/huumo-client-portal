@@ -17,18 +17,19 @@ import {
 import Link from 'next/link';
 import { POLinkedItems } from './POLinkedItems';
 import { useVendorDetails } from '@/hooks/vendors';
+import { VendorDetailsType } from '@/types/vendors';
 
 const responsiveness = [
   {
     title: 'Responsiveness',
     sections: [
       {
-        value: '20%',
+        id: 'confirmationRate',
         Icon: CircleCheckBig,
         description: 'Confirmation Rate',
       },
       {
-        value: '2 days',
+        id: 'avgResponseTime',
         Icon: Clock3,
         description: 'Avg Response Time',
       },
@@ -38,12 +39,12 @@ const responsiveness = [
     title: 'Automation Activity',
     sections: [
       {
-        value: '12',
+        id: 'followUpEmails',
         Icon: Mail,
         description: 'Follow-up Emails',
       },
       {
-        value: '32',
+        id: 'escalationMessages',
         Icon: MessageSquareWarning,
         description: 'Escalation Messages',
       },
@@ -53,12 +54,12 @@ const responsiveness = [
     title: 'Risk',
     sections: [
       {
-        value: '67  ',
+        id: 'overduePO',
         Icon: TimerReset,
         description: 'Overdue PO',
       },
       {
-        value: 'High',
+        id: 'riskLevel',
         Icon: BadgeAlert,
         description: 'Risk Level',
       },
@@ -78,6 +79,18 @@ export const VendorDetails = ({
   const { data, isPending } = useVendorDetails(vendorId!);
 
   const vendor = data?.vendor;
+
+  const getVendorDetailsValue = (id: keyof VendorDetailsType) => {
+    const idValue = vendor?.[id];
+    if (idValue === undefined) return '-';
+    if (id === 'confirmationRate') return vendor?.confirmationRate + '%';
+    if (id === 'avgResponseTime') return vendor?.avgResponseTime + ' days';
+    if (id === 'followUpEmails') return vendor?.followUpEmails + ' emails';
+    if (id === 'escalationMessages')
+      return vendor?.escalationMessages + ' messages';
+    if (id === 'overduePO') return vendor?.overduePO + ' POs';
+    if (id === 'riskLevel') return vendor?.riskLevel;
+  };
 
   return (
     <Sheet open={open} onOpenChange={handleClose}>
@@ -106,7 +119,9 @@ export const VendorDetails = ({
                 <div>{vendor?.email ? vendor?.email : '-'}</div>
               </div>
               <div className="space-y-1">
-                <div className="font-semibold text-[16px]">$450</div>
+                <div className="font-semibold text-[16px]">
+                  $ {vendor?.totalSpend}
+                </div>
                 <div>Total Spend</div>
               </div>
             </div>
@@ -115,16 +130,23 @@ export const VendorDetails = ({
                 <div key={title} className="space-y-2">
                   <div className="text-secondary-foreground">{title}</div>
                   <div className="flex">
-                    {sections.map(({ description, Icon, value }) => (
-                      <div
-                        key={value}
-                        className="b-[#E4E4E7] border p-3 space-y-1 rounded-[6px] flex-1"
-                      >
-                        <Icon className="text-[#20A665]" size={20} />
-                        <div className="text-[16px] font-semibold">{value}</div>
-                        <div>{description}</div>
-                      </div>
-                    ))}
+                    {sections.map(({ description, Icon, id }) => {
+                      const value = getVendorDetailsValue(
+                        id as keyof VendorDetailsType,
+                      );
+                      return (
+                        <div
+                          key={value}
+                          className="b-[#E4E4E7] border p-3 space-y-1 rounded-[6px] flex-1"
+                        >
+                          <Icon className="text-[#20A665]" size={20} />
+                          <div className="text-[16px] font-semibold capitalize">
+                            {value}
+                          </div>
+                          <div>{description}</div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               ))}

@@ -22,12 +22,23 @@ export enum RISK_LEVEL {
   high = 'high',
 }
 
-type VendorDetailsType = {
+type VendorStatus = 'active' | 'inactive';
+
+export type VendorDetailsType = {
   createdAt: string;
   email: null | null;
   id: number;
   name: string;
   updatedAt: string;
+  totalSpend: number;
+  confirmationRate: number;
+  performanceScore: number;
+  riskLevel: RISK_LEVEL;
+  status: VendorStatus;
+  avgResponseTime: number;
+  followUpEmails: number;
+  escalationMessages: number;
+  overduePO: number;
 };
 
 export interface VendorDetailsRespone {
