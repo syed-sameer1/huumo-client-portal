@@ -14,10 +14,13 @@ import {
   MessageSquareWarning,
   TimerReset,
 } from 'lucide-react';
-import Link from 'next/link';
 import { POLinkedItems } from './POLinkedItems';
+import { VendorDetailsSkeleton } from './VendorDetailsSkeleton';
 import { useVendorDetails } from '@/hooks/vendors';
 import { VendorDetailsType } from '@/types/vendors';
+import { Button } from '@/components/ui/button';
+import { routeUrls } from '@/constants/urls';
+import { useRouter } from 'next/navigation';
 
 const responsiveness = [
   {
@@ -39,7 +42,7 @@ const responsiveness = [
     title: 'Automation Activity',
     sections: [
       {
-        id: 'followUpEmails',
+        id: 'totalFollowupsSent',
         Icon: Mail,
         description: 'Follow-up Emails',
       },
@@ -54,7 +57,7 @@ const responsiveness = [
     title: 'Risk',
     sections: [
       {
-        id: 'overduePO',
+        id: 'overduePOs',
         Icon: TimerReset,
         description: 'Overdue PO',
       },
@@ -77,8 +80,11 @@ export const VendorDetails = ({
   vendorId: number | null;
 }) => {
   const { data, isPending } = useVendorDetails(vendorId!);
-
+  const router = useRouter();
   const vendor = data?.vendor;
+  const poItems = data?.vendor?.latestPurchaseOrders;
+
+  if (!vendorId) return null;
 
   const getVendorDetailsValue = (id: keyof VendorDetailsType) => {
     const idValue = vendor?.[id];
@@ -88,8 +94,16 @@ export const VendorDetails = ({
     if (id === 'followUpEmails') return vendor?.followUpEmails + ' emails';
     if (id === 'escalationMessages')
       return vendor?.escalationMessages + ' messages';
-    if (id === 'overduePO') return vendor?.overduePO + ' POs';
+    if (id === 'overduePOs') return vendor?.overduePOs;
     if (id === 'riskLevel') return vendor?.riskLevel;
+    if (id === 'totalFollowupsSent') return vendor?.totalFollowupsSent;
+  };
+
+  const handleViewAll = () => {
+    if (!vendor) return;
+    router.push(
+      `${routeUrls.purchaseOrdersRoute}?searchValue=${vendor.email || vendor.name}`,
+    );
   };
 
   return (
@@ -104,8 +118,8 @@ export const VendorDetails = ({
           </SheetTitle>
         </SheetHeader>
         {isPending ? (
-          <div>Loading..</div>
-        ) : (
+          <VendorDetailsSkeleton />
+        ) : vendor ? (
           <div className="py-4 space-y-6 overflow-y-auto">
             <Field orientation="horizontal" className="w-fit">
               <Switch id="automation" />
@@ -156,14 +170,20 @@ export const VendorDetails = ({
                 <div className="text-[18px] font-semibold">
                   POs linked to vendor
                 </div>
-                <Link href="#" className="text-[#20A665] text-[14px]">
-                  View All
-                </Link>
+                {!!poItems?.length && (
+                  <Button
+                    variant="ghost"
+                    onClick={handleViewAll}
+                    className="text-[#20A665] text-[14px]"
+                  >
+                    View All
+                  </Button>
+                )}
               </div>
-              <POLinkedItems />
+              <POLinkedItems vendorId={vendorId} />
             </div>
           </div>
-        )}
+        ) : null}
       </SheetContent>
     </Sheet>
   );
