@@ -5,7 +5,6 @@ import { VendorsSection } from '@/components/vendors';
 import { AddVendorButton } from '@/components/vendors/AddVendorButton';
 import { VendorExportButton } from '@/components/vendors/VendorExportButton';
 import { Button } from '@/components/ui/button';
-import { VendorsSkeleton } from '@/components/vendors/VendorsTable/VendorsSkeleton';
 
 export default function VendorsPage() {
   return (
