@@ -4,6 +4,10 @@ import { Button } from '@/components/ui/button';
 import { useSearchParams } from 'next/navigation';
 import { useExportCsvVendors } from '@/hooks/vendors';
 import { toast } from 'sonner';
+import {
+  searchParamsToVendorFilters,
+  vendorFiltersToApiQuery,
+} from '@/components/vendors/VendorFilters/constants';
 
 function filenameFromContentDisposition(header: string | undefined) {
   if (!header) return null;
@@ -21,14 +25,31 @@ export function VendorExportButton() {
   const { mutate: exportCsv, isPending } = useExportCsvVendors();
 
   const handleExportCsv = () => {
-    const presets = searchParams.getAll('preset');
+    const filters = searchParamsToVendorFilters(
+      new URLSearchParams(searchParams.toString()),
+    );
+    const api = vendorFiltersToApiQuery(filters);
     const params = {
-      searchValue: searchParams.get('searchValue') || undefined,
-      confirmationRateMin: searchParams.get('crMin') || undefined,
-      confirmationRateMax: searchParams.get('crMax') || undefined,
-      performanceScoreMin: searchParams.get('psMin') || undefined,
-      performanceScoreMax: searchParams.get('psMax') || undefined,
-      presets: presets.length > 0 ? presets : undefined,
+      searchValue: api.searchValue,
+      confirmationRateMin:
+        api.confirmationRateMin !== undefined
+          ? String(api.confirmationRateMin)
+          : undefined,
+      confirmationRateMax:
+        api.confirmationRateMax !== undefined
+          ? String(api.confirmationRateMax)
+          : undefined,
+      performanceScoreMin:
+        api.performanceScoreMin !== undefined
+          ? String(api.performanceScoreMin)
+          : undefined,
+      performanceScoreMax:
+        api.performanceScoreMax !== undefined
+          ? String(api.performanceScoreMax)
+          : undefined,
+      riskLevel: api.riskLevel,
+      sortBy: api.sortBy,
+      missingEmail: api.missingEmail,
     };
 
     exportCsv(params, {

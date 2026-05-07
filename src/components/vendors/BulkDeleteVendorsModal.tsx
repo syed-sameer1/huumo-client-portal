@@ -9,10 +9,9 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { LoadingButton } from '@/components/LoadingButton';
-import { useDeleteVendor } from '@/hooks/vendors';
+import { useVendorBulkAction } from '@/hooks/vendors';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { useState } from 'react';
 import type { VendorData } from '@/types/vendors';
 
 type BulkDeleteVendorsModalProps = {
@@ -29,37 +28,35 @@ export function BulkDeleteVendorsModal({
   onSuccess,
 }: BulkDeleteVendorsModalProps) {
   const queryClient = useQueryClient();
-  const { mutateAsync } = useDeleteVendor();
-  const [isDeleting, setIsDeleting] = useState(false);
+  const { mutate: bulkDeleteVendors, isPending } = useVendorBulkAction();
 
   const count = selectedVendors.length;
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
     if (count === 0) return;
-    setIsDeleting(true);
-    const results = await Promise.allSettled(
-      selectedVendors.map((v) => mutateAsync(String(v.id))),
+    bulkDeleteVendors(
+      {
+        vendorIds: selectedVendors.map((v) => v.id),
+        action: 'delete',
+      },
+      {
+        onSuccess: () => {
+          toast.success(
+            count === 1 ? 'Vendor deleted' : `${count} vendors deleted`,
+          );
+          queryClient.invalidateQueries({
+            queryKey: ['vendors-data'],
+            exact: false,
+          });
+          onSuccess();
+          onOpenChange(false);
+        },
+        onError: () => {
+          toast.error('Could not delete vendors. Try again.');
+        },
+      },
     );
-    setIsDeleting(false);
-    const failed = results.filter((r) => r.status === 'rejected').length;
-    if (failed === 0) {
-      toast.success(
-        count === 1 ? 'Vendor deleted' : `${count} vendors deleted`,
-      );
-    } else if (failed === count) {
-      toast.error('Could not delete vendors. Try again.');
-      return;
-    } else {
-      toast.message(
-        `${count - failed} deleted, ${failed} failed. Refresh and retry failed rows if needed.`,
-      );
-    }
-    queryClient.invalidateQueries({ queryKey: ['vendors-data'], exact: false });
-    onSuccess();
-    onOpenChange(false);
   };
-
-  const busy = isDeleting;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -72,7 +69,7 @@ export function BulkDeleteVendorsModal({
         <div className="text-muted-foreground space-y-2 pb-2 text-sm">
           <p>
             {count === 1
-              ? `Are you sure you want to delete ${selectedVendors[0]?.name ?? 'this vendor'}?`
+              ? `Are you sure you want to delete ${selectedVendors[0]?.vendorName ?? 'this vendor'}?`
               : `Are you sure you want to delete ${count} selected vendors?`}
           </p>
           <p>You will not be able to send follow ups to deleted vendors.</p>
@@ -82,7 +79,7 @@ export function BulkDeleteVendorsModal({
             variant="outline"
             type="button"
             onClick={() => onOpenChange(false)}
-            disabled={busy}
+            disabled={isPending}
           >
             Cancel
           </Button>
@@ -90,7 +87,7 @@ export function BulkDeleteVendorsModal({
             className="bg-[#DC2626] font-medium text-white"
             type="button"
             onClick={handleDelete}
-            loading={busy}
+            loading={isPending}
           >
             Delete
           </LoadingButton>
