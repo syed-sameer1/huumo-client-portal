@@ -61,7 +61,7 @@ export const RolesTable = ({
     <div className="w-full min-w-0 max-w-full">
       <Table className="table-fixed w-max min-w-full border-collapse border">
         <TableHeader table={table} />
-        <TableBody table={table} />
+        <TableBody table={table} isFetching={isFetching} />
       </Table>
       <DataTablePagination
         table={table}

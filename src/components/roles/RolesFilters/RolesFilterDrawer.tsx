@@ -13,6 +13,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import {
   DEFAULT_ROLES_FILTERS,
+  ROLE_OPTIONS,
+  STATUS_OPTIONS,
   type RoleFilterId,
   type RoleStatusFilterId,
   type RolesFiltersState,
@@ -27,9 +29,10 @@ const ROLE_ROWS: { id: RoleFilterId; label: string }[] = [
 ];
 
 const STATUS_ROWS: { id: RoleStatusFilterId; label: string }[] = [
-  { id: 'invitation', label: 'Invitation sent' },
-  { id: 'access', label: 'Access granted' },
-  { id: 'deactivated', label: 'Deactivated' },
+  { id: 'all', label: 'All' },
+  { id: 'active', label: 'Active' },
+  { id: 'inActive', label: 'Inactive' },
+  { id: 'pending', label: 'Pending' },
 ];
 
 export function RolesFilterDrawer({
@@ -154,8 +157,12 @@ export function RolesFilterDrawer({
             onClick={() => {
               let roles = draft.roles;
               let statuses = draft.statuses;
-              if (isFullRoleSelection(roles)) roles = [];
-              if (isFullStatusSelection(statuses)) statuses = [];
+              if (roles.includes('all') || isFullRoleSelection(roles)) {
+                roles = [...ROLE_OPTIONS];
+              }
+              if (statuses.includes('all') || isFullStatusSelection(statuses)) {
+                statuses = [...STATUS_OPTIONS];
+              }
               onApply({
                 ...draft,
                 roles,

@@ -1,7 +1,7 @@
 import type { User } from '@/service/users';
 
 export type RoleFilterId = 'all' | 'admin' | 'member';
-export type RoleStatusFilterId = 'invitation' | 'access' | 'deactivated';
+export type RoleStatusFilterId = 'all' | 'active' | 'inActive' | 'pending';
 
 export type RolesFiltersState = {
   searchValue: string;
@@ -15,11 +15,11 @@ export const DEFAULT_ROLES_FILTERS: RolesFiltersState = {
   statuses: [],
 };
 
-const ROLE_OPTIONS: RoleFilterId[] = ['admin', 'member'];
-const STATUS_OPTIONS: RoleStatusFilterId[] = [
-  'invitation',
-  'access',
-  'deactivated',
+export const ROLE_OPTIONS: RoleFilterId[] = ['admin', 'member'];
+export const STATUS_OPTIONS: RoleStatusFilterId[] = [
+  'active',
+  'inActive',
+  'pending',
 ];
 
 export function isFullRoleSelection(roles: RoleFilterId[]): boolean {
@@ -36,23 +36,53 @@ export function isFullStatusSelection(statuses: RoleStatusFilterId[]): boolean {
   );
 }
 
-/** True when we must load all pages and filter in memory (API has no filter params). */
-export function needsRolesClientAggregation(f: RolesFiltersState): boolean {
+function rolesStateToApiRoles(roles: RoleFilterId[]): string[] | undefined {
+  if (roles.length === 0) return undefined;
+  if (roles.includes('all') || isFullRoleSelection(roles)) {
+    return [...ROLE_OPTIONS];
+  }
+  const specific = roles.filter(
+    (r): r is 'admin' | 'member' => r === 'admin' || r === 'member',
+  );
+  if (specific.length === 0) return undefined;
+  return specific;
+}
+
+function statusesStateToApiStatuses(
+  statuses: RoleStatusFilterId[],
+): string[] | undefined {
+  if (statuses.length === 0) return undefined;
+  if (statuses.includes('all') || isFullStatusSelection(statuses)) {
+    return [...STATUS_OPTIONS];
+  }
+  const specific = statuses.filter(
+    (s): s is Exclude<RoleStatusFilterId, 'all'> => s !== 'all',
+  );
+  if (specific.length === 0) return undefined;
+  return specific;
+}
+
+/** Query params for GET /user (matches URL param names). Full/"all" role or status still sends every value to the API. */
+export function rolesFiltersToApiParams(f: RolesFiltersState): {
+  searchValue?: string;
+  role?: string[];
+  status?: string[];
+} {
   const q = f.searchValue.trim();
-  const roleEff =
-    f.roles.length > 0 && !isFullRoleSelection(f.roles) ? f.roles : [];
-  const statusEff =
-    f.statuses.length > 0 && !isFullStatusSelection(f.statuses)
-      ? f.statuses
-      : [];
-  return Boolean(q) || roleEff.length > 0 || statusEff.length > 0;
+  const out: { searchValue?: string; role?: string[]; status?: string[] } = {};
+  if (q) out.searchValue = q;
+  const roleForApi = rolesStateToApiRoles(f.roles);
+  if (roleForApi) out.role = roleForApi;
+  const statusForApi = statusesStateToApiStatuses(f.statuses);
+  if (statusForApi) out.status = statusForApi;
+  return out;
 }
 
 export function getUserStatusCategory(user: User): RoleStatusFilterId {
   const s = (user.status ?? '').toLowerCase();
-  if (s === 'active') return 'access';
-  if (s === 'inactive') return 'deactivated';
-  return 'invitation';
+  if (s === 'active') return 'active';
+  if (s === 'inactive') return 'inActive';
+  return 'pending';
 }
 
 export function applyRolesFilters(users: User[], f: RolesFiltersState): User[] {
@@ -108,7 +138,9 @@ function parseRoleParam(v: string): RoleFilterId | null {
 
 function parseStatusParam(v: string): RoleStatusFilterId | null {
   const x = v.toLowerCase();
-  if (x === 'invitation' || x === 'access' || x === 'deactivated') return x;
+  if (x === 'active') return 'active';
+  if (x === 'inactive') return 'inActive';
+  if (x === 'pending') return 'pending';
   return null;
 }
 
@@ -123,8 +155,25 @@ export function rolesFiltersToSearchParams(
     params.set('page', String(page));
   }
   if (f.searchValue.trim()) params.set('searchValue', f.searchValue.trim());
-  f.roles.forEach((r) => params.append('role', r));
-  f.statuses.forEach((s) => params.append('status', s));
+  f.roles.forEach((r) => {
+    if (r !== 'all') {
+      params.append('role', r);
+    } else {
+      params.delete('role');
+      params.append('role', 'admin');
+      params.append('role', 'member');
+    }
+  });
+  f.statuses.forEach((s) => {
+    if (s !== 'all') {
+      params.append('status', s);
+    } else {
+      params.delete('status');
+      params.append('status', 'active');
+      params.append('status', 'inActive');
+      params.append('status', 'pending');
+    }
+  });
   return params;
 }
 
@@ -142,7 +191,6 @@ export function searchParamsToRolesFilters(
 
   const uniqRoles = [...new Set(roles)];
   const uniqStatuses = [...new Set(statuses)];
-
   return {
     searchValue: searchParams.get('searchValue') ?? '',
     roles: uniqRoles,
