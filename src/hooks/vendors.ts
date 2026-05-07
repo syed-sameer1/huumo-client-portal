@@ -4,8 +4,10 @@ import {
   exportCsvVendors,
   getVendors,
   updateVendor,
+  vendorBulkAction,
   vendorDetails,
   type ExportVendorsCsvParams,
+  type VendorBulkActionPayload,
 } from '@/service/vendors';
 import { vendorFiltersToApiQuery } from '@/components/vendors/VendorFilters/constants';
 import type { VendorFiltersState } from '@/components/vendors/VendorFilters/constants';
@@ -17,6 +19,7 @@ import { AddVendorFieldValues } from '@/schema/vendor';
 import { VendorDetailsRespone } from '@/types/vendors';
 import { vendorMappingSubmit } from '@/service/purchaseOrders/columnMapping';
 import { AxiosError } from 'axios';
+import { ApiErrorResponse } from './auth';
 
 export const useVendorsData = (
   page: number,
@@ -50,6 +53,16 @@ export const useAddVendor = (
 
 export const useDeleteVendor = () => {
   return useApiMutation(deleteVendor);
+};
+
+export const useVendorBulkAction = (
+  options?: MutationOptions<
+    unknown,
+    AxiosError<ApiErrorResponse>,
+    VendorBulkActionPayload
+  >,
+) => {
+  return useApiMutation(vendorBulkAction, options);
 };
 
 type UpdateVendorVariables = {
