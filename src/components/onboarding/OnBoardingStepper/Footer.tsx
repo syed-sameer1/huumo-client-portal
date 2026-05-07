@@ -8,6 +8,7 @@ export const Footer = ({
   onNextStep,
   onBackStep,
   loading,
+  showSaveAndContinue = true,
 }: FooterProps) => {
   return (
     <div className="flex justify-between w-full">
@@ -29,14 +30,16 @@ export const Footer = ({
         >
           <Link href="/purchase-orders">Skip to Dashboard</Link>
         </Button>
-        <LoadingButton
-          loading={loading}
-          className="bg-[#20A665] text-white"
-          onClick={onNextStep}
-          type="submit"
-        >
-          Save and Continue
-        </LoadingButton>
+        {showSaveAndContinue && (
+          <LoadingButton
+            loading={loading}
+            className="bg-[#20A665] text-white"
+            onClick={onNextStep}
+            type="submit"
+          >
+            Save and Continue
+          </LoadingButton>
+        )}
       </div>
     </div>
   );

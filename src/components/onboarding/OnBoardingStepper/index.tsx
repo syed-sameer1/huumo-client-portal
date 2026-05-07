@@ -16,7 +16,7 @@ import { IntegrateEmail } from '../IntegrateEmail';
 import { useEffect, useState } from 'react';
 import { AutomationRules } from '../AutomationRules';
 import { Footer } from './Footer';
-import { PurchaseOrders } from '../PurchaseOrders';
+import { AddPurchaseOrderOptions } from '@/components/purchase-orders/AddPurchaseOrderOptions';
 import { Form } from '@/components/ui/form';
 import { useForm } from 'react-hook-form';
 import { FollowUpFrequencyFormValues } from '../types';
@@ -29,7 +29,11 @@ import { useSearchParams } from 'next/navigation';
 const steps = [
   { title: 'Connect Email', id: 1, IntegrationOption: IntegrateEmail },
   { title: 'Automation Rules', id: 2, IntegrationOption: AutomationRules },
-  { title: 'Upload / Link PO Data', id: 3, IntegrationOption: PurchaseOrders },
+  {
+    title: 'Upload / Link PO Data',
+    id: 3,
+    IntegrationOption: AddPurchaseOrderOptions,
+  },
 ];
 
 export default function OnBoardingStepper() {
@@ -133,6 +137,7 @@ export default function OnBoardingStepper() {
                   setCurrentStep((prev) => Math.max(prev - 1, 1))
                 }
                 loading={isPending}
+                showSaveAndContinue={step.id !== 3}
               />
             </StepperContent>
           ))}
