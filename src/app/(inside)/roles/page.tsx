@@ -2,6 +2,7 @@ import { PageContainer } from '@/components/layout/PageContainer';
 import { Title } from '@/components/layout/Title';
 import { AddRoleButton } from '@/components/roles/add-role-button';
 import { RolesSection } from '@/components/roles/roles-section';
+import { Suspense } from 'react';
 
 export default function RolesPage() {
   return (
@@ -10,7 +11,9 @@ export default function RolesPage() {
         <Title>Roles</Title>
         <AddRoleButton />
       </div>
-      <RolesSection />
+      <Suspense fallback={<></>}>
+        <RolesSection />
+      </Suspense>
     </PageContainer>
   );
 }

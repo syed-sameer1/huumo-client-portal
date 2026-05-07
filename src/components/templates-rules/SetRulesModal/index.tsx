@@ -1,6 +1,6 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
+import { useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from '@/components/ui/form';
 import {
@@ -25,7 +25,9 @@ export const SetRulesModal = ({ open, onClose }: SetRulesModalProps) => {
   const { mutate, isPending } = useClientUpdateFrequency();
 
   const form = useForm<FollowUpFrequencyFormValues>({
-    resolver: zodResolver(followUpFrequencySchema),
+    resolver: zodResolver(
+      followUpFrequencySchema,
+    ) as Resolver<FollowUpFrequencyFormValues>,
     mode: 'onChange',
     defaultValues: {
       followup1FrequencyDays: 1,

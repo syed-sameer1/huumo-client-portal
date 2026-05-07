@@ -84,7 +84,7 @@ export const ManualPurchaseOrder = () => {
   const filteredVendors = useMemo(() => {
     const q = vendorSearch.trim().toLowerCase();
     if (!q) return vendorOptions;
-    return vendorOptions.filter((v) => v.name.toLowerCase().includes(q));
+    return vendorOptions.filter((v) => v.vendorName.toLowerCase().includes(q));
   }, [vendorOptions, vendorSearch]);
 
   const lineItemForm = useForm<LineItemValues>({
@@ -354,7 +354,7 @@ export const ManualPurchaseOrder = () => {
                                         ? (vendorOptions.find(
                                             (v) =>
                                               String(v.id) === selectedVendorId,
-                                          )?.name ?? 'Select vendor')
+                                          )?.vendorName ?? 'Select vendor')
                                         : isLoading
                                           ? 'Loading vendors…'
                                           : 'Select vendor'}
@@ -398,7 +398,7 @@ export const ManualPurchaseOrder = () => {
                                         setVendorSearch('');
                                       }}
                                     >
-                                      {v.name}
+                                      {v.vendorName}
                                     </button>
                                   ))
                                 )}

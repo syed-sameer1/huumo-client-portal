@@ -18,7 +18,7 @@ import { AutomationRules } from '../AutomationRules';
 import { Footer } from './Footer';
 import { AddPurchaseOrderOptions } from '@/components/purchase-orders/AddPurchaseOrderOptions';
 import { Form } from '@/components/ui/form';
-import { useForm } from 'react-hook-form';
+import { useForm, type Resolver } from 'react-hook-form';
 import { FollowUpFrequencyFormValues } from '../types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { followUpFrequencySchema } from '@/schema/followUpFrequencySchema';
@@ -44,7 +44,9 @@ export default function OnBoardingStepper() {
   const gmailStatus = searchParams.get('gmail');
 
   const form = useForm<FollowUpFrequencyFormValues>({
-    resolver: zodResolver(followUpFrequencySchema),
+    resolver: zodResolver(
+      followUpFrequencySchema,
+    ) as Resolver<FollowUpFrequencyFormValues>,
     mode: 'onChange',
     defaultValues: {
       followup1FrequencyDays: 1,
