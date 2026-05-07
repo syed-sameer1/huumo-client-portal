@@ -3,7 +3,6 @@ import { PageContainer } from '@/components/layout/PageContainer';
 import { Title } from '@/components/layout/Title';
 import { SetRulesButton } from '@/components/templates-rules/SetRulesButton';
 import { TemplatesSection } from '@/components/templates-rules/TemplatesSection';
-import { TemplateSearchFilter } from '@/components/templates-rules/TemplatesSection/TemplateSearchFilter';
 
 export default function TemplatesPage() {
   return (
@@ -17,11 +16,6 @@ export default function TemplatesPage() {
           HUUMO automatically follows up on unacknowledged POs using the rules
           and templates you define.
         </div>
-        <Suspense
-          fallback={<div className="h-10 max-w-md rounded-md bg-muted/60" />}
-        >
-          <TemplateSearchFilter />
-        </Suspense>
       </div>
       <Suspense fallback={null}>
         <TemplatesSection />

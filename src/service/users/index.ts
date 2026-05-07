@@ -22,11 +22,26 @@ export type UpdateUserPayload = {
   role: string;
 };
 
-export const getUsers = (params: {
+export type GetUsersParams = {
   pageNumber: number;
   limit: number;
-}): Promise<AxiosResponse<UsersListResponse>> => {
-  return api.get(urls.users, { params });
+  searchValue?: string;
+  role?: string[];
+  status?: string[];
+};
+
+export const getUsers = (
+  params: GetUsersParams,
+): Promise<AxiosResponse<UsersListResponse>> => {
+  const q = new URLSearchParams();
+  q.set('pageNumber', String(params.pageNumber));
+  q.set('limit', String(params.limit));
+  if (params.searchValue?.trim()) {
+    q.set('searchValue', params.searchValue.trim());
+  }
+  params.role?.forEach((r) => q.append('role', r));
+  params.status?.forEach((s) => q.append('status', s));
+  return api.get(`${urls.users}?${q.toString()}`);
 };
 
 export const updateUser = (

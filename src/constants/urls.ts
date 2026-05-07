@@ -21,6 +21,7 @@ export const urls = {
   users: '/user',
   deleteUser: '/user/{id}',
   vendors: '/vendor',
+  vendorBulkAction: '/vendor/bulk-action',
   vendorExport: '/vendor/export',
   vendor: `/vendor/{id}`,
   deleteVendor: `/vendor/{id}`,

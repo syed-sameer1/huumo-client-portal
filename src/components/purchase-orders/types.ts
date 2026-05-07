@@ -1,10 +1,4 @@
-export enum PurchaseOrderStatus {
-  ACKNOWLEDGE = 'acknowledge',
-  REVIEW = 'review',
-  FOLLOW_UP = 'follow-up',
-  OVER_DUE = 'overdue',
-  ESCALATED = 'escalated',
-}
+import { POStatus } from '@/types/purchaseOrders';
 
 export interface PurchaseOrderData {
   id: number;
@@ -14,5 +8,5 @@ export interface PurchaseOrderData {
   quantity: number;
   poValue: string;
   orderDate: string;
-  status: PurchaseOrderStatus;
+  status: POStatus;
 }

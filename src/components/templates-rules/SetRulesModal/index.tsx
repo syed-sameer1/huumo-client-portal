@@ -1,23 +1,8 @@
 'use client';
 
-import { useForm, type Resolver } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Slider } from '@/components/ui/slider';
+import { Form } from '@/components/ui/form';
 import {
   Dialog,
   DialogContent,
@@ -26,15 +11,10 @@ import {
 } from '@/components/ui/dialog';
 import { LoadingButton } from '@/components/LoadingButton';
 import { toast } from 'sonner';
-import { SetRulesFormValues, setRulesSchema } from '@/schema/setRules';
-
-const DAY_OPTIONS = [
-  { value: 1, label: '1 day' },
-  { value: 2, label: '2 days' },
-  { value: 3, label: '3 days' },
-  { value: 4, label: '4 days' },
-  { value: 5, label: '5 days' },
-];
+import { followUpFrequencySchema } from '@/schema/followUpFrequencySchema';
+import type { FollowUpFrequencyFormValues } from '@/components/onboarding/types';
+import { AutomationRules } from '@/components/onboarding/AutomationRules';
+import { useClientUpdateFrequency } from '@/hooks/client';
 
 interface SetRulesModalProps {
   open: boolean;
@@ -42,165 +22,45 @@ interface SetRulesModalProps {
 }
 
 export const SetRulesModal = ({ open, onClose }: SetRulesModalProps) => {
-  const form = useForm<SetRulesFormValues>({
-    resolver: zodResolver(setRulesSchema) as Resolver<SetRulesFormValues>,
+  const { mutate, isPending } = useClientUpdateFrequency();
+
+  const form = useForm<FollowUpFrequencyFormValues>({
+    resolver: zodResolver(followUpFrequencySchema),
     mode: 'onChange',
     defaultValues: {
-      followUp1FrequencyDays: undefined,
-      followUp2FrequencyDays: undefined,
-      finalReminderFrequencyDays: undefined,
-      aiConfidenceThreshold: 50,
+      followup1FrequencyDays: 1,
+      followup2FrequencyDays: 1,
+      followup3FrequencyDays: 1,
+      aiConfidenceThreshold: 0,
     },
   });
 
-  const onSubmit = (_values: SetRulesFormValues) => {
-    toast.success('Rules saved successfully');
-    onClose();
+  const onSubmit = (values: FollowUpFrequencyFormValues) => {
+    mutate(values, {
+      onSuccess: () => {
+        toast.success('Rules saved successfully');
+        onClose();
+      },
+      onError: () => {
+        toast.error('Failed to save rules');
+      },
+    });
   };
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[480px] p-8 gap-0">
-        <DialogHeader className="mb-6">
-          <DialogTitle className="text-2xl font-semibold">
-            Set Rules
-          </DialogTitle>
+    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
+      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto p-8 gap-0">
+        <DialogHeader className="mb-4">
+          <DialogTitle className="text-2xl font-semibold">Set Rules</DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-            {/* Follow-up #1 Frequency */}
-            <FormField<SetRulesFormValues, 'followUp1FrequencyDays'>
-              control={form.control}
-              name="followUp1FrequencyDays"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-foreground font-medium">
-                    Follow-up #1 Frequency
-                  </FormLabel>
-                  <Select
-                    value={field.value?.toString()}
-                    onValueChange={(v) => field.onChange(Number(v))}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="h-11">
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {DAY_OPTIONS.map((opt) => (
-                        <SelectItem
-                          key={opt.value}
-                          value={opt.value.toString()}
-                        >
-                          {opt.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Follow-up #2 Frequency */}
-            <FormField<SetRulesFormValues, 'followUp2FrequencyDays'>
-              control={form.control}
-              name="followUp2FrequencyDays"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-foreground font-medium">
-                    Follow-up #2 Frequency
-                  </FormLabel>
-                  <Select
-                    value={field.value?.toString()}
-                    onValueChange={(v) => field.onChange(Number(v))}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="h-11">
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {DAY_OPTIONS.map((opt) => (
-                        <SelectItem
-                          key={opt.value}
-                          value={opt.value.toString()}
-                        >
-                          {opt.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Final Reminder Frequency */}
-            <FormField<SetRulesFormValues, 'finalReminderFrequencyDays'>
-              control={form.control}
-              name="finalReminderFrequencyDays"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-foreground font-medium">
-                    Final Reminder Frequency
-                  </FormLabel>
-                  <Select
-                    value={field.value?.toString()}
-                    onValueChange={(v) => field.onChange(Number(v))}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="h-11">
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {DAY_OPTIONS.map((opt) => (
-                        <SelectItem
-                          key={opt.value}
-                          value={opt.value.toString()}
-                        >
-                          {opt.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* AI Confidence Threshold */}
-            <FormField<SetRulesFormValues, 'aiConfidenceThreshold'>
-              control={form.control}
-              name="aiConfidenceThreshold"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-foreground font-medium">
-                    AI Confidence Threshold
-                  </FormLabel>
-                  <FormControl>
-                    <Slider
-                      value={[field.value]}
-                      onValueChange={(v) => field.onChange(v[0])}
-                      min={0}
-                      max={100}
-                      step={1}
-                    />
-                  </FormControl>
-                  <div className="text-sm text-muted-foreground">
-                    {field.value}%
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Save Changes Button */}
-            <div className="flex justify-end pt-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <AutomationRules />
+            <div className="flex justify-end pt-2">
               <LoadingButton
                 type="submit"
+                loading={isPending}
                 className="bg-[#52a46d] hover:bg-[#438e5b] text-white px-10 h-11 transition-colors"
               >
                 Save Changes
