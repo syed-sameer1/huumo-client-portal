@@ -4,7 +4,7 @@ import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DEFAULT_VENDOR_FILTERS,
-  getPresetLabel,
+  getPresetShortLabel,
   vendorSliderIsDefault,
   type VendorFiltersState,
 } from './constants';
@@ -17,9 +17,20 @@ export function VendorActiveChips({
   onFiltersChange: (next: VendorFiltersState) => void;
 }) {
   const removePreset = (id: string) => {
+    let drawerSort = filters.drawerSort;
+    if (id === 'high-risk') {
+      drawerSort = drawerSort.filter((p) => p !== 'high-risk');
+    } else if (id === 'high-spend') {
+      drawerSort = drawerSort.filter(
+        (p) => p !== 'high-spend' && p !== 'top-spend',
+      );
+    } else if (id === 'low-confirmation-rate') {
+      drawerSort = drawerSort.filter((p) => p !== 'low-confirmation-rate');
+    }
     onFiltersChange({
       ...filters,
-      presets: filters.presets.filter((p) => p !== id),
+      quickPresets: filters.quickPresets.filter((p) => p !== id),
+      drawerSort,
     });
   };
 
@@ -31,17 +42,17 @@ export function VendorActiveChips({
 
   return (
     <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
-      {filters.presets.map((id) => (
+      {filters.quickPresets.map((id) => (
         <span
           key={id}
           className="inline-flex items-center gap-1.5 rounded-full border border-input bg-background px-3 py-1 text-sm font-semibold text-[#71717A]"
         >
-          {getPresetLabel(id)}
+          {getPresetShortLabel(id)}
           <button
             type="button"
             className="rounded-full p-0.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             onClick={() => removePreset(id)}
-            aria-label={`Remove ${getPresetLabel(id)}`}
+            aria-label={`Remove ${getPresetShortLabel(id)}`}
           >
             <X className="h-3.5 w-3.5" strokeWidth={2} />
           </button>
