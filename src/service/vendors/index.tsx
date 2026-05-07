@@ -12,7 +12,9 @@ export type GetVendorsParams = {
   confirmationRateMax?: number;
   performanceScoreMin?: number;
   performanceScoreMax?: number;
-  presets?: string[];
+  riskLevel?: string;
+  sortBy?: string;
+  missingEmail?: boolean;
 };
 
 export const getVendors = (
@@ -34,7 +36,9 @@ export const getVendors = (
   if (params.performanceScoreMax !== undefined) {
     q.set('performanceScoreMax', String(params.performanceScoreMax));
   }
-  params.presets?.forEach((p) => q.append('preset', p));
+  if (params.riskLevel) q.set('riskLevel', params.riskLevel);
+  if (params.sortBy) q.set('sortBy', params.sortBy);
+  if (params.missingEmail === true) q.set('missingEmail', 'true');
   return api.get(`${urls.vendors}/?${q.toString()}`);
 };
 
@@ -64,8 +68,19 @@ export type ExportVendorsCsvParams = {
   confirmationRateMax?: string;
   performanceScoreMin?: string;
   performanceScoreMax?: string;
-  presets?: string[];
+  riskLevel?: string;
+  sortBy?: string;
+  missingEmail?: boolean;
 };
+
+export type VendorBulkActionPayload = {
+  vendorIds: number[];
+  action: 'delete';
+};
+
+export const vendorBulkAction = (
+  payload: VendorBulkActionPayload,
+): Promise<AxiosResponse<unknown>> => api.post(urls.vendorBulkAction, payload);
 
 export const exportCsvVendors = (
   params?: ExportVendorsCsvParams,
@@ -84,7 +99,9 @@ export const exportCsvVendors = (
   if (params?.performanceScoreMax) {
     qs.set('performanceScoreMax', params.performanceScoreMax);
   }
-  params?.presets?.forEach((p) => qs.append('preset', p));
+  if (params?.riskLevel) qs.set('riskLevel', params.riskLevel);
+  if (params?.sortBy) qs.set('sortBy', params.sortBy);
+  if (params?.missingEmail === true) qs.set('missingEmail', 'true');
 
   const suffix = qs.toString() ? `?${qs.toString()}` : '';
   return api.get(`${urls.vendorExport}${suffix}`, {

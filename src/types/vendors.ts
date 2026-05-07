@@ -1,3 +1,5 @@
+import { POStatus } from './purchaseOrders';
+
 export type VendorData = {
   id: number;
   createdAt: string;
@@ -24,6 +26,16 @@ export enum RISK_LEVEL {
 
 type VendorStatus = 'active' | 'inactive';
 
+export type POLinkedItemsType = {
+  createdAt: string;
+  dueDate: string;
+  id: number;
+  orderDate: string;
+  poNumber: string;
+  status: POStatus;
+  poValue?: number;
+};
+
 export type VendorDetailsType = {
   createdAt: string;
   email: null | null;
@@ -38,7 +50,9 @@ export type VendorDetailsType = {
   avgResponseTime: number;
   followUpEmails: number;
   escalationMessages: number;
-  overduePO: number;
+  overduePOs: number;
+  totalFollowupsSent: number;
+  latestPurchaseOrders: POLinkedItemsType[];
 };
 
 export interface VendorDetailsRespone {
