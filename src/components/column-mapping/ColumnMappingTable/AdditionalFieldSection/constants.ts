@@ -23,4 +23,16 @@ export const ADDITIONAL_FIELDS = [
     sample: 'Site 1',
     name: 'a',
   },
+  {
+    id: 'account',
+    label: 'Account',
+    sample: 'Account 1',
+    name: 'a',
+  },
+  {
+    id: 'buyer',
+    label: 'Buyer',
+    sample: 'Buyer 1',
+    name: 'a',
+  },
 ];

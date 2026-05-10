@@ -1,7 +1,7 @@
 'use client';
 
 import { useImportColumn } from '@/hooks/csvImports';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { FormProvider, useForm } from 'react-hook-form';
 import { LoaderDialog } from '../loader';
 import { ColumnMappingFooter } from '../column-mapping/ColumnMappingTable/ColumnMappingFooter';
@@ -13,18 +13,17 @@ import { ColumnMappingHeader as ColumnTableMappingHeader } from '@/components/co
 import { zodResolver } from '@hookform/resolvers/zod';
 import { RequiredFieldSection } from '../column-mapping/ColumnMappingTable/RequiredFieldSection';
 import { ColumnContainer } from '../column-mapping/ColumnContainer';
-import { ColumnMappingHeader } from '../column-mapping/ColumnMappingHeader';
 import { useVendorColumnMapping } from '@/hooks/vendors';
 import { VENDOR_COLUMN_MAPPING_FIELDS } from '@/constants/vendorColumnMappingFields';
 import { type Resolver } from 'react-hook-form';
 import { useState } from 'react';
+import { AnalyticsDialog } from '@/components/column-mapping/ColumnMappingTable/AnalyticsDialog';
 
 export const VendorsColumnMapping = () => {
   const importJobId = useSearchParams().get('import_job_id');
   const { data, isPending } = useImportColumn(importJobId as string);
   const { mutate, isPending: isMappingPending } = useVendorColumnMapping();
-  const router = useRouter();
-  const [headerIncluded, setHeaderIncluded] = useState(false);
+  const [previewDialogOpen, setPreviewDialogOpen] = useState(false);
 
   const form = useForm<MappingVendorFormValues>({
     resolver: zodResolver(
@@ -40,14 +39,13 @@ export const VendorsColumnMapping = () => {
     mutate(
       {
         ImportJobId: Number(importJobId),
-        headerIncluded,
         mapping: {
           ...data,
         },
       },
       {
         onSuccess: () => {
-          router.push('/vendors');
+          setPreviewDialogOpen(true);
         },
       },
     );
@@ -58,10 +56,6 @@ export const VendorsColumnMapping = () => {
 
   return (
     <ColumnContainer>
-      <ColumnMappingHeader
-        headerIncluded={headerIncluded}
-        onHeaderIncludedChange={setHeaderIncluded}
-      />
       <FormProvider {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="shadow-md border border-[#E4E4E7] p-6 rounded-4xl">
@@ -75,6 +69,11 @@ export const VendorsColumnMapping = () => {
           <ColumnMappingFooter isLoading={isMappingPending} />
         </form>
       </FormProvider>
+      <AnalyticsDialog
+        open={previewDialogOpen}
+        onClose={setPreviewDialogOpen}
+        flow="vendor"
+      />
     </ColumnContainer>
   );
 };

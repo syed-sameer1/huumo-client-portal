@@ -28,13 +28,14 @@ export const ExporetButton = () => {
   const { mutate: exportCsv, isPending } = useExportCsvPurchaseOrders();
 
   const handleExportCsv = () => {
+    const statusList = searchParams.getAll('status');
     const params = {
       searchValue: searchParams.get('searchValue') || undefined,
       orderDateFrom: searchParams.get('orderDateFrom') || undefined,
       orderDateTo: searchParams.get('orderDateTo') || undefined,
       dueDateFrom: searchParams.get('dueDateFrom') || undefined,
       dueDateTo: searchParams.get('dueDateTo') || undefined,
-      status: searchParams.get('status') || undefined,
+      statuses: statusList.length > 0 ? statusList : undefined,
     };
 
     exportCsv(params, {

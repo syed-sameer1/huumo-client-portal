@@ -56,8 +56,13 @@ export const tableColumns: ColumnDef<POLineItems>[] = [
   {
     accessorKey: 'status',
     header: 'Status',
-    cell: ({ getValue }) => (
-      <StatusActionDropdown statusValue={getValue() as POStatus} />
-    ),
+    cell: ({ getValue, row }) => {
+      return (
+        <StatusActionDropdown
+          statusValue={getValue() as POStatus}
+          poId={row.original.id}
+        />
+      );
+    },
   },
 ];

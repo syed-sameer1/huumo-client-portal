@@ -31,6 +31,7 @@ export enum POStatus {
   OVER_DUE = 'overdue',
   ESCALATED = 'escalated',
   CREATED = 'created',
+  CLOSED = 'closed',
 }
 
 export type PurchaseOrderRawData = {

@@ -3,11 +3,11 @@ import {
   TableCell,
   TableRow,
 } from '@/components/ui/table';
-import { columns } from './constants';
 import { flexRender } from '@tanstack/react-table';
 import { PurchaseOrdersTableType } from './types';
-import { TableSkeletonRow } from '@/components/TableSkeleton/TableSkeletonRow';
 import { useRouter } from 'next/navigation';
+import { purchaseOrderColumnWidthStyle } from './columnLayout';
+import { PurchaseOrderTableSkeleton } from './PurchaseOrderSkeleton/PurchaseOrderTableSkeleton';
 
 export const TableBody = ({
   table,
@@ -17,16 +17,10 @@ export const TableBody = ({
   isLoading: boolean;
 }) => {
   const router = useRouter();
-  const columnCount = table.getAllColumns().length;
+  const visibleColumns = table.getVisibleLeafColumns();
 
   if (isLoading) {
-    return (
-      <ShadcnTableBody>
-        {Array.from({ length: 6 }).map((_, i) => (
-          <TableSkeletonRow key={i} columns={columnCount} />
-        ))}
-      </ShadcnTableBody>
-    );
+    return <PurchaseOrderTableSkeleton />;
   }
 
   return (
@@ -44,7 +38,11 @@ export const TableBody = ({
             }}
           >
             {row.getVisibleCells().map((cell) => (
-              <TableCell key={cell.id} className="py-4">
+              <TableCell
+                key={cell.id}
+                className="py-4"
+                style={purchaseOrderColumnWidthStyle(cell.column.columnDef)}
+              >
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
               </TableCell>
             ))}
@@ -52,7 +50,10 @@ export const TableBody = ({
         ))
       ) : (
         <TableRow>
-          <TableCell colSpan={columns.length} className="h-24 text-center">
+          <TableCell
+            colSpan={visibleColumns.length}
+            className="h-24 text-center"
+          >
             No results.
           </TableCell>
         </TableRow>

@@ -11,6 +11,7 @@ import {
 import { PurchaseOrdersTableType } from './types';
 import { StatusActionDropdown } from './StatusActionDropdown';
 import { EditVendorModal } from '@/components/vendors/EditVendorModal';
+import { purchaseOrderColumnWidthStyle } from './columnLayout';
 
 export function EmailCell({ row }: { row: PurchaseOrders }) {
   const [open, setOpen] = useState(false);
@@ -51,6 +52,7 @@ export function EmailCell({ row }: { row: PurchaseOrders }) {
 export const tableColumns: ColumnDef<PurchaseOrders>[] = [
   {
     id: 'select',
+    meta: { width: 48 },
     header: ({ table }) => (
       <Checkbox
         checked={table.getIsAllPageRowsSelected()}
@@ -71,6 +73,7 @@ export const tableColumns: ColumnDef<PurchaseOrders>[] = [
 
   {
     accessorKey: 'poNumber',
+    meta: { width: 128 },
     header: ({ column }) => (
       <SortableHeader column={column} title="PO Number" />
     ),
@@ -80,41 +83,64 @@ export const tableColumns: ColumnDef<PurchaseOrders>[] = [
   },
   {
     accessorKey: 'vendorName',
+    meta: { width: 168 },
     header: ({ column }) => <SortableHeader column={column} title="Vendor" />,
+    cell: ({ getValue }) => (
+      <span className="capitalize">{String(getValue() ?? '')}</span>
+    ),
   },
   {
     accessorKey: 'site',
+    meta: { width: 104 },
     header: ({ column }) => <SortableHeader column={column} title="Site" />,
+    cell: ({ getValue }) => (
+      <span className="capitalize">{String(getValue() ?? '-')}</span>
+    ),
+  },
+  {
+    accessorKey: 'buyer',
+    meta: { width: 112 },
+    header: ({ column }) => <SortableHeader column={column} title="Buyer" />,
+    cell: ({ getValue }) => (
+      <span className="capitalize">{String(getValue() ?? '-')}</span>
+    ),
+  },
+  {
+    accessorKey: 'account',
+    meta: { width: 112 },
+    header: ({ column }) => <SortableHeader column={column} title="Account" />,
+    cell: ({ getValue }) => (
+      <span className="capitalize">{String(getValue() ?? '-')}</span>
+    ),
   },
   {
     accessorKey: 'vendorEmail',
+    meta: { width: 220 },
     header: 'Email Address',
     cell: ({ row }) => <EmailCell row={row.original} />,
   },
-
-  {
-    accessorKey: 'quantity',
-    header: ({ column }) => <SortableHeader column={column} title="Quantity" />,
-  },
-
   {
     accessorKey: 'poValue',
+    meta: { width: 104 },
     header: ({ column }) => <SortableHeader column={column} title="PO Value" />,
     cell: ({ getValue }) => `$${Number(getValue<number>())?.toFixed(2)}`,
   },
 
   {
     accessorKey: 'orderDate',
+    meta: { width: 116 },
     header: ({ column }) => (
       <SortableHeader column={column} title="Order Date" />
     ),
   },
   {
     accessorKey: 'dueDate',
+    meta: { width: 116 },
     header: 'Deliver',
   },
   {
     accessorKey: 'dueIn',
+    meta: { width: 88 },
     header: ({ column }) => <SortableHeader column={column} title="Due In" />,
     cell: ({ getValue }) => {
       return getValue() ? String(getValue()) : '-';
@@ -122,21 +148,30 @@ export const tableColumns: ColumnDef<PurchaseOrders>[] = [
   },
   {
     accessorKey: 'overdueBy',
+    meta: { width: 108 },
     header: ({ column }) => (
       <SortableHeader column={column} title="Overdue By" />
     ),
+    cell: ({ getValue }) => {
+      return getValue() ? String(getValue()) : '-';
+    },
   },
   {
     accessorKey: 'lastUpdate',
+    meta: { width: 124 },
     header: ({ column }) => (
       <SortableHeader column={column} title="Last Update" />
     ),
   },
   {
     accessorKey: 'status',
+    meta: { width: 148 },
     header: 'Status',
-    cell: ({ getValue }) => (
-      <StatusActionDropdown statusValue={getValue() as POStatus} />
+    cell: ({ row, getValue }) => (
+      <StatusActionDropdown
+        poId={row.original.id}
+        statusValue={getValue() as POStatus}
+      />
     ),
   },
 ];
@@ -148,7 +183,11 @@ export const TableHeader = ({ table }: { table: PurchaseOrdersTableType }) => {
         <TableRow key={headerGroup.id}>
           {headerGroup.headers.map((header) => {
             return (
-              <TableHead key={header.id} className="h-12">
+              <TableHead
+                key={header.id}
+                className="h-12"
+                style={purchaseOrderColumnWidthStyle(header.column.columnDef)}
+              >
                 {header.isPlaceholder
                   ? null
                   : flexRender(

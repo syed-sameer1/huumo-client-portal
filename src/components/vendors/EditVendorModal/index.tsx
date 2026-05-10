@@ -1,3 +1,5 @@
+'use client';
+
 import { LoadingButton } from '@/components/LoadingButton';
 import {
   Dialog,
@@ -89,7 +91,7 @@ export const EditVendorModal = ({
             <Label htmlFor="vendorName">Vendor</Label>
             <Input
               id="vendorName"
-              placeholder="Big Kahuna Burger Ltd."
+              placeholder="Vendor Name"
               {...register('vendorName')}
             />
             {errors.vendorName && (

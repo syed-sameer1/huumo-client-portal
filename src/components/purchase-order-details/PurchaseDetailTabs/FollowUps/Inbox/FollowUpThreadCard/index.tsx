@@ -18,7 +18,6 @@ export const FollowUpThreadCard = ({
   const { subject, id, body } = message?.emailTemplate;
   const { label, bgColor } =
     FollowUpStatusChipConfig[message?.status as FollowUpStatusKey] ?? {};
-  console.log('message', { message, status });
 
   return (
     <Button

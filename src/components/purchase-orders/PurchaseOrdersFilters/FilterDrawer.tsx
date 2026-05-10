@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Sheet,
   SheetContent,
@@ -12,14 +12,11 @@ import { Button } from '@/components/ui/button';
 import { DatePicker } from '@/components/form-inputs/date-picker';
 import {
   STATUS_OPTIONS,
-  // SECONDARY_FLAG_OPTIONS,
+  SECONDARY_FLAG_OPTIONS,
   DEFAULT_FILTERS,
+  toggleInFilterArray,
   type PurchaseOrderFilters,
 } from './constants';
-
-// function toggleInArray(arr: string[], val: string): string[] {
-//   return arr.includes(val) ? arr.filter((v) => v !== val) : [...arr, val];
-// }
 
 function ChipGroup({
   label,
@@ -90,6 +87,10 @@ export function FilterDrawer({
 }: FilterDrawerProps) {
   const [draft, setDraft] = useState<PurchaseOrderFilters>(filters);
 
+  useEffect(() => {
+    setDraft(filters);
+  }, [filters]);
+
   const handleOpen = (isOpen: boolean) => {
     if (isOpen) setDraft(filters);
     onOpenChange(isOpen);
@@ -97,22 +98,25 @@ export function FilterDrawer({
 
   const handleStatusToggle = (val: string) => {
     if (val === 'all') {
-      setDraft((d) => ({ ...d, status: '' }));
+      setDraft((d) => ({ ...d, statuses: [] }));
       return;
     }
-    setDraft((d) => ({ ...d, status: d.status === val ? '' : val }));
+    setDraft((d) => ({
+      ...d,
+      statuses: toggleInFilterArray(d.statuses, val),
+    }));
   };
 
-  // const handleFlagToggle = (val: string) => {
-  //   if (val === 'all') {
-  //     setDraft((d) => ({ ...d, secondaryFlags: [] }));
-  //     return;
-  //   }
-  //   setDraft((d) => ({
-  //     ...d,
-  //     secondaryFlags: toggleInArray(d.secondaryFlags, val),
-  //   }));
-  // };
+  const handleFlagToggle = (val: string) => {
+    if (val === 'all') {
+      setDraft((d) => ({ ...d, secondaryFlags: [] }));
+      return;
+    }
+    setDraft((d) => ({
+      ...d,
+      secondaryFlags: toggleInFilterArray(d.secondaryFlags, val),
+    }));
+  };
 
   return (
     <Sheet open={open} onOpenChange={handleOpen}>
@@ -202,7 +206,7 @@ export function FilterDrawer({
           <ChipGroup
             label="Status"
             options={STATUS_OPTIONS}
-            selected={draft.status}
+            selected={draft.statuses}
             onToggle={handleStatusToggle}
             // counts={{
             //   all: 45,
@@ -216,20 +220,20 @@ export function FilterDrawer({
             // }}
           />
 
-          {/* <ChipGroup
+          <ChipGroup
             label="Secondary Flags"
             options={SECONDARY_FLAG_OPTIONS}
             selected={draft.secondaryFlags}
             onToggle={handleFlagToggle}
-            counts={{
-              all: 45,
-              'past-due': 5,
-              'needs-review': 5,
-              'open-follow-ups': 5,
-              escalated: 5,
-              'automation-paused': 3,
-            }}
-          /> */}
+            // counts={{
+            //   all: 45,
+            //   'past-due': 5,
+            //   'needs-review': 5,
+            //   'open-follow-ups': 5,
+            //   escalated: 5,
+            //   'automation-paused': 3,
+            // }}
+          />
         </div>
 
         <div className="flex gap-3">

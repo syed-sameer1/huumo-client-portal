@@ -9,55 +9,35 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { routeUrls } from '@/constants/urls';
 import {
   useImportColumn,
-  useProcessImport,
   useImportVendorCSV,
+  useProcessImport,
 } from '@/hooks/csvImports';
+import { useQueryClient } from '@tanstack/react-query';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
-import { AxiosResponse } from 'axios';
 import { toast } from 'sonner';
 import { MissingVendorEmailModal } from './MissingVendorEmailModal';
 import { VendorEmailColumnMappingModal } from './VendorEmailColumnMappingModal';
-
-function getImportJobIdFromVendorCsvResponse(
-  res: AxiosResponse<unknown>,
-): string | null {
-  const body = res.data as
-    | { importJobId?: number | string; data?: { importJobId?: number } }
-    | undefined;
-  const id = body?.importJobId ?? body?.data?.importJobId;
-  return id != null ? String(id) : null;
-}
-
-function getMissingVendorEmailCountFromProcessResponse(
-  response: AxiosResponse<unknown>,
-): number | undefined {
-  const body = response.data as
-    | {
-        data?: {
-          data?: {
-            previewSummary?: { missingVendorEmailCount?: number };
-          };
-        };
-      }
-    | undefined;
-  return body?.data?.data?.previewSummary?.missingVendorEmailCount;
-}
+import { SuccessModal } from '../SuccessModal';
+import { routeUrls } from '@/constants/urls';
+import { getImportJobIdFromVendorCsvResponse } from '../SuccessModal/helpers';
 
 export const AnalyticsDialog = ({
   open,
   onClose,
+  flow = 'purchase-order',
 }: {
   open: boolean;
   onClose: Dispatch<SetStateAction<boolean>>;
+  flow?: 'purchase-order' | 'vendor';
 }) => {
   const importJobId = useSearchParams().get('import_job_id');
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const isPurchaseOrderFlow = flow === 'purchase-order';
   const [showEmailMissingModal, setShowEmailMissingModal] = useState(false);
-  const [missingEmailModalCount, setMissingEmailModalCount] = useState(0);
   const [vendorSupplementJobId, setVendorSupplementJobId] = useState<
     string | null
   >(null);
@@ -66,52 +46,6 @@ export const AnalyticsDialog = ({
 
   const { mutate: importVendorCsv, isPending: isVendorCsvUploading } =
     useImportVendorCSV();
-
-  const previewPollOptions = useMemo(
-    () => ({
-      enabled: open && !!importJobId,
-      refetchInterval: (query: {
-        state: { data?: { data?: { data?: { status?: string } } } };
-      }) => {
-        const status = query.state.data?.data?.data?.status;
-        return status === 'previewReady' ? false : 2000;
-      },
-      staleTime: 0,
-    }),
-    [open, importJobId],
-  );
-  const { isPending, data, isFetching, isRefetching } = useImportColumn(
-    importJobId as string,
-    previewPollOptions,
-  );
-  const { mutate: processImport, isPending: isProcessing } = useProcessImport();
-
-  const previewSummary = data?.data.data?.previewSummary;
-
-  const onImport = () => {
-    if (!importJobId) return;
-    const previewMissing = previewSummary?.missingVendorEmailCount;
-
-    processImport(
-      { id: importJobId },
-      {
-        onSuccess: (response) => {
-          const fromResponse =
-            getMissingVendorEmailCountFromProcessResponse(response);
-          const missing = fromResponse ?? previewMissing ?? 0;
-
-          onClose(false);
-
-          if (missing > 0) {
-            setMissingEmailModalCount(missing);
-            setShowEmailMissingModal(true);
-          } else {
-            router.push(routeUrls.purchaseOrdersRoute);
-          }
-        },
-      },
-    );
-  };
 
   const goToPurchaseOrders = () => {
     setShowEmailMissingModal(false);
@@ -146,6 +80,50 @@ export const AnalyticsDialog = ({
     });
   };
 
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const previewPollOptions = useMemo(
+    () => ({
+      enabled: open && !!importJobId,
+      refetchInterval: (query: {
+        state: { data?: { data?: { data?: { status?: string } } } };
+      }) => {
+        const status = query.state.data?.data?.data?.status;
+        return status === 'previewReady' ? false : 2000;
+      },
+      staleTime: 0,
+    }),
+    [open, importJobId],
+  );
+  const { isPending, data, isRefetching } = useImportColumn(
+    importJobId as string,
+    previewPollOptions,
+  );
+  const { mutate: processImport, isPending: isProcessing } = useProcessImport();
+
+  const previewSummary = data?.data.data?.previewSummary;
+
+  const onImport = () => {
+    if (!importJobId) return;
+
+    processImport(
+      { id: importJobId },
+      {
+        onSuccess: () => {
+          if (flow === 'vendor') {
+            queryClient.invalidateQueries({
+              queryKey: ['vendors-data'],
+              exact: false,
+            });
+          }
+          setShowSuccessModal(true);
+          onClose(false);
+        },
+      },
+    );
+  };
+
+  if (!previewSummary) return null;
+
   return (
     <>
       <Dialog open={open} onOpenChange={onClose}>
@@ -154,7 +132,11 @@ export const AnalyticsDialog = ({
             {isRefetching || isPending ? (
               <div className="flex items-center flex-col gap-[40px]">
                 <GradientRingSpinner size={100} />
-                <div className="font-semibold">PO details analyzing...</div>
+                <div className="font-semibold">
+                  {flow === 'vendor'
+                    ? 'Vendor file analyzing…'
+                    : 'PO details analyzing…'}
+                </div>
               </div>
             ) : (
               <div className="space-y-8">
@@ -168,35 +150,64 @@ export const AnalyticsDialog = ({
                 </div>
                 <div className="space-y-2">
                   <div className="text-[#3F3F46]">
-                    Total Records :{' '}
+                    Total records :{' '}
                     <span className="font-semibold text-[#09090B]">
                       {previewSummary?.totalRows}
                     </span>
                   </div>
                   <div className="text-[#3F3F46]">
-                    Records to Create :{' '}
+                    Valid records :{' '}
                     <span className="font-semibold text-[#09090B]">
                       {previewSummary?.validRows}
                     </span>
                   </div>
                   <div className="text-[#3F3F46]">
-                    Missing Vendor Emails:{' '}
-                    <span className="font-semibold text-[#09090B]">
-                      {previewSummary?.missingVendorEmailCount}
-                    </span>
-                  </div>
-                  <div className="text-[#3F3F46]">
-                    Duplicated Rows:{' '}
+                    Invalid records :{' '}
                     <span className="font-semibold text-[#09090B]">
                       {previewSummary?.invalidRows}
                     </span>
                   </div>
                   <div className="text-[#3F3F46]">
-                    Overdue POs:{' '}
+                    Duplicate records :{' '}
                     <span className="font-semibold text-[#09090B]">
-                      {previewSummary?.invalidRows}
+                      {previewSummary?.duplicateRows}
                     </span>
                   </div>
+                  {isPurchaseOrderFlow && (
+                    <>
+                      <div className="text-[#3F3F46]">
+                        Total POs :{' '}
+                        <span className="font-semibold text-[#09090B]">
+                          {previewSummary?.uniquePOs}
+                        </span>
+                      </div>
+                      <div className="text-[#3F3F46]">
+                        POs to create :{' '}
+                        <span className="font-semibold text-[#09090B]">
+                          {previewSummary?.newPOs}
+                        </span>
+                      </div>
+                      <div className="text-[#3F3F46]">
+                        POs to update :{' '}
+                        <span className="font-semibold text-[#09090B]">
+                          {previewSummary?.existingPOs}
+                        </span>
+                      </div>
+                      <div className="text-[#3F3F46]">
+                        Missing vendor emails:{' '}
+                        <span className="font-semibold text-[#09090B]">
+                          {previewSummary?.missingVendorEmailCount}
+                        </span>
+                      </div>
+
+                      <div className="text-[#3F3F46]">
+                        Overdue POs:{' '}
+                        <span className="font-semibold text-[#09090B]">
+                          {previewSummary?.overdueCount}
+                        </span>
+                      </div>
+                    </>
+                  )}
                   <div className="text-[#3F3F46]">
                     Errors :{' '}
                     <span className="font-semibold text-[#09090B]">
@@ -213,9 +224,15 @@ export const AnalyticsDialog = ({
                       </AccordionTrigger>
                       <AccordionContent>
                         <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
-                          {previewSummary.topErrors.map((err, idx) => (
-                            <li key={`${err}-${idx}`}>{err}</li>
-                          ))}
+                          {Object.keys(previewSummary.errorBreakdown).map(
+                            (val, index) => {
+                              return (
+                                <li key={`${val}-${index}`}>
+                                  {val}: {previewSummary.errorBreakdown[val]}
+                                </li>
+                              );
+                            },
+                          )}
                         </ul>
                       </AccordionContent>
                     </AccordionItem>
@@ -223,11 +240,17 @@ export const AnalyticsDialog = ({
                 )}
 
                 <div className="flex justify-between gap-12">
-                  <Button className="flex-1" variant="ghost">
+                  <Button
+                    className="flex-1"
+                    variant="ghost"
+                    type="button"
+                    onClick={() => onClose(false)}
+                  >
                     Cancel
                   </Button>
                   <Button
                     className="flex-1"
+                    type="button"
                     disabled={!importJobId || isProcessing}
                     onClick={onImport}
                   >
@@ -240,26 +263,41 @@ export const AnalyticsDialog = ({
         </DialogContent>
       </Dialog>
 
-      <MissingVendorEmailModal
-        open={showEmailMissingModal}
-        onOpenChange={setShowEmailMissingModal}
-        missingCount={missingEmailModalCount}
-        importJobId={importJobId ?? ''}
-        onContinueWithoutEmail={goToPurchaseOrders}
-        onProceed={handleProceedWithVendorCsv}
-        isUploading={isVendorCsvUploading}
-      />
+      {isPurchaseOrderFlow && (
+        <>
+          <MissingVendorEmailModal
+            open={showEmailMissingModal}
+            onOpenChange={setShowEmailMissingModal}
+            missingCount={previewSummary.missingVendorEmailCount}
+            importJobId={importJobId ?? ''}
+            onContinueWithoutEmail={goToPurchaseOrders}
+            onProceed={handleProceedWithVendorCsv}
+            isUploading={isVendorCsvUploading}
+          />
 
-      {vendorSupplementJobId && (
-        <VendorEmailColumnMappingModal
-          key={vendorSupplementJobId}
-          open={showVendorColumnMappingModal}
-          importJobId={vendorSupplementJobId}
-          onOpenChange={(next) => {
-            setShowVendorColumnMappingModal(next);
-            if (!next) setVendorSupplementJobId(null);
-          }}
-          onMappingSuccess={goToPurchaseOrders}
+          {vendorSupplementJobId && (
+            <VendorEmailColumnMappingModal
+              key={vendorSupplementJobId}
+              open={showVendorColumnMappingModal}
+              importJobId={vendorSupplementJobId}
+              onOpenChange={(next) => {
+                setShowVendorColumnMappingModal(next);
+                if (!next) setVendorSupplementJobId(null);
+              }}
+              onMappingSuccess={goToPurchaseOrders}
+            />
+          )}
+        </>
+      )}
+      {showSuccessModal && (
+        <SuccessModal
+          previewSummary={previewSummary}
+          open={showSuccessModal}
+          onClose={() => setShowSuccessModal(false)}
+          setShowEmailMissingModal={
+            isPurchaseOrderFlow ? setShowEmailMissingModal : undefined
+          }
+          flow={flow}
         />
       )}
     </>

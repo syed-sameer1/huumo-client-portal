@@ -16,9 +16,9 @@ import { IntegrateEmail } from '../IntegrateEmail';
 import { useEffect, useState } from 'react';
 import { AutomationRules } from '../AutomationRules';
 import { Footer } from './Footer';
-import { PurchaseOrders } from '../PurchaseOrders';
+import { AddPurchaseOrderOptions } from '@/components/purchase-orders/AddPurchaseOrderOptions';
 import { Form } from '@/components/ui/form';
-import { useForm } from 'react-hook-form';
+import { useForm, type Resolver } from 'react-hook-form';
 import { FollowUpFrequencyFormValues } from '../types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { followUpFrequencySchema } from '@/schema/followUpFrequencySchema';
@@ -29,7 +29,11 @@ import { useSearchParams } from 'next/navigation';
 const steps = [
   { title: 'Connect Email', id: 1, IntegrationOption: IntegrateEmail },
   { title: 'Automation Rules', id: 2, IntegrationOption: AutomationRules },
-  { title: 'Upload / Link PO Data', id: 3, IntegrationOption: PurchaseOrders },
+  {
+    title: 'Upload / Link PO Data',
+    id: 3,
+    IntegrationOption: AddPurchaseOrderOptions,
+  },
 ];
 
 export default function OnBoardingStepper() {
@@ -40,12 +44,15 @@ export default function OnBoardingStepper() {
   const gmailStatus = searchParams.get('gmail');
 
   const form = useForm<FollowUpFrequencyFormValues>({
-    resolver: zodResolver(followUpFrequencySchema),
+    resolver: zodResolver(
+      followUpFrequencySchema,
+    ) as Resolver<FollowUpFrequencyFormValues>,
     mode: 'onChange',
     defaultValues: {
-      followup1FrequencyDays: undefined,
-      followup2FrequencyDays: undefined,
-      followup3FrequencyDays: undefined,
+      followup1FrequencyDays: 1,
+      followup2FrequencyDays: 1,
+      followup3FrequencyDays: 1,
+      aiConfidenceThreshold: 0,
     },
   });
 
@@ -73,10 +80,10 @@ export default function OnBoardingStepper() {
         'followup1FrequencyDays',
         'followup2FrequencyDays',
         'followup3FrequencyDays',
+        'aiConfidenceThreshold',
       ]);
 
       if (!isValid) return;
-
       mutate(form.getValues(), {
         onSuccess: () => {
           setCurrentStep((prev) => Math.min(prev + 1, steps.length));
@@ -132,6 +139,7 @@ export default function OnBoardingStepper() {
                   setCurrentStep((prev) => Math.max(prev - 1, 1))
                 }
                 loading={isPending}
+                showSaveAndContinue={step.id !== 3}
               />
             </StepperContent>
           ))}

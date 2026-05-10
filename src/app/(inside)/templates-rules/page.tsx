@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { PageContainer } from '@/components/layout/PageContainer';
 import { Title } from '@/components/layout/Title';
 import { SetRulesButton } from '@/components/templates-rules/SetRulesButton';
@@ -15,9 +16,10 @@ export default function TemplatesPage() {
           HUUMO automatically follows up on unacknowledged POs using the rules
           and templates you define.
         </div>
-        <div>Filter</div>
       </div>
-      <TemplatesSection />
+      <Suspense fallback={null}>
+        <TemplatesSection />
+      </Suspense>
     </PageContainer>
   );
 }

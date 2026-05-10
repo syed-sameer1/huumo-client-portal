@@ -2,6 +2,7 @@ import { urls } from '@/constants/urls';
 import { api } from '../api';
 import { AxiosResponse } from 'axios';
 import {
+  POStatus,
   PurchaseOrdersResponse,
   PurchaseOrdersDetailsResponse,
 } from '@/types/purchaseOrders';
@@ -21,7 +22,8 @@ export interface PurchaseOrdersParams {
   orderDateTo?: string;
   dueDateFrom?: string;
   dueDateTo?: string;
-  status?: string;
+  statuses?: string[];
+  secondaryFlags?: string[];
 }
 
 export const purchaseOrdersService = (
@@ -35,7 +37,8 @@ export const purchaseOrdersService = (
   if (params.orderDateTo) query.set('orderDateTo', params.orderDateTo);
   if (params.dueDateFrom) query.set('dueDateFrom', params.dueDateFrom);
   if (params.dueDateTo) query.set('dueDateTo', params.dueDateTo);
-  if (params.status) query.set('status', params.status);
+  params.statuses?.forEach((s) => query.append('status', s));
+  params.secondaryFlags?.forEach((f) => query.append('secondaryFlag', f));
   return api.get(`${urls.purchaseOrder}/?${query.toString()}`);
 };
 
@@ -60,15 +63,29 @@ export const createPurchaseOrder = (
 ): Promise<AxiosResponse<CreatePurchaseOrderResponse>> =>
   api.post(urls.purchaseOrder, purchaseOrder);
 
+export type PurchaseOrderBulkAction = 'close' | 'delete' | POStatus;
+
+export type PurchaseOrderBulkActionPayload = {
+  poIds: number[];
+  action: PurchaseOrderBulkAction;
+};
+
+export const bulkPurchaseOrderAction = (
+  payload: PurchaseOrderBulkActionPayload,
+): Promise<AxiosResponse<unknown>> =>
+  api.post(urls.purchaseOrderBulkAction, payload);
+
+/** @deprecated Use `bulkPurchaseOrderAction` with `{ poIds, action: 'delete' }`. */
 export type BulkDeletePurchaseOrdersPayload = {
   poIds: number[];
   force: boolean;
 };
 
+/** @deprecated Use `bulkPurchaseOrderAction`. */
 export const bulkDeletePurchaseOrders = (
   payload: BulkDeletePurchaseOrdersPayload,
 ): Promise<AxiosResponse<unknown>> =>
-  api.delete('/purchase-order/bulk-delete', { data: payload });
+  api.delete(urls.bulkDeletePurchaseOrders, { data: payload });
 
 export type ExportPurchaseOrdersCsvParams = {
   searchValue?: string;
@@ -76,7 +93,7 @@ export type ExportPurchaseOrdersCsvParams = {
   orderDateTo?: string;
   dueDateFrom?: string;
   dueDateTo?: string;
-  status?: string;
+  statuses?: string[];
 };
 
 export const exportCsvPurchaseOrders = (
@@ -88,7 +105,7 @@ export const exportCsvPurchaseOrders = (
   if (params?.orderDateTo) qs.set('orderDateTo', params.orderDateTo);
   if (params?.dueDateFrom) qs.set('dueDateFrom', params.dueDateFrom);
   if (params?.dueDateTo) qs.set('dueDateTo', params.dueDateTo);
-  if (params?.status) qs.set('status', params.status);
+  params?.statuses?.forEach((s) => qs.append('status', s));
 
   const suffix = qs.toString() ? `?${qs.toString()}` : '';
   return api.get(`${urls.purchaseOrderExport}${suffix}`, {

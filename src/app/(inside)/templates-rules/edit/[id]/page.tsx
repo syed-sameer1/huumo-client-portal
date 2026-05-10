@@ -1,14 +1,15 @@
 import { PageContainer } from '@/components/layout/PageContainer';
 import { EditTemplateForm } from '@/components/templates-rules/EditTemplateForm';
 
-export default function EditTemplatePage({
+export default async function EditTemplatePage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const { id } = await params;
   return (
     <PageContainer className="space-y-8">
-      <EditTemplateForm templateId={params.id} />
+      <EditTemplateForm templateId={id} />
     </PageContainer>
   );
 }

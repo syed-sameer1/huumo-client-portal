@@ -4,27 +4,37 @@ import { Table } from '@/components/ui/table';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { tableColumns, TableHeader } from './TableHeader';
 import { TableBody } from './TableBody';
-import { useState } from 'react';
-import { useUsersData } from '@/hooks/client';
-import { PAGE_SIZE } from '@/hooks/purchaseOrders';
 import { DataTablePagination } from '@/components/TablePagination';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { PAGE_SIZE, PAGE_SIZE_OPTIONS } from './constants';
+import { NoResultFound } from '@/components/no-results-found';
+import type { RolesFiltersState } from '@/components/roles/RolesFilters/constants';
+import { hasRolesSearchOrFilters } from '@/components/roles/RolesFilters/constants';
+import type { User } from '@/service/users';
 
-export const RolesTable = () => {
-  const searchParams = useSearchParams();
-  const initialPage = Number(searchParams.get('page') ?? 1) - 1;
-  const router = useRouter();
+interface RolesTableProps {
+  filters: RolesFiltersState;
+  pageIndex: number;
+  onPageChange: (pageIndex: number) => void;
+  users: User[];
+  totalUsers: number;
+  isFetching: boolean;
+}
 
-  const [page, setPage] = useState(initialPage);
-  const { data, isLoading } = useUsersData(page + 1);
-
+export const RolesTable = ({
+  filters,
+  pageIndex,
+  onPageChange,
+  users,
+  totalUsers,
+  isFetching,
+}: RolesTableProps) => {
   const table = useReactTable({
-    data: isLoading ? [] : data?.users ?? [],
+    data: users,
     columns: tableColumns,
-    pageCount: Math.ceil((data?.totalUsers ?? 0) / PAGE_SIZE),
+    pageCount: Math.max(1, Math.ceil(totalUsers / PAGE_SIZE)),
     state: {
       pagination: {
-        pageIndex: page,
+        pageIndex,
         pageSize: PAGE_SIZE,
       },
     },
@@ -32,24 +42,32 @@ export const RolesTable = () => {
     onPaginationChange: (updater) => {
       const next =
         typeof updater === 'function'
-          ? updater({ pageIndex: page, pageSize: PAGE_SIZE })
+          ? updater({ pageIndex, pageSize: PAGE_SIZE })
           : updater;
 
-      setPage(next.pageIndex);
-
-      router.push(`?page=${next.pageIndex + 1}`, { scroll: true });
+      onPageChange(next.pageIndex);
     },
     getCoreRowModel: getCoreRowModel(),
   });
 
+  const noResultsWithFilters =
+    !isFetching && hasRolesSearchOrFilters(filters) && totalUsers === 0;
+
+  if (noResultsWithFilters) {
+    return <NoResultFound />;
+  }
+
   return (
-    <div className="overflow-hidden rounded-md border">
-      <Table>
+    <div className="w-full min-w-0 max-w-full">
+      <Table className="table-fixed w-max min-w-full border-collapse border">
         <TableHeader table={table} />
-        <TableBody table={table} />
-        <DataTablePagination table={table} total={data?.totalUsers ?? 0} />
+        <TableBody table={table} isFetching={isFetching} />
       </Table>
+      <DataTablePagination
+        table={table}
+        total={totalUsers}
+        pageSizeOptions={PAGE_SIZE_OPTIONS}
+      />
     </div>
   );
 };
-

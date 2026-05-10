@@ -4,7 +4,6 @@ export const DetailCard = ({ details, id }: { details: any; id: string }) => {
   const selectedCard =
     PurchaseDetailCardConfig[id as keyof typeof PurchaseDetailCardConfig];
   const { iconColor, Icon, iconBg, title, formatter } = selectedCard || {};
-  console.log(details[id]);
   return (
     <div className="border-[#E4E4E7] rounded-[6px] p-3 flex-1 min-h-27.5 border space-y-2">
       <div
@@ -14,7 +13,11 @@ export const DetailCard = ({ details, id }: { details: any; id: string }) => {
         <Icon style={{ color: iconColor }} size={14} />
       </div>
       <div className="text-muted-foreground text-xs font-medium">{title}</div>
-      <div className="text-sm font-medium">{formatter(details[id])}</div>
+      {details[id] ? (
+        <div className="text-sm font-medium">{formatter(details[id])}</div>
+      ) : (
+        <div className="text-sm font-medium">-</div>
+      )}
     </div>
   );
 };

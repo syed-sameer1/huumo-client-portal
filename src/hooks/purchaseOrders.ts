@@ -5,8 +5,8 @@ import {
   purchaseOrdersService,
   purchaseOrderStats,
   createPurchaseOrder,
-  bulkDeletePurchaseOrders,
-  type BulkDeletePurchaseOrdersPayload,
+  bulkPurchaseOrderAction,
+  type PurchaseOrderBulkActionPayload,
   exportCsvPurchaseOrders,
   type ExportPurchaseOrdersCsvParams,
   type PurchaseOrdersParams,
@@ -16,7 +16,8 @@ import { MutationOptions } from '@/types/query';
 import { ManualPurchaseOrderValues } from '@/schema/purchaseOrder';
 import { AxiosError } from 'axios';
 
-export const PAGE_SIZE = 20;
+/** Default page size for tables that still import this constant (roles, vendors, etc.). */
+export const PAGE_SIZE = 50;
 
 export const useColumnMapping = (options?: any) => {
   return useApiMutation(mappingSubmit, options);
@@ -25,13 +26,14 @@ export const useColumnMapping = (options?: any) => {
 export const usePurchaseOrders = (
   page: number,
   filterParams?: Omit<PurchaseOrdersParams, 'limit' | 'pageNumber'>,
+  pageSize: number = PAGE_SIZE,
 ) => {
   const res = useApiQuery({
-    queryKey: ['purchase-orders', page, filterParams],
+    queryKey: ['purchase-orders', page, filterParams, pageSize],
     queryFn: () => {
       return purchaseOrdersService({
         pageNumber: page,
-        limit: PAGE_SIZE,
+        limit: pageSize,
         ...filterParams,
       });
     },
@@ -75,14 +77,14 @@ export const useCreatePurchaseOrder = (
   return useApiMutation(createPurchaseOrder, options);
 };
 
-export const useBulkDeletePurchaseOrder = (
+export const usePurchaseOrderBulkAction = (
   options?: MutationOptions<
-    any,
+    unknown,
     AxiosError<{ message?: string }>,
-    BulkDeletePurchaseOrdersPayload
+    PurchaseOrderBulkActionPayload
   >,
 ) => {
-  return useApiMutation(bulkDeletePurchaseOrders, options);
+  return useApiMutation(bulkPurchaseOrderAction, options);
 };
 
 export const useExportCsvPurchaseOrders = (

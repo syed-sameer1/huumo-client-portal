@@ -26,13 +26,23 @@ export const QUICK_FILTERS = [
   { label: 'Acknowledged', value: 'acknowledge' },
 ] as const;
 
+/** Shown above the table until a status or secondary flag is applied; then replaced by removable chips. */
+export const QUICK_FILTER_PRESET_BAR = [
+  { label: 'Overdue', statusValue: 'overdue' },
+  { label: 'Missing Vendor Info', statusValue: 'missing-vendor-info' },
+  { label: 'Open Follow-ups', statusValue: 'follow-up' },
+  { label: 'Acknowledge', statusValue: 'acknowledge' },
+  { label: 'Review', statusValue: 'review' },
+] as const;
+
 export type PurchaseOrderFilters = {
   searchValue: string;
   orderDateFrom: string;
   orderDateTo: string;
   dueDateFrom: string;
   dueDateTo: string;
-  status: string;
+  /** Selected PO statuses (multi-select); synced with drawer and quick presets. */
+  statuses: string[];
   secondaryFlags: string[];
   quickFilters: string[];
 };
@@ -43,10 +53,14 @@ export const DEFAULT_FILTERS: PurchaseOrderFilters = {
   orderDateTo: '',
   dueDateFrom: '',
   dueDateTo: '',
-  status: '',
+  statuses: [],
   secondaryFlags: [],
   quickFilters: [],
 };
+
+export function toggleInFilterArray(arr: string[], val: string): string[] {
+  return arr.includes(val) ? arr.filter((v) => v !== val) : [...arr, val];
+}
 
 export function filtersToParams(
   filters: PurchaseOrderFilters,
@@ -57,20 +71,32 @@ export function filtersToParams(
   if (filters.orderDateTo) params.set('orderDateTo', filters.orderDateTo);
   if (filters.dueDateFrom) params.set('dueDateFrom', filters.dueDateFrom);
   if (filters.dueDateTo) params.set('dueDateTo', filters.dueDateTo);
-  if (filters.status) params.set('status', filters.status);
+  filters.statuses.forEach((s) => params.append('status', s));
   filters.secondaryFlags.forEach((f) => params.append('secondaryFlag', f));
   filters.quickFilters.forEach((q) => params.append('quickFilter', q));
   return params;
 }
 
+export function getStatusLabel(value: string): string | undefined {
+  if (!value) return undefined;
+  const opt = STATUS_OPTIONS.find((o) => o.value === value);
+  return opt?.label;
+}
+
+export function getSecondaryFlagLabel(value: string): string {
+  const opt = SECONDARY_FLAG_OPTIONS.find((o) => o.value === value);
+  return opt?.label ?? value;
+}
+
 export function paramsToFilters(params: URLSearchParams): PurchaseOrderFilters {
+  const statusesFromUrl = params.getAll('status');
   return {
     searchValue: params.get('searchValue') ?? '',
     orderDateFrom: params.get('orderDateFrom') ?? '',
     orderDateTo: params.get('orderDateTo') ?? '',
     dueDateFrom: params.get('dueDateFrom') ?? '',
     dueDateTo: params.get('dueDateTo') ?? '',
-    status: params.get('status') ?? '',
+    statuses: statusesFromUrl,
     secondaryFlags: params.getAll('secondaryFlag'),
     quickFilters: params.getAll('quickFilter'),
   };

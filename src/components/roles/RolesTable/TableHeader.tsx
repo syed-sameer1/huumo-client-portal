@@ -41,17 +41,26 @@ export const tableColumns: ColumnDef<User>[] = [
     accessorKey: 'status',
     header: ({ column }) => <SortableHeader column={column} title="Status" />,
     cell: ({ row }) => {
-      const isActive = (row.original.status ?? '').toLowerCase() === 'active';
+      const s = (row.original.status ?? '').toLowerCase();
+      const isActive = s === 'active';
+      const isDeactivated = s === 'inactive';
+      const label = isActive
+        ? 'Access granted'
+        : isDeactivated
+          ? 'Deactivated'
+          : 'Invitation sent';
       return (
         <div
           className={cn(
             'inline-flex items-center justify-center rounded-full px-6 py-2 font-semibold',
             isActive
               ? 'bg-[#DEFFDF] text-[#10834B]'
-              : 'bg-[#FFF4D4] text-[#916E02]',
+              : isDeactivated
+                ? 'bg-[#FEE2E2] text-[#B91C1C]'
+                : 'bg-[#FFF4D4] text-[#916E02]',
           )}
         >
-          {isActive ? 'Access granted' : 'Invitation sent'}
+          {label}
         </div>
       );
     },
@@ -89,4 +98,3 @@ export const TableHeader = ({ table }: { table: RolesTableType }) => {
     </ShadcnTableHeader>
   );
 };
-

@@ -27,6 +27,8 @@ export const manualPurchaseOrderSchema = z
     site: z.string().refine(isOptionalStrictSiteDomain, {
       message: 'Enter a valid domain (e.g. example.com)',
     }),
+    buyer: z.string(),
+    account: z.string(),
     vendorMode: vendorModeSchema,
     vendorId: z.string().optional(),
     vendorName: z.string().optional(),
