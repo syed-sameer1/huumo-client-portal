@@ -81,6 +81,8 @@ export const AnalyticsDialog = ({
   };
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showConfirmImportModal, setShowConfirmImportModel] = useState(false);
+
   const previewPollOptions = useMemo(
     () => ({
       enabled: open && !!importJobId,
@@ -120,6 +122,10 @@ export const AnalyticsDialog = ({
         },
       },
     );
+  };
+
+  const onConfirmImport = () => {
+    setShowConfirmImportModel(true);
   };
 
   if (!previewSummary) return null;
@@ -248,14 +254,25 @@ export const AnalyticsDialog = ({
                   >
                     Cancel
                   </Button>
-                  <Button
-                    className="flex-1"
-                    type="button"
-                    disabled={!importJobId || isProcessing}
-                    onClick={onImport}
-                  >
-                    {isProcessing ? 'Importing…' : 'Import'}
-                  </Button>
+                  {previewSummary.invalidRows > 0 ? (
+                    <Button
+                      className="flex-1"
+                      type="button"
+                      disabled={!previewSummary.validRows}
+                      onClick={onConfirmImport}
+                    >
+                      Import
+                    </Button>
+                  ) : (
+                    <Button
+                      className="flex-1"
+                      type="button"
+                      disabled={!importJobId || isProcessing}
+                      onClick={onImport}
+                    >
+                      {isProcessing ? 'Importing…' : 'Import'}
+                    </Button>
+                  )}
                 </div>
               </div>
             )}
@@ -299,6 +316,47 @@ export const AnalyticsDialog = ({
           }
           flow={flow}
         />
+      )}
+      {showConfirmImportModal && (
+        <Dialog
+          open={open}
+          onOpenChange={(next) => setShowConfirmImportModel(next)}
+        >
+          <DialogContent className="sm:max-w-[520px]">
+            <div>
+              <div className="space-y-8">
+                <div className="text-center space-y-2">
+                  <div className="text-[18px] font-semibold">
+                    Are you sure you want to Import?
+                  </div>
+                  <div className="text-sm">
+                    This import only entertain valid records(
+                    {previewSummary.validRows})
+                  </div>
+                </div>
+
+                <div className="flex justify-between gap-12">
+                  <Button
+                    className="flex-1"
+                    variant="ghost"
+                    type="button"
+                    onClick={() => setShowConfirmImportModel(false)}
+                  >
+                    No
+                  </Button>
+                  <Button
+                    className="flex-1"
+                    type="button"
+                    disabled={!importJobId || isProcessing}
+                    onClick={onImport}
+                  >
+                    {isProcessing ? 'Importing…' : 'Yes'}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       )}
     </>
   );
