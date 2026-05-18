@@ -118,10 +118,10 @@ export const LoginForm = () => {
           >
             Log In
           </LoadingButton>
-          <div className="text-sm text-secondary-foreground text-center">
+          {/* <div className="text-sm text-secondary-foreground text-center">
             or continue with
           </div>
-          <SocialLogins />
+          <SocialLogins /> */}
         </div>
       </form>
     </Form>
