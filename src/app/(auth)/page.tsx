@@ -5,17 +5,7 @@ import { LoginForm } from '@/components/auth/LoginForm';
 export default function Login() {
   return (
     <div className="relative flex items-center h-screen">
-      <AuthWrapper
-        title="Log In"
-        description={
-          <div>
-            Don&apos;t have an account?{' '}
-            <Link href="/signup" className="text-accent-foreground">
-              Sign up
-            </Link>
-          </div>
-        }
-      >
+      <AuthWrapper title="Log In">
         <LoginForm />
       </AuthWrapper>
       <div className="flex items-center justify-center gap-3 absolute bottom-10 left-0 right-0">
