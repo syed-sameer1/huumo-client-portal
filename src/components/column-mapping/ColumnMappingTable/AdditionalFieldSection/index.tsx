@@ -10,27 +10,10 @@ import { MappingRow } from '../MappingRow';
 import { ADDITIONAL_FIELDS } from './constants';
 import { MappingField } from '../MappingRow/types';
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
-import { AdditionalFieldDialog } from '../AdditionalFieldDialog';
-import { AddFieldValues } from '@/schema/columnMappingSchema';
 
 export const AdditionalFieldSection = ({ headers }: { headers: any }) => {
   const [additionalFields, setAdditionalFields] =
     useState<MappingField[]>(ADDITIONAL_FIELDS);
-  const [open, setOpen] = useState(false);
-
-  const addField = ({ name, sample }: AddFieldValues) => {
-    setAdditionalFields((prev) => [
-      ...prev,
-      {
-        id: crypto.randomUUID(),
-        label: name,
-        sample,
-        removable: true,
-      },
-    ]);
-  };
 
   const removeField = (id: string) => {
     setAdditionalFields((prev) => prev.filter((f) => f.id !== id));
@@ -62,23 +45,9 @@ export const AdditionalFieldSection = ({ headers }: { headers: any }) => {
                 headers={headers}
               />
             ))}
-
-            <Button
-              variant="ghost"
-              onClick={() => setOpen(true)}
-              className="text-green-600 mt-4"
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Add Field
-            </Button>
           </AccordionContent>
         </AccordionItem>
       </Accordion>
-      <AdditionalFieldDialog
-        open={open}
-        onClose={() => setOpen(false)}
-        onAddField={addField}
-      />
     </>
   );
 };

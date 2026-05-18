@@ -13,7 +13,11 @@ export const DetailCard = ({ details, id }: { details: any; id: string }) => {
         <Icon style={{ color: iconColor }} size={14} />
       </div>
       <div className="text-muted-foreground text-xs font-medium">{title}</div>
-      <div className="text-sm font-medium">{formatter(details[id])}</div>
+      {details[id] ? (
+        <div className="text-sm font-medium">{formatter(details[id])}</div>
+      ) : (
+        <div className="text-sm font-medium">-</div>
+      )}
     </div>
   );
 };

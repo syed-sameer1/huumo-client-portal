@@ -1,3 +1,4 @@
+import { LoadingButton } from '@/components/LoadingButton';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -6,21 +7,43 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { useDeleteVendor } from '@/hooks/vendors';
+import { useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 interface DeleteVendorModalProps {
   onClose: () => void;
   open: boolean;
   vendorName: string;
+  vendorId: number;
 }
 
 export const DeleteVendorModal = ({
   onClose,
   open,
   vendorName,
+  vendorId,
 }: DeleteVendorModalProps) => {
+  const queryClient = useQueryClient();
+  const { mutate: deleteVendor, isPending } = useDeleteVendor();
+  const handleDeleteVendor = () => {
+    deleteVendor(vendorId.toString(), {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ['vendors-data'],
+          exact: false,
+        });
+        toast.success('Vendor deleted');
+        onClose();
+      },
+      onError: () => {
+        toast.error('Something went wrong please try again');
+      },
+    });
+  };
   return (
-    <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="p-6">
+    <Dialog open={open} onOpenChange={onClose} data-no-row-click>
+      <DialogContent className="p-6" data-no-row-click>
         <DialogHeader>
           <DialogTitle className="text-lg">Delete Vendor Details</DialogTitle>
         </DialogHeader>
@@ -36,9 +59,13 @@ export const DeleteVendorModal = ({
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button className="bg-[#DC2626] text-white font-medium">
+          <LoadingButton
+            className="bg-[#DC2626] text-white font-medium"
+            onClick={handleDeleteVendor}
+            loading={isPending}
+          >
             Delete
-          </Button>
+          </LoadingButton>
         </DialogFooter>
       </DialogContent>
     </Dialog>

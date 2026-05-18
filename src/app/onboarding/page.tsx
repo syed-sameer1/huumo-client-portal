@@ -1,6 +1,7 @@
 import { ProfileDropdown } from '@/components/layout/Header/ProfileDropdown';
 import { Onboarding } from '@/components/onboarding';
 import Image from 'next/image';
+import { Suspense } from 'react';
 
 export default function OnboardingPage() {
   return (
@@ -14,7 +15,9 @@ export default function OnboardingPage() {
         />
         <ProfileDropdown />
       </div>
-      <Onboarding />
+      <Suspense>
+        <Onboarding />
+      </Suspense>
     </div>
   );
 }

@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { Controller, useFormContext } from 'react-hook-form';
+import { humanizeHeader } from './helpers';
 
 type Props = {
   name: string;
@@ -20,6 +21,7 @@ type Props = {
   showBorder?: boolean;
   id: string;
   headers: any;
+  errors?: any;
 };
 
 export function MappingRow({
@@ -31,16 +33,11 @@ export function MappingRow({
   id,
   showBorder = true,
   headers,
+  errors,
 }: Props) {
-  const {
-    control,
-    formState: { errors },
-  } = useFormContext();
+  const { control } = useFormContext();
 
-  const error = required
-    ? id.split('.').reduce((acc: any, key) => acc?.[key], errors.required)
-    : undefined;
-
+  const error = required ? errors[id] : undefined;
   return (
     <div
       className={cn(
@@ -69,12 +66,14 @@ export function MappingRow({
                 >
                   <SelectValue placeholder="Select Column" />
                 </SelectTrigger>
-                <SelectContent>
-                  {headers.map((val: string) => (
-                    <SelectItem key={val} value={val}>
-                      {val}
-                    </SelectItem>
-                  ))}
+                <SelectContent className="max-h-64 overflow-auto">
+                  {headers.map((val: string) => {
+                    return (
+                      <SelectItem key={val} value={val}>
+                        {humanizeHeader(val)}
+                      </SelectItem>
+                    );
+                  })}
                 </SelectContent>
               </Select>
             </>

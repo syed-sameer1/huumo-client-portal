@@ -1,3 +1,5 @@
+'use client';
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -5,6 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
 import { EllipsisVertical } from 'lucide-react';
 import { useState } from 'react';
 import { EditVendorModal } from '../EditVendorModal';
@@ -13,16 +16,30 @@ import { DeleteVendorModal } from '../DeleteVendorModal';
 interface MoreOptionsProps {
   email: string | null;
   vendorName: string;
+  vendorId: number;
 }
 
-export const MoreOptions = ({ email, vendorName }: MoreOptionsProps) => {
+export const MoreOptions = ({
+  email,
+  vendorName,
+  vendorId,
+}: MoreOptionsProps) => {
   const [editVendor, setEditVendor] = useState(false);
   const [deleteVendor, setDeleteVendor] = useState(false);
   return (
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <EllipsisVertical />
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            data-no-row-click
+            onClick={(e) => e.stopPropagation()}
+          >
+            <EllipsisVertical className="h-4 w-4" />
+          </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-49 mr-4 mt-5">
           <DropdownMenuGroup>
@@ -52,11 +69,13 @@ export const MoreOptions = ({ email, vendorName }: MoreOptionsProps) => {
         open={editVendor}
         email={email}
         vendorName={vendorName}
+        vendorId={vendorId}
       />
       <DeleteVendorModal
         onClose={() => setDeleteVendor(false)}
         open={deleteVendor}
         vendorName={vendorName}
+        vendorId={vendorId}
       />
     </>
   );

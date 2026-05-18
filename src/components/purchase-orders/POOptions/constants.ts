@@ -12,8 +12,8 @@ export const PO_OPTIONS = [
     id: PO_VALUES.UPLOAD_CSV,
   },
   {
-    title: 'Import from Google Sheets',
-    image: 'google-sheet-logo.svg',
+    title: 'Import CSV file',
+    image: 'import-po.svg',
     id: PO_VALUES.GOOGLE_SHEET,
   },
   {

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { POStatus, PurchaseOrders } from '@/types/purchaseOrders';
 import { ColumnDef, flexRender } from '@tanstack/react-table';
@@ -9,21 +10,62 @@ import {
 } from '@/components/ui/table';
 import { PurchaseOrdersTableType } from './types';
 import { StatusActionDropdown } from './StatusActionDropdown';
-import { formatDate } from '@/lib/date';
+import { EditVendorModal } from '@/components/vendors/EditVendorModal';
+import { purchaseOrderColumnWidthStyle } from './columnLayout';
+
+export function EmailCell({ row }: { row: PurchaseOrders }) {
+  const [open, setOpen] = useState(false);
+  const email = row.vendorEmail;
+
+  if (!email) {
+    const onClick = (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setOpen(true);
+    };
+    return (
+      <>
+        <span className="text-red-500 flex items-center gap-1">
+          ⦿ Missing email ·
+          <button
+            type="button"
+            className="text-green-600 underline"
+            onClick={onClick}
+          >
+            Add
+          </button>
+        </span>
+        <EditVendorModal
+          open={open}
+          onClose={() => setOpen(false)}
+          vendorName={row.vendorName}
+          email={email}
+          vendorId={row.vendorId}
+        />
+      </>
+    );
+  }
+
+  return <>{email}</>;
+}
 
 export const tableColumns: ColumnDef<PurchaseOrders>[] = [
   {
     id: 'select',
+    meta: { width: 48 },
     header: ({ table }) => (
       <Checkbox
         checked={table.getIsAllPageRowsSelected()}
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        className="data-[state=checked]:bg-[#FAFAFA] data-[state=checked]:text-[#20A665] data-[state=checked]:border-[#A1A1AA]"
       />
     ),
     cell: ({ row }) => (
       <Checkbox
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
+        onClick={(e) => e.stopPropagation()}
+        className="data-[state=checked]:bg-[#E0FEED] data-[state=checked]:text-[#20A665] data-[state=checked]:border-[#A1A1AA]"
       />
     ),
     enableSorting: false,
@@ -31,6 +73,7 @@ export const tableColumns: ColumnDef<PurchaseOrders>[] = [
 
   {
     accessorKey: 'poNumber',
+    meta: { width: 128 },
     header: ({ column }) => (
       <SortableHeader column={column} title="PO Number" />
     ),
@@ -38,61 +81,97 @@ export const tableColumns: ColumnDef<PurchaseOrders>[] = [
       return row.original.poNumber;
     },
   },
-
   {
-    accessorKey: 'vendor.name',
+    accessorKey: 'vendorName',
+    meta: { width: 168 },
     header: ({ column }) => <SortableHeader column={column} title="Vendor" />,
+    cell: ({ getValue }) => (
+      <span className="capitalize">{String(getValue() ?? '')}</span>
+    ),
   },
-
   {
-    accessorKey: 'email',
+    accessorKey: 'site',
+    meta: { width: 104 },
+    header: ({ column }) => <SortableHeader column={column} title="Site" />,
+    cell: ({ getValue }) => (
+      <span className="capitalize">{String(getValue() ?? '-')}</span>
+    ),
+  },
+  {
+    accessorKey: 'buyer',
+    meta: { width: 112 },
+    header: ({ column }) => <SortableHeader column={column} title="Buyer" />,
+    cell: ({ getValue }) => (
+      <span className="capitalize">{String(getValue() ?? '-')}</span>
+    ),
+  },
+  {
+    accessorKey: 'account',
+    meta: { width: 112 },
+    header: ({ column }) => <SortableHeader column={column} title="Account" />,
+    cell: ({ getValue }) => (
+      <span className="capitalize">{String(getValue() ?? '-')}</span>
+    ),
+  },
+  {
+    accessorKey: 'vendorEmail',
+    meta: { width: 220 },
     header: 'Email Address',
-    cell: ({ row }) => {
-      const email = row.original.vendor.email;
-
-      if (!email) {
-        return (
-          <span className="text-red-500 flex items-center gap-1">
-            ⦿ Missing email ·
-            <button className="text-green-600 underline">Add</button>
-          </span>
-        );
-      }
-
-      return email;
-    },
+    cell: ({ row }) => <EmailCell row={row.original} />,
   },
-
-  {
-    accessorKey: 'quantity',
-    header: ({ column }) => <SortableHeader column={column} title="Quantity" />,
-  },
-
   {
     accessorKey: 'poValue',
+    meta: { width: 104 },
     header: ({ column }) => <SortableHeader column={column} title="PO Value" />,
-    // cell: ({ getValue }) => `$${Number(getValue<number>())?.toFixed(2)}`,
-    cell: () => `$240.00`,
+    cell: ({ getValue }) => `$${Number(getValue<number>())?.toFixed(2)}`,
   },
 
   {
     accessorKey: 'orderDate',
+    meta: { width: 116 },
     header: ({ column }) => (
       <SortableHeader column={column} title="Order Date" />
     ),
   },
   {
-    accessorKey: 'deliverDate',
+    accessorKey: 'dueDate',
+    meta: { width: 116 },
     header: 'Deliver',
-    cell: () => {
-      return '9/18/16';
+  },
+  {
+    accessorKey: 'dueIn',
+    meta: { width: 88 },
+    header: ({ column }) => <SortableHeader column={column} title="Due In" />,
+    cell: ({ getValue }) => {
+      return getValue() ? String(getValue()) : '-';
     },
   },
   {
+    accessorKey: 'overdueBy',
+    meta: { width: 108 },
+    header: ({ column }) => (
+      <SortableHeader column={column} title="Overdue By" />
+    ),
+    cell: ({ getValue }) => {
+      return getValue() ? String(getValue()) : '-';
+    },
+  },
+  {
+    accessorKey: 'lastUpdate',
+    meta: { width: 124 },
+    header: ({ column }) => (
+      <SortableHeader column={column} title="Last Update" />
+    ),
+  },
+  {
     accessorKey: 'status',
+    meta: { width: 148 },
     header: 'Status',
-    cell: ({ getValue }) => (
-      <StatusActionDropdown statusValue={getValue() as POStatus} />
+    cell: ({ row, getValue }) => (
+      <StatusActionDropdown
+        poId={row.original.id}
+        statusValue={getValue() as POStatus}
+      />
     ),
   },
 ];
@@ -104,7 +183,11 @@ export const TableHeader = ({ table }: { table: PurchaseOrdersTableType }) => {
         <TableRow key={headerGroup.id}>
           {headerGroup.headers.map((header) => {
             return (
-              <TableHead key={header.id} className="h-12">
+              <TableHead
+                key={header.id}
+                className="h-12"
+                style={purchaseOrderColumnWidthStyle(header.column.columnDef)}
+              >
                 {header.isPlaceholder
                   ? null
                   : flexRender(

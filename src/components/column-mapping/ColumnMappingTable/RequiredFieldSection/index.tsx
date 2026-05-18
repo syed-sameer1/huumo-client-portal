@@ -1,19 +1,28 @@
 import { MappingRow } from '../MappingRow';
-import { REQUIRED_FIELDS } from './constants';
+import { MappingField } from '../MappingRow/types';
 
-export const RequiredFieldSection = ({ headers }: { headers: any }) => {
+export const RequiredFieldSection = ({
+  headers,
+  requiredFields,
+  errors,
+}: {
+  headers: any;
+  requiredFields: MappingField[];
+  errors: any;
+}) => {
   return (
     <div>
-      {REQUIRED_FIELDS.map((field, index) => (
+      {requiredFields.map((field, index) => (
         <MappingRow
           key={field.id}
-          name={`required.${field.id}`}
+          name={field.name || ''}
           label={field.label}
           sample={field.sample}
           id={field.id}
           required
-          showBorder={index !== REQUIRED_FIELDS.length - 1}
+          showBorder={index !== requiredFields.length - 1}
           headers={headers}
+          errors={errors}
         />
       ))}
     </div>

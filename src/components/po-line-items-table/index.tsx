@@ -9,12 +9,13 @@ import { usePurchaseOrderDetailsData } from '../purchase-order-details/hooks/use
 
 export const POLineItemsTable = () => {
   const { data: detailsData } = usePurchaseOrderDetailsData();
-  console.log('detailsData', detailsData);
+
   const table = useReactTable({
     data: detailsData?.items || [],
     columns: tableColumns,
     getCoreRowModel: getCoreRowModel(),
   });
+
   return (
     <div className="overflow-hidden rounded-md border">
       <Table>

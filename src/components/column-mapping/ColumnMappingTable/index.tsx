@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { AdditionalFieldSection } from './AdditionalFieldSection';
 import { ColumnMappingHeader } from './ColumnMappingHeader';
@@ -8,19 +9,22 @@ import {
   MappingFormValues,
   columnMappingSchema,
 } from '@/schema/columnMappingSchema';
-import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ColumnMappingFooter } from './ColumnMappingFooter';
 import { useImportColumn } from '@/hooks/csvImports';
 import { useSearchParams } from 'next/navigation';
 import { LoaderDialog } from '@/components/loader';
 import { useColumnMapping } from '@/hooks/purchaseOrders';
+import { REQUIRED_FIELDS } from './RequiredFieldSection/constants';
+import { AnalyticsDialog } from './AnalyticsDialog';
 
 export const ColumnMappingTable = () => {
   const importJobId = useSearchParams().get('import_job_id');
+  const [previewDialogOpen, setPreviewDialogOpen] = useState(false);
+
   const { data, isPending } = useImportColumn(importJobId as string);
+
   const { mutate, isPending: isMappingPending } = useColumnMapping();
-  const router = useRouter();
 
   const form = useForm<MappingFormValues>({
     resolver: zodResolver(columnMappingSchema),
@@ -29,15 +33,17 @@ export const ColumnMappingTable = () => {
         poNumber: '',
         orderDate: '',
         vendorName: '',
-      },
-      additional: {
-        vendorEmail: '',
         dueDate: '',
         lineItem: '',
         quantity: '',
+      },
+      additional: {
+        vendorEmail: '',
         confirmQty: '',
         remainingQty: '',
         unitCost: '',
+        buyer: '',
+        account: '',
       },
     },
   });
@@ -53,7 +59,7 @@ export const ColumnMappingTable = () => {
       },
       {
         onSuccess: () => {
-          router.push('/purchase-orders');
+          setPreviewDialogOpen(true);
         },
       },
     );
@@ -67,11 +73,19 @@ export const ColumnMappingTable = () => {
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <div className="shadow-md border border-[#E4E4E7] p-6 rounded-4xl">
           <ColumnMappingHeader />
-          <RequiredFieldSection headers={data?.data?.data?.headers} />
+          <RequiredFieldSection
+            requiredFields={REQUIRED_FIELDS}
+            headers={data?.data?.data?.headers}
+            errors={form.formState?.errors?.required || {}}
+          />
           <AdditionalFieldSection headers={data?.data?.data?.headers} />
         </div>
         <ColumnMappingFooter isLoading={isMappingPending} />
       </form>
+      <AnalyticsDialog
+        open={previewDialogOpen}
+        onClose={setPreviewDialogOpen}
+      />
     </FormProvider>
   );
 };

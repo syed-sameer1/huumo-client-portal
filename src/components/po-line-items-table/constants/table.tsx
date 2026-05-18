@@ -1,6 +1,8 @@
 import { SortableHeader } from '@/components/purchase-orders/PurchaseOrdersTable/SortableHeader';
 import { ColumnDef } from '@tanstack/react-table';
 import { POLineItems } from '../types';
+import { StatusActionDropdown } from '@/components/purchase-orders/PurchaseOrdersTable/StatusActionDropdown';
+import { POStatus } from '@/types/purchaseOrders';
 
 export const tableColumns: ColumnDef<POLineItems>[] = [
   {
@@ -23,7 +25,9 @@ export const tableColumns: ColumnDef<POLineItems>[] = [
       <SortableHeader column={column} title="Confirmed Qty" />
     ),
     cell: ({ row }) => {
-      return row.original.confirmedQuantity;
+      return row.original.confirmedQuantity
+        ? row.original.confirmedQuantity
+        : '-';
     },
   },
   {
@@ -32,19 +36,33 @@ export const tableColumns: ColumnDef<POLineItems>[] = [
       <SortableHeader column={column} title="Remaining Qty" />
     ),
     cell: ({ row }) => {
-      return row.original.pendingQuantity;
+      return row.original.pendingQuantity ? row.original.pendingQuantity : '-';
     },
   },
   {
-    accessorKey: 'value',
+    accessorKey: 'unitCost',
     header: ({ column }) => <SortableHeader column={column} title="Value" />,
-    cell: ({ getValue }) => `$${Number(getValue<number>())?.toFixed(2)}`,
+    cell: ({ getValue }) => {
+      return getValue() ? `$${getValue()}` : '-';
+    },
   },
   {
     accessorKey: 'dueDate',
     header: ({ column }) => <SortableHeader column={column} title="Due Date" />,
     cell: ({ getValue }) => {
-      return getValue();
+      return getValue() ? getValue() : '-';
+    },
+  },
+  {
+    accessorKey: 'status',
+    header: 'Status',
+    cell: ({ getValue, row }) => {
+      return (
+        <StatusActionDropdown
+          statusValue={getValue() as POStatus}
+          poId={row.original.id}
+        />
+      );
     },
   },
 ];

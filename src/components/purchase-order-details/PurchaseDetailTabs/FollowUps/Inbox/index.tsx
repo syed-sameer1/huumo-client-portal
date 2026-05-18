@@ -1,18 +1,42 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { InboxSearch } from '../../InboxSearch';
-import { inboxThreads } from '../mockData';
 import { FollowUpThreadCard } from './FollowUpThreadCard';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { FollowUpTabConfig } from '../constants/followUpTabsConfig';
+import { PurchaseOrderFollowup } from '@/types/purchaseOrders';
+import { FollowUpStatus } from '../types';
 
-export const Inbox = () => {
-  const [selectedMessage, setSelectedMessage] = useState(inboxThreads[0].id);
+export const Inbox = ({
+  selectedMessageId,
+  setSelectedMessageId,
+  followUps,
+}: {
+  selectedMessageId: number | null;
+  setSelectedMessageId: (id: number) => void;
+  followUps: PurchaseOrderFollowup[];
+}) => {
+  const [activeTab, setActiveTab] = useState(FollowUpTabConfig[0].value);
+
+  const filteredFollowUps = useMemo(() => {
+    if (activeTab === 'all') {
+      return followUps;
+    }
+    if (activeTab === 'sent') {
+      return followUps.filter((f) => f.status === FollowUpStatus.sent);
+    }
+    return followUps.filter((f) => f.status !== FollowUpStatus.sent);
+  }, [followUps, activeTab]);
+
   return (
     <div className="w-105.75 border rounded-sm">
       <div className="p-2 px-3 text-[20px] font-semibold border-b">Inbox</div>
       <div className="py-4 px-3">
         <InboxSearch />
-        <Tabs defaultValue={FollowUpTabConfig[0].value} className="w-full mt-3">
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="w-full mt-3"
+        >
           <TabsList className="w-full bg-transparent">
             {FollowUpTabConfig.map((tab) => (
               <TabsTrigger
@@ -31,12 +55,12 @@ export const Inbox = () => {
         </Tabs>
 
         <div className="mt-4 space-y-4">
-          {inboxThreads.map((message) => (
+          {filteredFollowUps.map((message) => (
             <FollowUpThreadCard
               message={message}
               key={message.id}
-              selectedMessage={selectedMessage}
-              onSetSelectedMessage={setSelectedMessage}
+              selectedMessage={selectedMessageId}
+              onSetSelectedMessage={setSelectedMessageId}
             />
           ))}
         </div>

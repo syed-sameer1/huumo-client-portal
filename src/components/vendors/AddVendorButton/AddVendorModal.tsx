@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button';
+import { LoadingButton } from '@/components/LoadingButton';
 import {
   Dialog,
   DialogContent,
@@ -8,9 +8,12 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useAddVendor } from '@/hooks/vendors';
 import { AddVendorFieldValues, addVendorSchema } from '@/schema/vendor';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
 interface AddVendorModalProps {
   onClose: () => void;
@@ -18,6 +21,9 @@ interface AddVendorModalProps {
 }
 
 export const AddVendorModal = ({ onClose, open }: AddVendorModalProps) => {
+  const { mutate, isPending } = useAddVendor();
+  const queryClient = useQueryClient();
+
   const {
     register,
     handleSubmit,
@@ -27,13 +33,25 @@ export const AddVendorModal = ({ onClose, open }: AddVendorModalProps) => {
     resolver: zodResolver(addVendorSchema),
     defaultValues: {
       vendorName: '',
-      email: '',
+      vendorEmail: '',
     },
   });
 
-  const submitHandler = (_data: AddVendorFieldValues) => {
-    reset();
-    onClose();
+  const submitHandler = (data: AddVendorFieldValues) => {
+    mutate(data, {
+      onSuccess: () => {
+        reset();
+        onClose();
+        toast.success('Vendor added success');
+        queryClient.invalidateQueries({
+          queryKey: ['vendors-data'],
+          exact: false,
+        });
+      },
+      onError: () => {
+        toast.error('Something went wrong please try again');
+      },
+    });
   };
 
   return (
@@ -48,7 +66,7 @@ export const AddVendorModal = ({ onClose, open }: AddVendorModalProps) => {
             <Label htmlFor="name">Vendor</Label>
             <Input
               id="name"
-              placeholder="Big Kahuna Burger Ltd."
+              placeholder="Vendor Name"
               {...register('vendorName')}
             />
             {errors.vendorName && (
@@ -60,10 +78,13 @@ export const AddVendorModal = ({ onClose, open }: AddVendorModalProps) => {
 
           <div className="flex gap-2 flex-col">
             <Label htmlFor="name">Email</Label>
-            <Input placeholder="vendor@example.com" {...register('email')} />
-            {errors.email && (
+            <Input
+              placeholder="vendor@example.com"
+              {...register('vendorEmail')}
+            />
+            {errors.vendorEmail && (
               <p className="text-sm text-destructive mt-1">
-                {errors.email.message}
+                {errors.vendorEmail.message}
               </p>
             )}
           </div>
@@ -72,9 +93,13 @@ export const AddVendorModal = ({ onClose, open }: AddVendorModalProps) => {
           </div>
 
           <DialogFooter>
-            <Button className="w-33 h-10 bg-background-secondary" type="submit">
+            <LoadingButton
+              className="w-33 h-10 bg-background-secondary"
+              type="submit"
+              loading={isPending}
+            >
               Add
-            </Button>
+            </LoadingButton>
           </DialogFooter>
         </form>
       </DialogContent>

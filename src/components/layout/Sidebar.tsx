@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import {
   SidebarHeader,
@@ -17,8 +19,13 @@ import Image from 'next/image';
 import { getRoutes } from './routes';
 import { Button } from '../ui/button';
 import { Progress } from '../ui/progress';
+import { useClientSettings } from '@/hooks/client';
+import { usePathname } from 'next/navigation';
 
 export const Sidebar = () => {
+  const { data } = useClientSettings();
+  const path = usePathname();
+
   return (
     <ShadcnSidebar className="gap-4">
       <SidebarHeader>
@@ -30,29 +37,39 @@ export const Sidebar = () => {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {getRoutes().map(({ href, Icon, label, subRoutes }) => (
-                <SidebarMenuItem key={href}>
-                  <SidebarMenuButton className="h-13" asChild>
-                    <Link href={href}>
-                      <div className="flex items-center gap-2">
-                        <Icon width={20} height={20} />
-                        <span>{label}</span>
-                      </div>
-                    </Link>
-                  </SidebarMenuButton>
-                  {subRoutes && (
-                    <SidebarMenuSub>
-                      {subRoutes.map(({ href, label }) => (
-                        <SidebarMenuSubItem key={href}>
-                          <SidebarMenuSubButton asChild>
-                            <Link href={href}>{label}</Link>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-                      ))}
-                    </SidebarMenuSub>
-                  )}
-                </SidebarMenuItem>
-              ))}
+              {getRoutes().map(({ href, Icon, label, subRoutes }) => {
+                const isActive = path === href;
+                return (
+                  <SidebarMenuItem key={href}>
+                    <SidebarMenuButton
+                      className="h-13"
+                      asChild
+                      isActive={isActive}
+                    >
+                      <Link href={href}>
+                        <div className="flex items-center gap-2">
+                          <Icon width={20} height={20} />
+                          <span>{label}</span>
+                        </div>
+                      </Link>
+                    </SidebarMenuButton>
+                    {subRoutes && (
+                      <SidebarMenuSub>
+                        {subRoutes.map(({ href, label }) => {
+                          const isActive = path === href;
+                          return (
+                            <SidebarMenuSubItem key={href}>
+                              <SidebarMenuSubButton asChild isActive={isActive}>
+                                <Link href={href}>{label}</Link>
+                              </SidebarMenuSubButton>
+                            </SidebarMenuSubItem>
+                          );
+                        })}
+                      </SidebarMenuSub>
+                    )}
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -67,10 +84,10 @@ export const Sidebar = () => {
           </div>
           <div className="space-y-1.5">
             <div className="text-[12px] text-secondary-foreground">
-              30 of 200 used
+              {data?.data?.activePoCount} of {data?.data.maxPoLimit} used
             </div>
             <Progress
-              value={20}
+              value={data?.data?.activePoCount / 2}
               className="bg-[#EDFFF6] [&>div]:bg-[#20A665]"
             />
           </div>

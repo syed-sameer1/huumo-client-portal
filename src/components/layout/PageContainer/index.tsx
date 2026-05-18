@@ -8,5 +8,9 @@ export const PageContainer = ({
   children: ReactNode;
   className?: string;
 }) => {
-  return <div className={cn('py-5 px-5', className)}>{children}</div>;
+  return (
+    <div className={cn('py-5 px-5 w-full min-w-0 max-w-full', className)}>
+      {children}
+    </div>
+  );
 };

@@ -1,4 +1,4 @@
 import { Table } from '@tanstack/react-table';
-import { VendorsData } from '../types';
+import { VendorData } from '../../../types/vendors';
 
-export type VendorsTableType = Table<VendorsData>;
+export type VendorsTableType = Table<VendorData>;

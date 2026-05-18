@@ -5,9 +5,7 @@ import {
   useReactTable,
   Table,
 } from '@tanstack/react-table';
-import { mockData } from './mockData';
 import { SortableHeader } from '@/components/purchase-orders/PurchaseOrdersTable/SortableHeader';
-import { formatDate } from '@/lib/date';
 import { OrderStatusChip } from '@/components/OrderStatusChip';
 import {
   TableRow,
@@ -17,15 +15,8 @@ import {
   TableCell,
   Table as ShadcnTable,
 } from '@/components/ui/table';
-import { POStatus } from '@/types/purchaseOrders';
-
-type POLinkedItemsType = {
-  id: number;
-  poNumber: string;
-  poValue: number;
-  orderDate: string;
-  status: POStatus;
-};
+import { useVendorDetails } from '@/hooks/vendors';
+import { POLinkedItemsType } from '@/types/vendors';
 
 export type LinkedPOItemsType = Table<POLinkedItemsType>;
 
@@ -42,14 +33,14 @@ export const tableColumns: ColumnDef<POLinkedItemsType>[] = [
   {
     accessorKey: 'poValue',
     cell: ({ row }) => {
-      return `$${row.original.poValue}`;
+      return row.original.poValue ? `$${row.original.poValue}` : '-';
     },
     header: ({ column }) => <SortableHeader column={column} title="PO Value" />,
   },
   {
     accessorKey: 'orderDate',
     cell: ({ row }) => {
-      return formatDate(row.original.orderDate);
+      return row.original.orderDate;
     },
     header: ({ column }) => (
       <SortableHeader column={column} title="Order Date" />
@@ -92,7 +83,11 @@ const TableBody = ({ table }: { table: LinkedPOItemsType }) => {
     <ShadcnTableBody>
       {table.getRowModel().rows?.length ? (
         table.getRowModel().rows.map((row) => (
-          <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+          <TableRow
+            key={row.id}
+            data-state={row.getIsSelected() && 'selected'}
+            className="even:bg-[#20A6650D]"
+          >
             {row.getVisibleCells().map((cell) => (
               <TableCell key={cell.id} className="py-4">
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -102,16 +97,21 @@ const TableBody = ({ table }: { table: LinkedPOItemsType }) => {
         ))
       ) : (
         <TableRow>
-          <TableCell className="h-24 text-center">No results.</TableCell>
+          <TableCell colSpan={tableColumns.length} className="h-24 text-center">
+            No POs linked to this vendor.
+          </TableCell>
         </TableRow>
       )}
     </ShadcnTableBody>
   );
 };
 
-export const POLinkedItems = () => {
+export const POLinkedItems = ({ vendorId }: { vendorId: number }) => {
+  const { data } = useVendorDetails(vendorId);
+  const poItems = data?.vendor?.latestPurchaseOrders;
+  console.log('purchase orders', poItems);
   const table = useReactTable({
-    data: mockData,
+    data: poItems || [],
     columns: tableColumns,
     getCoreRowModel: getCoreRowModel(),
   });

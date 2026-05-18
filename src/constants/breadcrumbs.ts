@@ -1,33 +1,25 @@
 export const SelectImportMethodBreadcrumbs = [
   {
-    href: 'purchase-orders',
+    href: '/purchase-orders',
     label: 'Purchase Orders',
   },
   {
-    href: 'new-purchase-order',
-    label: 'New PO',
-  },
-  {
-    href: 'select-import-method',
+    href: '/select-import-method',
     label: 'Select Import Method',
   },
 ];
 
 export const ColumnMappingBreadcrumbs = [
   {
-    href: 'purchase-orders',
+    href: '/purchase-orders',
     label: 'Purchase Orders',
   },
   {
-    href: 'new-purchase-order',
-    label: 'New PO',
-  },
-  {
-    href: 'select-import-method',
+    href: '/purchase-orders/select-import-method',
     label: 'Select Import Method',
   },
   {
-    href: 'column-mapping',
+    href: '/column-mapping',
     label: 'Column Mapping',
   },
 ];

@@ -8,17 +8,45 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { AddVendorModal } from './AddVendorModal';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Spinner } from '@/components/ui/spinner';
+import { useImportVendorCSV } from '@/hooks/csvImports';
+import { routeUrls } from '@/constants/urls';
+import { useRouter } from 'next/navigation';
 
 export const AddVendorButton = () => {
   const [open, setOpen] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const { mutate } = useImportVendorCSV();
+  const router = useRouter();
+
   const handleAddVendor = () => {
     setOpen(true);
   };
 
   const handleOnCloseModal = () => {
     setOpen(false);
+  };
+
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('file', file);
+
+    mutate(formData, {
+      onSuccess: (res) => {
+        router.push(
+          `${routeUrls.vendorColumnMapping}/?import_job_id=${res.data.importJobId}`,
+        );
+      },
+    });
   };
 
   return (
@@ -35,13 +63,33 @@ export const AddVendorButton = () => {
             >
               Add Manually
             </DropdownMenuItem>
-            <DropdownMenuItem className="text-secondary-foreground text-sm py-1.5 h-8.25">
+            <DropdownMenuItem
+              className="text-secondary-foreground text-sm py-1.5 h-8.25"
+              onClick={handleImportClick}
+            >
               Import CSV file
             </DropdownMenuItem>
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".csv"
+        className="hidden"
+        onChange={onFileChange}
+      />
       <AddVendorModal open={open} onClose={handleOnCloseModal} />
+      {false && (
+        <Dialog open={true}>
+          <DialogContent className="p-6">
+            <Spinner />
+            <div className="font-semibold text-[18px]">
+              Vendor details extracting...
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </>
   );
 };

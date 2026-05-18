@@ -1,0 +1,305 @@
+'use client';
+
+import { GradientRingSpinner } from '@/components/gradient-loader';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
+import {
+  useImportColumn,
+  useImportVendorCSV,
+  useProcessImport,
+} from '@/hooks/csvImports';
+import { useQueryClient } from '@tanstack/react-query';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Dispatch, SetStateAction, useMemo, useState } from 'react';
+import { toast } from 'sonner';
+import { MissingVendorEmailModal } from './MissingVendorEmailModal';
+import { VendorEmailColumnMappingModal } from './VendorEmailColumnMappingModal';
+import { SuccessModal } from '../SuccessModal';
+import { routeUrls } from '@/constants/urls';
+import { getImportJobIdFromVendorCsvResponse } from '../SuccessModal/helpers';
+
+export const AnalyticsDialog = ({
+  open,
+  onClose,
+  flow = 'purchase-order',
+}: {
+  open: boolean;
+  onClose: Dispatch<SetStateAction<boolean>>;
+  flow?: 'purchase-order' | 'vendor';
+}) => {
+  const importJobId = useSearchParams().get('import_job_id');
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const isPurchaseOrderFlow = flow === 'purchase-order';
+  const [showEmailMissingModal, setShowEmailMissingModal] = useState(false);
+  const [vendorSupplementJobId, setVendorSupplementJobId] = useState<
+    string | null
+  >(null);
+  const [showVendorColumnMappingModal, setShowVendorColumnMappingModal] =
+    useState(false);
+
+  const { mutate: importVendorCsv, isPending: isVendorCsvUploading } =
+    useImportVendorCSV();
+
+  const goToPurchaseOrders = () => {
+    setShowEmailMissingModal(false);
+    setShowVendorColumnMappingModal(false);
+    setVendorSupplementJobId(null);
+    router.push(routeUrls.purchaseOrdersRoute);
+  };
+
+  const handleProceedWithVendorCsv = (selectedFile: File | null) => {
+    if (!selectedFile) {
+      toast.error(
+        'Select a CSV file to proceed, or use Continue without Email',
+      );
+      return;
+    }
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+    importVendorCsv(formData, {
+      onSuccess: (res) => {
+        const jobId = getImportJobIdFromVendorCsvResponse(res);
+        if (!jobId) {
+          toast.error('Could not start import. Missing import job id.');
+          return;
+        }
+        setVendorSupplementJobId(jobId);
+        setShowEmailMissingModal(false);
+        setShowVendorColumnMappingModal(true);
+      },
+      onError: () => {
+        toast.error('Upload failed. Please try again.');
+      },
+    });
+  };
+
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const previewPollOptions = useMemo(
+    () => ({
+      enabled: open && !!importJobId,
+      refetchInterval: (query: {
+        state: { data?: { data?: { data?: { status?: string } } } };
+      }) => {
+        const status = query.state.data?.data?.data?.status;
+        return status === 'previewReady' ? false : 2000;
+      },
+      staleTime: 0,
+    }),
+    [open, importJobId],
+  );
+  const { isPending, data, isRefetching } = useImportColumn(
+    importJobId as string,
+    previewPollOptions,
+  );
+  const { mutate: processImport, isPending: isProcessing } = useProcessImport();
+
+  const previewSummary = data?.data.data?.previewSummary;
+
+  const onImport = () => {
+    if (!importJobId) return;
+
+    processImport(
+      { id: importJobId },
+      {
+        onSuccess: () => {
+          if (flow === 'vendor') {
+            queryClient.invalidateQueries({
+              queryKey: ['vendors-data'],
+              exact: false,
+            });
+          }
+          setShowSuccessModal(true);
+          onClose(false);
+        },
+      },
+    );
+  };
+
+  if (!previewSummary) return null;
+
+  return (
+    <>
+      <Dialog open={open} onOpenChange={onClose}>
+        <DialogContent className="sm:max-w-[520px]">
+          <div>
+            {isRefetching || isPending ? (
+              <div className="flex items-center flex-col gap-[40px]">
+                <GradientRingSpinner size={100} />
+                <div className="font-semibold">
+                  {flow === 'vendor'
+                    ? 'Vendor file analyzing…'
+                    : 'PO details analyzing…'}
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-8">
+                <div className="text-center space-y-2">
+                  <div className="text-[18px] font-semibold">
+                    CSV file has been analyzed{' '}
+                  </div>
+                  <div className="text-sm">
+                    Please review below before completing the import.
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="text-[#3F3F46]">
+                    Total records :{' '}
+                    <span className="font-semibold text-[#09090B]">
+                      {previewSummary?.totalRows}
+                    </span>
+                  </div>
+                  <div className="text-[#3F3F46]">
+                    Valid records :{' '}
+                    <span className="font-semibold text-[#09090B]">
+                      {previewSummary?.validRows}
+                    </span>
+                  </div>
+                  <div className="text-[#3F3F46]">
+                    Invalid records :{' '}
+                    <span className="font-semibold text-[#09090B]">
+                      {previewSummary?.invalidRows}
+                    </span>
+                  </div>
+                  <div className="text-[#3F3F46]">
+                    Duplicate records :{' '}
+                    <span className="font-semibold text-[#09090B]">
+                      {previewSummary?.duplicateRows}
+                    </span>
+                  </div>
+                  {isPurchaseOrderFlow && (
+                    <>
+                      <div className="text-[#3F3F46]">
+                        Total POs :{' '}
+                        <span className="font-semibold text-[#09090B]">
+                          {previewSummary?.uniquePOs}
+                        </span>
+                      </div>
+                      <div className="text-[#3F3F46]">
+                        POs to create :{' '}
+                        <span className="font-semibold text-[#09090B]">
+                          {previewSummary?.newPOs}
+                        </span>
+                      </div>
+                      <div className="text-[#3F3F46]">
+                        POs to update :{' '}
+                        <span className="font-semibold text-[#09090B]">
+                          {previewSummary?.existingPOs}
+                        </span>
+                      </div>
+                      <div className="text-[#3F3F46]">
+                        Missing vendor emails:{' '}
+                        <span className="font-semibold text-[#09090B]">
+                          {previewSummary?.missingVendorEmailCount}
+                        </span>
+                      </div>
+
+                      <div className="text-[#3F3F46]">
+                        Overdue POs:{' '}
+                        <span className="font-semibold text-[#09090B]">
+                          {previewSummary?.overdueCount}
+                        </span>
+                      </div>
+                    </>
+                  )}
+                  <div className="text-[#3F3F46]">
+                    Errors :{' '}
+                    <span className="font-semibold text-[#09090B]">
+                      {previewSummary?.topErrors?.length ?? 0}
+                    </span>
+                  </div>
+                </div>
+
+                {!!previewSummary?.topErrors?.length && (
+                  <Accordion type="single" collapsible className="w-full">
+                    <AccordionItem value="errors">
+                      <AccordionTrigger className="no-underline hover:no-underline pt-0 text-md text-[#3F3F46]">
+                        Errors
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
+                          {Object.keys(previewSummary.errorBreakdown).map(
+                            (val, index) => {
+                              return (
+                                <li key={`${val}-${index}`}>
+                                  {val}: {previewSummary.errorBreakdown[val]}
+                                </li>
+                              );
+                            },
+                          )}
+                        </ul>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                )}
+
+                <div className="flex justify-between gap-12">
+                  <Button
+                    className="flex-1"
+                    variant="ghost"
+                    type="button"
+                    onClick={() => onClose(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    className="flex-1"
+                    type="button"
+                    disabled={!importJobId || isProcessing}
+                    onClick={onImport}
+                  >
+                    {isProcessing ? 'Importing…' : 'Import'}
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {isPurchaseOrderFlow && (
+        <>
+          <MissingVendorEmailModal
+            open={showEmailMissingModal}
+            onOpenChange={setShowEmailMissingModal}
+            missingCount={previewSummary.missingVendorEmailCount}
+            importJobId={importJobId ?? ''}
+            onContinueWithoutEmail={goToPurchaseOrders}
+            onProceed={handleProceedWithVendorCsv}
+            isUploading={isVendorCsvUploading}
+          />
+
+          {vendorSupplementJobId && (
+            <VendorEmailColumnMappingModal
+              key={vendorSupplementJobId}
+              open={showVendorColumnMappingModal}
+              importJobId={vendorSupplementJobId}
+              onOpenChange={(next) => {
+                setShowVendorColumnMappingModal(next);
+                if (!next) setVendorSupplementJobId(null);
+              }}
+              onMappingSuccess={goToPurchaseOrders}
+            />
+          )}
+        </>
+      )}
+      {showSuccessModal && (
+        <SuccessModal
+          previewSummary={previewSummary}
+          open={showSuccessModal}
+          onClose={() => setShowSuccessModal(false)}
+          setShowEmailMissingModal={
+            isPurchaseOrderFlow ? setShowEmailMissingModal : undefined
+          }
+          flow={flow}
+        />
+      )}
+    </>
+  );
+};
