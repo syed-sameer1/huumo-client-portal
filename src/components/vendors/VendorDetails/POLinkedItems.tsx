@@ -31,9 +31,9 @@ export const tableColumns: ColumnDef<POLinkedItemsType>[] = [
     },
   },
   {
-    accessorKey: 'poValue',
+    accessorKey: 'totalValue',
     cell: ({ row }) => {
-      return row.original.poValue ? `$${row.original.poValue}` : '-';
+      return row.original.totalValue ? `$${row.original.totalValue}` : '-';
     },
     header: ({ column }) => <SortableHeader column={column} title="PO Value" />,
   },

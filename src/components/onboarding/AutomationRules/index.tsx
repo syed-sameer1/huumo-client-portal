@@ -16,6 +16,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 const MIN_DAYS = 1;
 const MAX_DAYS = 365;
@@ -86,6 +93,7 @@ export const AutomationRules = () => {
 
         <div className="w-100 space-y-6">
           {/* Follow-up #1 */}
+
           <FormField
             control={control}
             name="followup1FrequencyDays"
@@ -94,9 +102,26 @@ export const AutomationRules = () => {
                 <FormLabel className="font-medium text-sm mb-2 block">
                   Follow-up #1 Frequency
                 </FormLabel>
-                <FormControl>
-                  <FrequencyDaysControl {...field} />
-                </FormControl>
+
+                <div className="flex items-center">
+                  <div className="w-20 mr-2">
+                    <Select
+                      value={field.value?.toString()}
+                      onValueChange={(v) => field.onChange(Number(v))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1">1</SelectItem>
+                        <SelectItem value="2">2</SelectItem>
+                        <SelectItem value="3">3</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <p>day(s) from the PO creation date</p>
+                </div>
+
                 <FormMessage />
               </FormItem>
             )}
@@ -111,9 +136,24 @@ export const AutomationRules = () => {
                 <FormLabel className="font-medium text-sm mb-2 block">
                   Follow-up #2 Frequency
                 </FormLabel>
-                <FormControl>
-                  <FrequencyDaysControl {...field} />
-                </FormControl>
+                <div className="flex items-center">
+                  <div className="w-20 mr-2">
+                    <Select
+                      value={field.value?.toString()}
+                      onValueChange={(v) => field.onChange(Number(v))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1">1</SelectItem>
+                        <SelectItem value="2">2</SelectItem>
+                        <SelectItem value="3">3</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <p>day(s) from the PO creation date</p>
+                </div>
                 <FormMessage />
               </FormItem>
             )}
@@ -128,9 +168,24 @@ export const AutomationRules = () => {
                 <FormLabel className="font-medium text-sm mb-2 block">
                   Final Reminder Frequency
                 </FormLabel>
-                <FormControl>
-                  <FrequencyDaysControl {...field} />
-                </FormControl>
+                <div className="flex items-center">
+                  <div className="w-20 mr-2">
+                    <Select
+                      value={field.value?.toString()}
+                      onValueChange={(v) => field.onChange(Number(v))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1">1</SelectItem>
+                        <SelectItem value="2">2</SelectItem>
+                        <SelectItem value="3">3</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <p>day(s) from the PO creation date</p>
+                </div>
                 <FormMessage />
               </FormItem>
             )}
@@ -179,7 +234,7 @@ export const AutomationRules = () => {
                   />
                 </FormControl>
                 <div className="mt-1 flex justify-between text-sm text-muted-foreground">
-                  <span>0%</span>
+                  <span>{field.value}%</span>
                   <span>100%</span>
                 </div>
                 <FormMessage />

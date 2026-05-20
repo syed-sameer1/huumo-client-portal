@@ -33,7 +33,7 @@ export type POLinkedItemsType = {
   orderDate: string;
   poNumber: string;
   status: POStatus;
-  poValue?: number;
+  totalValue?: number;
 };
 
 export type VendorDetailsType = {
