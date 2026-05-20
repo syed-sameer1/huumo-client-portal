@@ -1,4 +1,9 @@
+'use client';
+
+import { useEmailTemplate } from '@/tanstack/templates/useEmailTemplate';
+import { formatEmailTemplateTypeLabel } from '@/types/emailTemplate';
 import { TemplateDetailHeader } from './TemplateDetailHeader';
+import { TemplateDetailsSkeleton } from './TemplateDetailsSkeleton';
 
 interface TemplateDetailsSectionProps {
   templateId: string;
@@ -7,57 +12,42 @@ interface TemplateDetailsSectionProps {
 export const TemplateDetailsSection = ({
   templateId,
 }: TemplateDetailsSectionProps) => {
+  const { data, isLoading, isError } = useEmailTemplate(templateId);
+
+  if (isLoading) {
+    return <TemplateDetailsSkeleton templateId={templateId} />;
+  }
+
+  if (isError || !data?.template) {
+    return (
+      <div className="space-y-10">
+        <TemplateDetailHeader templateId={templateId} />
+        <p className="text-sm text-destructive">
+          Unable to load template. Please try again later.
+        </p>
+      </div>
+    );
+  }
+
+  const { template } = data;
+
   return (
     <div className="space-y-10">
-      <TemplateDetailHeader templateId={templateId} />
-      <div className="max-w-[900px] m-auto rounded-[8px] p-[16px] border border-[#E4E4E7] space-y-[20px]">
-        <div>Template 2</div>
-        {/* Subject */}
-        <div>
-          <div>Subject</div>
-          <div>
-            Follow-up on Purchase Order <strong>{'{PO Number}'}</strong>
-          </div>
+      <TemplateDetailHeader templateId={templateId} title={template.name} />
+      <div className="m-auto max-w-[900px] space-y-[20px] rounded-[8px] border border-[#E4E4E7] p-[16px]">
+        <div className="font-medium">
+          {formatEmailTemplateTypeLabel(template.type)}
         </div>
-        {/* Content */}
+        <div>
+          <div className="text-sm text-muted-foreground">Subject</div>
+          <div className="mt-1">{template.subject}</div>
+        </div>
         <div className="space-y-4">
-          <div>Body</div>
-          <div>
-            Dear <strong>{'{Vendor}'}</strong>,
-          </div>
-          <div className="space-y-4">
-            <div>
-              I hope this message finds you well. I am reaching out to follow up
-              on our Purchase Order # {'{PO Number}'}, which was placed on{' '}
-              {'{Order Date}'}. As we approach the due date of {'{Due Date}'}, I
-              wanted to check in on the status of the order.
-            </div>
-            <div>
-              Could you kindly provide us with an update on the current progress
-              of the order, including the expected timeline for delivery? If
-              there have been any delays or issues that might affect the
-              delivery schedule, please inform us as soon as possible so we can
-              adjust our planning accordingly.
-            </div>
-            <div>
-              Additionally, we would appreciate any details regarding the PO
-              Line Items, Unit Cost <strong>{'{Unit Cost}'}</strong> and PO
-              Value <strong>{'{PO Value}'}</strong> if there are any
-              discrepancies.
-            </div>
-            <div>
-              Thank you for your time and consideration. Should you have any
-              questions or require further assistance, please don&apos;t
-              hesitate to reach out. We look forward to the opportunity of
-              working with you.
-            </div>
-          </div>
-          <div>
-            <div>Best regards,</div>
-            <div>
-              <strong>{'{Company Signature}'}</strong>
-            </div>
-          </div>
+          <div className="text-sm text-muted-foreground">Body</div>
+          <div
+            className="prose prose-sm max-w-none font-normal [&_p]:mb-4 [&_p:last-child]:mb-0"
+            dangerouslySetInnerHTML={{ __html: template.body }}
+          />
         </div>
       </div>
     </div>
