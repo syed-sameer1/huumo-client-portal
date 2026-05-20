@@ -9,6 +9,7 @@ export type VendorFiltersState = {
   quickPresets: string[];
   /** Drawer Sort By: High Risk Vendors, Missing Email, Top Spend Vendors */
   drawerSort: string[];
+  vendorId?: string;
 };
 
 export const DEFAULT_VENDOR_FILTERS: VendorFiltersState = {
@@ -95,12 +96,14 @@ type VendorApiQuery = {
   riskLevel?: string;
   sortBy?: string;
   missingEmail?: boolean;
+  vendorId?: string;
 };
 
 /** Params sent to GET /vendor (excluding limit/pageNumber). */
 export function vendorFiltersToApiQuery(f: VendorFiltersState): VendorApiQuery {
   const out: VendorApiQuery = {};
   if (f.searchValue.trim()) out.searchValue = f.searchValue.trim();
+  if (f.vendorId) out.vendorId = f.vendorId;
   if (f.confirmationRateMin !== 0 || f.confirmationRateMax !== 100) {
     out.confirmationRateMin = f.confirmationRateMin;
     out.confirmationRateMax = f.confirmationRateMax;
@@ -147,6 +150,7 @@ export function vendorFiltersToSearchParams(
     params.set('page', String(page));
   }
   if (f.searchValue) params.set('searchValue', f.searchValue);
+  if (f.vendorId) params.set('vendorId', String(f.vendorId));
   if (f.confirmationRateMin !== 0 || f.confirmationRateMax !== 100) {
     params.set('confirmationRateMin', String(f.confirmationRateMin));
     params.set('confirmationRateMax', String(f.confirmationRateMax));
@@ -173,6 +177,7 @@ export function searchParamsToVendorFilters(
       'crMin',
       0,
     ),
+    vendorId: searchParams.get('vendorId') ?? '',
     confirmationRateMax: parseSliderFromSearchParams(
       searchParams,
       'confirmationRateMax',

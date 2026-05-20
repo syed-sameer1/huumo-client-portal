@@ -109,7 +109,6 @@ const TableBody = ({ table }: { table: LinkedPOItemsType }) => {
 export const POLinkedItems = ({ vendorId }: { vendorId: number }) => {
   const { data } = useVendorDetails(vendorId);
   const poItems = data?.vendor?.latestPurchaseOrders;
-  console.log('purchase orders', poItems);
   const table = useReactTable({
     data: poItems || [],
     columns: tableColumns,

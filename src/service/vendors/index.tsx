@@ -15,6 +15,7 @@ export type GetVendorsParams = {
   riskLevel?: string;
   sortBy?: string;
   missingEmail?: boolean;
+  vendorId?: string;
 };
 
 export const getVendors = (
@@ -24,6 +25,7 @@ export const getVendors = (
   q.set('limit', String(params.limit));
   q.set('pageNumber', String(params.pageNumber));
   if (params.searchValue) q.set('searchValue', params.searchValue);
+  if (params.vendorId) q.set('vendorId', params.vendorId);
   if (params.confirmationRateMin !== undefined) {
     q.set('confirmationRateMin', String(params.confirmationRateMin));
   }

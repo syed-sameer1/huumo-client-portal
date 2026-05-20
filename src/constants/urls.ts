@@ -38,6 +38,7 @@ export const urls = {
   /** @deprecated Prefer `purchaseOrderBulkAction` with `action: 'delete'`. */
   bulkDeletePurchaseOrders: '/purchase-order/bulk-delete',
   purchaseOrderBulkAction: '/purchase-order/bulk-action',
+  sendTestEmail: '/email-template/send-test-email/{templateId}',
 };
 
 export const routeUrls = {
