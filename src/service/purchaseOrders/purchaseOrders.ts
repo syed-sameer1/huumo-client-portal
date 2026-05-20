@@ -24,6 +24,9 @@ export interface PurchaseOrdersParams {
   dueDateTo?: string;
   statuses?: string[];
   secondaryFlags?: string[];
+  vendorId?: string;
+  sortBy?: string;
+  sortOrder?: 'ASC' | 'DESC';
 }
 
 export const purchaseOrdersService = (
@@ -37,8 +40,13 @@ export const purchaseOrdersService = (
   if (params.orderDateTo) query.set('orderDateTo', params.orderDateTo);
   if (params.dueDateFrom) query.set('dueDateFrom', params.dueDateFrom);
   if (params.dueDateTo) query.set('dueDateTo', params.dueDateTo);
+  if (params.vendorId) query.set('vendorId', params.vendorId);
   params.statuses?.forEach((s) => query.append('status', s));
   params.secondaryFlags?.forEach((f) => query.append('secondaryFlag', f));
+  if (params.sortBy) {
+    query.set('sortBy', params.sortBy);
+    if (params.sortOrder) query.set('sortOrder', params.sortOrder);
+  }
   return api.get(`${urls.purchaseOrder}/?${query.toString()}`);
 };
 
@@ -48,6 +56,17 @@ export const purchaseOrderDetails = (
   api.get(
     urls.purchaseOrderDetails.replace('{purchaseOrderId}', purchaseOrderId),
   );
+
+export type SendFollowUpResponse = {
+  message?: string;
+} & Record<string, unknown>;
+
+export const sendFollowUp = (
+  poId: string,
+): Promise<AxiosResponse<SendFollowUpResponse>> => {
+  const path = urls.sendFollowUp.replace('{poId}', poId);
+  return api.post(path);
+};
 
 export const purchaseOrderStats = (): Promise<
   AxiosResponse<{
@@ -94,6 +113,8 @@ export type ExportPurchaseOrdersCsvParams = {
   dueDateFrom?: string;
   dueDateTo?: string;
   statuses?: string[];
+  sortBy?: string;
+  sortOrder?: 'ASC' | 'DESC';
 };
 
 export const exportCsvPurchaseOrders = (
@@ -106,6 +127,10 @@ export const exportCsvPurchaseOrders = (
   if (params?.dueDateFrom) qs.set('dueDateFrom', params.dueDateFrom);
   if (params?.dueDateTo) qs.set('dueDateTo', params.dueDateTo);
   params?.statuses?.forEach((s) => qs.append('status', s));
+  if (params?.sortBy) {
+    qs.set('sortBy', params.sortBy);
+    if (params.sortOrder) qs.set('sortOrder', params.sortOrder);
+  }
 
   const suffix = qs.toString() ? `?${qs.toString()}` : '';
   return api.get(`${urls.purchaseOrderExport}${suffix}`, {

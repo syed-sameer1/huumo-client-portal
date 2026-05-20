@@ -20,6 +20,24 @@ export const tableColumns: ColumnDef<POLineItems>[] = [
     },
   },
   {
+    accessorKey: 'unitCost',
+    header: ({ column }) => (
+      <SortableHeader column={column} title="Unit Cost" />
+    ),
+    cell: ({ row }) => {
+      return row.original.unitCost ? `$${row.original.unitCost}` : '-';
+    },
+  },
+  {
+    accessorKey: 'totalCost',
+    header: ({ column }) => (
+      <SortableHeader column={column} title="Total Cost" />
+    ),
+    cell: ({ row }) => {
+      return row.original.totalCost ? `$${row.original.totalCost}` : '-';
+    },
+  },
+  {
     accessorKey: 'confirmedQuantity',
     header: ({ column }) => (
       <SortableHeader column={column} title="Confirmed Qty" />

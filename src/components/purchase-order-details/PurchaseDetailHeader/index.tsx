@@ -17,7 +17,7 @@ export const PurchaseDetailHeader = () => {
             purchaseOrderStatus={data.data.purchaseOrder.status}
           />
         )}
-        <SendFollowUpButton />
+        <SendFollowUpButton poId={orderId} />
         <MoreOptions />
       </div>
     </div>

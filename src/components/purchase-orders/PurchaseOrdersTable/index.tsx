@@ -10,15 +10,23 @@ import {
 import { tableColumns, TableHeader } from './TableHeader';
 import { TableBody } from './TableBody';
 import { usePurchaseOrders } from '@/hooks/purchaseOrders';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { type PurchaseOrdersParams } from '@/service/purchaseOrders/purchaseOrders';
 import { NoResultFound } from '@/components/no-results-found';
 import type { PurchaseOrders } from '@/types/purchaseOrders';
 import { PAGE_SIZE_OPTIONS } from './constants';
 import { DataTablePagination } from '@/components/TablePagination';
+import type {
+  PurchaseOrderSortField,
+  PurchaseOrderSortOrder,
+} from '../PurchaseOrdersFilters/constants';
+import type { PurchaseOrdersTableMeta } from './types';
 
 interface PurchaseOrdersTableProps {
   filterParams?: Omit<PurchaseOrdersParams, 'limit' | 'pageNumber'>;
+  sortBy: '' | PurchaseOrderSortField;
+  sortOrder: '' | PurchaseOrderSortOrder;
+  onSortChange: (field: PurchaseOrderSortField) => void;
   rowSelection: RowSelectionState;
   onRowSelectionChange: (
     selection: RowSelectionState,
@@ -30,12 +38,19 @@ interface PurchaseOrdersTableProps {
 
 export const PurchaseOrdersTable = ({
   filterParams,
+  sortBy,
+  sortOrder,
+  onSortChange,
   rowSelection,
   onRowSelectionChange,
   pageSize,
   onPageSizeChange,
 }: PurchaseOrdersTableProps) => {
   const [page, setPage] = useState(0);
+
+  useEffect(() => {
+    setPage(0);
+  }, [filterParams]);
   const { data, isPending, isFetching } = usePurchaseOrders(
     page + 1,
     filterParams,
@@ -72,6 +87,12 @@ export const PurchaseOrdersTable = ({
     onRowSelectionChange: handleRowSelectionChange,
     getRowId: (row) => String(row.id),
     manualPagination: true,
+    manualSorting: true,
+    meta: {
+      sortBy,
+      sortOrder,
+      onSortChange,
+    } satisfies PurchaseOrdersTableMeta,
     onPaginationChange: (updater) => {
       const next =
         typeof updater === 'function'

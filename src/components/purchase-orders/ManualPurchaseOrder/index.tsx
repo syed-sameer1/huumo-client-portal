@@ -63,7 +63,6 @@ export const ManualPurchaseOrder = () => {
     defaultValues: {
       poNumber: '',
       orderDate: '',
-      dueDate: '',
       site: '',
       buyer: '',
       account: '',
@@ -89,7 +88,7 @@ export const ManualPurchaseOrder = () => {
 
   const lineItemForm = useForm<LineItemValues>({
     resolver: zodResolver(lineItemSchema) as Resolver<LineItemValues>,
-    defaultValues: { lineItem: '', quantity: 1, unitCost: 1 },
+    defaultValues: { lineItem: '', quantity: 1, unitCost: 1, dueDate: '' },
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -104,7 +103,10 @@ export const ManualPurchaseOrder = () => {
 
   const onSubmit = (values: ManualPurchaseOrderFormValues) => {
     const orderDate = toMMDDYYYY(values.orderDate);
-    const dueDate = values.dueDate ? toMMDDYYYY(values.dueDate) : undefined;
+    const items = values.items.map((item) => ({
+      ...item,
+      dueDate: toMMDDYYYY(item.dueDate),
+    }));
 
     const siteTrimmed = values.site.trim();
     const sitePayload = siteTrimmed ? { site: siteTrimmed } : {};
@@ -123,19 +125,17 @@ export const ManualPurchaseOrder = () => {
         ? {
             poNumber: values.poNumber,
             orderDate,
-            dueDate,
             ...optionalFields,
             vendorId: Number(values.vendorId),
-            items: values.items,
+            items,
           }
         : {
             poNumber: values.poNumber,
             orderDate,
-            dueDate,
             ...optionalFields,
             vendorName: values.vendorName?.trim(),
             vendorEmail: values.vendorEmail?.trim(),
-            items: values.items,
+            items,
           };
 
     mutate(payload as any, {
@@ -274,211 +274,183 @@ export const ManualPurchaseOrder = () => {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-3">
-                <div className="font-medium">
-                  Vendor <span className="text-destructive">*</span>
-                </div>
-
-                <FormField
-                  control={form.control}
-                  name="vendorMode"
-                  render={({ field }) => (
-                    <FormItem className="mb-4">
-                      <FormControl>
-                        <RadioGroup
-                          value={field.value}
-                          onValueChange={(v) => {
-                            field.onChange(v);
-                            if (v === 'select') {
-                              form.setValue('vendorName', '');
-                              form.setValue('vendorEmail', '');
-                            } else {
-                              form.setValue('vendorId', undefined);
-                            }
-                          }}
-                          className="gap-2"
-                        >
-                          <div className="flex items-center gap-2">
-                            <RadioGroupItem
-                              value="select"
-                              id="vendor-select"
-                              className="h-5 w-5 border-2  border-[#A1A1AA] [&_svg]:fill-[#20A665] [&_svg]:text-[#20A665] [&_svg]:w-[12px]"
-                            />
-                            <Label htmlFor="vendor-select" className="text-sm">
-                              Choose from vendor list
-                            </Label>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <RadioGroupItem
-                              value="manual"
-                              id="vendor-manual"
-                              className="h-5 w-5 border-2  border-[#A1A1AA] [&_svg]:fill-[#20A665] [&_svg]:text-[#20A665] [&_svg]:w-[12px]"
-                            />
-                            <Label htmlFor="vendor-manual" className="text-sm">
-                              Add vendor manually
-                            </Label>
-                          </div>
-                        </RadioGroup>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {vendorMode === 'select' ? (
-                  <FormField
-                    control={form.control}
-                    name="vendorId"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Popover
-                            open={vendorSearchOpen}
-                            onOpenChange={(open) => {
-                              setVendorSearchOpen(open);
-                              if (!open) setVendorSearch('');
-                            }}
-                          >
-                            <PopoverAnchor asChild>
-                              <div className="relative w-full">
-                                <PopoverTrigger asChild>
-                                  <Button
-                                    type="button"
-                                    variant="outline"
-                                    className="h-11 w-full justify-between font-normal"
-                                    disabled={isLoading}
-                                  >
-                                    <span className="truncate">
-                                      {selectedVendorId
-                                        ? (vendorOptions.find(
-                                            (v) =>
-                                              String(v.id) === selectedVendorId,
-                                          )?.vendorName ?? 'Select vendor')
-                                        : isLoading
-                                          ? 'Loading vendors…'
-                                          : 'Select vendor'}
-                                    </span>
-                                    <span className="text-muted-foreground">
-                                      ▾
-                                    </span>
-                                  </Button>
-                                </PopoverTrigger>
-                              </div>
-                            </PopoverAnchor>
-                            <PopoverContent
-                              className="w-[var(--radix-popover-trigger-width)] p-2"
-                              align="start"
-                              side="bottom"
-                              sideOffset={6}
-                            >
-                              <Input
-                                value={vendorSearch}
-                                onChange={(e) =>
-                                  setVendorSearch(e.target.value)
-                                }
-                                placeholder="Search vendor…"
-                                className="h-9"
-                                autoFocus
-                              />
-                              <div className="mt-2 max-h-56 overflow-auto ">
-                                {filteredVendors.length === 0 ? (
-                                  <div className="p-3 text-sm text-muted-foreground">
-                                    No vendors found.
-                                  </div>
-                                ) : (
-                                  filteredVendors.map((v) => (
-                                    <button
-                                      key={v.id}
-                                      type="button"
-                                      className="w-full text-left px-3 py-2 text-sm hover:bg-accent"
-                                      onClick={() => {
-                                        field.onChange(String(v.id));
-                                        setVendorSearchOpen(false);
-                                        setVendorSearch('');
-                                      }}
-                                    >
-                                      {v.vendorName}
-                                    </button>
-                                  ))
-                                )}
-                              </div>
-                            </PopoverContent>
-                          </Popover>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="vendorName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="font-medium mb-3 block">
-                            Vendor Name
-                            <span className="text-destructive">*</span>
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Nvidia Corp"
-                              className="h-11"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="vendorEmail"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="font-medium mb-3 block">
-                            Email Address{' '}
-                            <span className="text-destructive">*</span>
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="nvidia@hotmail.com"
-                              className="h-11"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                )}
+            <div className="space-y-3">
+              <div className="font-medium">
+                Vendor <span className="text-destructive">*</span>
               </div>
 
               <FormField
                 control={form.control}
-                name="dueDate"
+                name="vendorMode"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="font-medium mb-3 block">
-                      Due Date <span className="text-destructive">*</span>
-                    </FormLabel>
+                  <FormItem className="mb-4">
                     <FormControl>
-                      <DatePicker
-                        value={field.value ? new Date(field.value) : undefined}
-                        onChange={(d) => {
-                          field.onChange(d ? d.toISOString().slice(0, 10) : '');
+                      <RadioGroup
+                        value={field.value}
+                        onValueChange={(v) => {
+                          field.onChange(v);
+                          if (v === 'select') {
+                            form.setValue('vendorName', '');
+                            form.setValue('vendorEmail', '');
+                          } else {
+                            form.setValue('vendorId', undefined);
+                          }
                         }}
-                        placeholder="mm/dd/yyyy"
-                        format="short"
-                        inputClassName="h-11 w-full"
-                      />
+                        className="gap-2"
+                      >
+                        <div className="flex items-center gap-2">
+                          <RadioGroupItem
+                            value="select"
+                            id="vendor-select"
+                            className="h-5 w-5 border-2  border-[#A1A1AA] [&_svg]:fill-[#20A665] [&_svg]:text-[#20A665] [&_svg]:w-[12px]"
+                          />
+                          <Label htmlFor="vendor-select" className="text-sm">
+                            Choose from vendor list
+                          </Label>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <RadioGroupItem
+                            value="manual"
+                            id="vendor-manual"
+                            className="h-5 w-5 border-2  border-[#A1A1AA] [&_svg]:fill-[#20A665] [&_svg]:text-[#20A665] [&_svg]:w-[12px]"
+                          />
+                          <Label htmlFor="vendor-manual" className="text-sm">
+                            Add vendor manually
+                          </Label>
+                        </div>
+                      </RadioGroup>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
+              {vendorMode === 'select' ? (
+                <FormField
+                  control={form.control}
+                  name="vendorId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Popover
+                          open={vendorSearchOpen}
+                          onOpenChange={(open) => {
+                            setVendorSearchOpen(open);
+                            if (!open) setVendorSearch('');
+                          }}
+                        >
+                          <PopoverAnchor asChild>
+                            <div className="relative w-full">
+                              <PopoverTrigger asChild>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  className="h-11 w-full justify-between font-normal"
+                                  disabled={isLoading}
+                                >
+                                  <span className="truncate">
+                                    {selectedVendorId
+                                      ? (vendorOptions.find(
+                                          (v) =>
+                                            String(v.id) === selectedVendorId,
+                                        )?.vendorName ?? 'Select vendor')
+                                      : isLoading
+                                        ? 'Loading vendors…'
+                                        : 'Select vendor'}
+                                  </span>
+                                  <span className="text-muted-foreground">
+                                    ▾
+                                  </span>
+                                </Button>
+                              </PopoverTrigger>
+                            </div>
+                          </PopoverAnchor>
+                          <PopoverContent
+                            className="w-[var(--radix-popover-trigger-width)] p-2"
+                            align="start"
+                            side="bottom"
+                            sideOffset={6}
+                          >
+                            <Input
+                              value={vendorSearch}
+                              onChange={(e) => setVendorSearch(e.target.value)}
+                              placeholder="Search vendor…"
+                              className="h-9"
+                              autoFocus
+                            />
+                            <div className="mt-2 max-h-56 overflow-auto ">
+                              {filteredVendors.length === 0 ? (
+                                <div className="p-3 text-sm text-muted-foreground">
+                                  No vendors found.
+                                </div>
+                              ) : (
+                                filteredVendors.map((v) => (
+                                  <button
+                                    key={v.id}
+                                    type="button"
+                                    className="w-full text-left px-3 py-2 text-sm hover:bg-accent"
+                                    onClick={() => {
+                                      field.onChange(String(v.id));
+                                      setVendorSearchOpen(false);
+                                      setVendorSearch('');
+                                    }}
+                                  >
+                                    {v.vendorName}
+                                  </button>
+                                ))
+                              )}
+                            </div>
+                          </PopoverContent>
+                        </Popover>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="vendorName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="font-medium mb-3 block">
+                          Vendor Name
+                          <span className="text-destructive">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Nvidia Corp"
+                            className="h-11"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="vendorEmail"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="font-medium mb-3 block">
+                          Email Address{' '}
+                          <span className="text-destructive">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="nvidia@hotmail.com"
+                            className="h-11"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              )}
             </div>
 
             <Button
@@ -486,7 +458,12 @@ export const ManualPurchaseOrder = () => {
               variant="ghost"
               className="text-background-secondary justify-start px-0 hover:bg-transparent"
               onClick={() => {
-                lineItemForm.reset({ lineItem: '', quantity: 1, unitCost: 1 });
+                lineItemForm.reset({
+                  lineItem: '',
+                  quantity: 1,
+                  unitCost: 1,
+                  dueDate: '',
+                });
                 setLineItemModalOpen(true);
               }}
             >
@@ -515,6 +492,9 @@ export const ManualPurchaseOrder = () => {
                         <div className="font-medium">{li.lineItem}</div>
                         <div className="text-muted-foreground">
                           Qty: {li.quantity} · Unit cost: {li.unitCost}
+                          {li.dueDate
+                            ? ` · Due: ${toMMDDYYYY(li.dueDate)}`
+                            : ''}
                         </div>
                       </div>
                       <Button
@@ -571,6 +551,30 @@ export const ManualPurchaseOrder = () => {
                         className="h-11"
                         placeholder="Plastic"
                         {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={lineItemForm.control}
+                name="dueDate"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="font-medium mb-3 block">
+                      Due Date <span className="text-destructive">*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <DatePicker
+                        value={field.value ? new Date(field.value) : undefined}
+                        onChange={(d) => {
+                          field.onChange(d ? d.toISOString().slice(0, 10) : '');
+                        }}
+                        placeholder="mm/dd/yyyy"
+                        format="short"
+                        inputClassName="h-11 w-full"
                       />
                     </FormControl>
                     <FormMessage />
