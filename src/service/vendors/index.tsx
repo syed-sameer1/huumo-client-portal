@@ -14,6 +14,7 @@ export type GetVendorsParams = {
   performanceScoreMax?: number;
   riskLevel?: string;
   sortBy?: string;
+  sortOrder?: 'ASC' | 'DESC';
   missingEmail?: boolean;
   vendorId?: string;
 };
@@ -39,7 +40,10 @@ export const getVendors = (
     q.set('performanceScoreMax', String(params.performanceScoreMax));
   }
   if (params.riskLevel) q.set('riskLevel', params.riskLevel);
-  if (params.sortBy) q.set('sortBy', params.sortBy);
+  if (params.sortBy) {
+    q.set('sortBy', params.sortBy);
+    if (params.sortOrder) q.set('sortOrder', params.sortOrder);
+  }
   if (params.missingEmail === true) q.set('missingEmail', 'true');
   return api.get(`${urls.vendors}/?${q.toString()}`);
 };
@@ -72,6 +76,7 @@ export type ExportVendorsCsvParams = {
   performanceScoreMax?: string;
   riskLevel?: string;
   sortBy?: string;
+  sortOrder?: 'ASC' | 'DESC';
   missingEmail?: boolean;
 };
 
@@ -102,7 +107,10 @@ export const exportCsvVendors = (
     qs.set('performanceScoreMax', params.performanceScoreMax);
   }
   if (params?.riskLevel) qs.set('riskLevel', params.riskLevel);
-  if (params?.sortBy) qs.set('sortBy', params.sortBy);
+  if (params?.sortBy) {
+    qs.set('sortBy', params.sortBy);
+    if (params.sortOrder) qs.set('sortOrder', params.sortOrder);
+  }
   if (params?.missingEmail === true) qs.set('missingEmail', 'true');
 
   const suffix = qs.toString() ? `?${qs.toString()}` : '';

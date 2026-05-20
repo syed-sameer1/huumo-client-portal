@@ -49,6 +49,7 @@ export function VendorExportButton() {
           : undefined,
       riskLevel: api.riskLevel,
       sortBy: api.sortBy,
+      sortOrder: api.sortOrder,
       missingEmail: api.missingEmail,
     };
 

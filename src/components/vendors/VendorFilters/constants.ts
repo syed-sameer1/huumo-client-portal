@@ -1,3 +1,17 @@
+/** Allowed `sortBy` keys for GET /vendor (e.g. `?sortBy=vendorName&sortOrder=ASC`). */
+export const VENDOR_SORT_FIELDS = [
+  'vendorName',
+  'vendorEmail',
+  'totalSpend',
+  'confirmationRate',
+  'performanceScore',
+  'riskLevel',
+] as const;
+
+export type VendorSortField = (typeof VENDOR_SORT_FIELDS)[number];
+
+export type VendorSortOrder = 'ASC' | 'DESC';
+
 export type VendorFiltersState = {
   /** Same URL key as purchase orders (`searchValue`). */
   searchValue: string;
@@ -10,6 +24,8 @@ export type VendorFiltersState = {
   /** Drawer Sort By: High Risk Vendors, Missing Email, Top Spend Vendors */
   drawerSort: string[];
   vendorId?: string;
+  sortBy: '' | VendorSortField;
+  sortOrder: '' | VendorSortOrder;
 };
 
 export const DEFAULT_VENDOR_FILTERS: VendorFiltersState = {
@@ -20,7 +36,57 @@ export const DEFAULT_VENDOR_FILTERS: VendorFiltersState = {
   performanceScoreMax: 100,
   quickPresets: [],
   drawerSort: [],
+  sortBy: '',
+  sortOrder: '',
 };
+
+const VENDOR_SORT_FIELD_SET = new Set<string>(VENDOR_SORT_FIELDS);
+
+export function isVendorSortField(value: string): value is VendorSortField {
+  return VENDOR_SORT_FIELD_SET.has(value);
+}
+
+export function normalizeVendorSortOrder(value: string): VendorSortOrder | '' {
+  const upper = value.toUpperCase();
+  if (upper === 'ASC') return 'ASC';
+  if (upper === 'DESC') return 'DESC';
+  return '';
+}
+
+export function getVendorSortDirection(
+  sortBy: '' | VendorSortField,
+  sortOrder: '' | VendorSortOrder,
+  field: VendorSortField,
+): false | VendorSortOrder {
+  if (sortBy !== field) return false;
+  return sortOrder === 'DESC' ? 'DESC' : sortOrder === 'ASC' ? 'ASC' : false;
+}
+
+/** One sort at a time: new column → ASC; same column cycles ASC → DESC → off. */
+export function toggleVendorSort(
+  sortBy: '' | VendorSortField,
+  sortOrder: '' | VendorSortOrder,
+  field: VendorSortField,
+): { sortBy: '' | VendorSortField; sortOrder: '' | VendorSortOrder } {
+  if (sortBy !== field) {
+    return { sortBy: field, sortOrder: 'ASC' };
+  }
+  if (sortOrder === 'ASC') {
+    return { sortBy: field, sortOrder: 'DESC' };
+  }
+  return { sortBy: '', sortOrder: '' };
+}
+
+export function vendorSortToApiQuery(
+  sortBy: '' | VendorSortField,
+  sortOrder: '' | VendorSortOrder,
+): { sortBy?: string; sortOrder?: VendorSortOrder } {
+  if (!sortBy) return {};
+  return {
+    sortBy,
+    sortOrder: sortOrder === 'DESC' ? 'DESC' : 'ASC',
+  };
+}
 
 export const VENDOR_QUICK_PRESET_ORDER = [
   'high-risk',
@@ -95,6 +161,7 @@ type VendorApiQuery = {
   performanceScoreMax?: number;
   riskLevel?: string;
   sortBy?: string;
+  sortOrder?: VendorSortOrder;
   missingEmail?: boolean;
   vendorId?: string;
 };
@@ -119,17 +186,21 @@ export function vendorFiltersToApiQuery(f: VendorFiltersState): VendorApiQuery {
     out.riskLevel = 'high';
   }
 
-  const wantsTotalSpend =
-    f.quickPresets.includes('high-spend') ||
-    f.drawerSort.includes('high-spend') ||
-    f.drawerSort.includes('top-spend');
-  const wantsConfirmation =
-    f.quickPresets.includes('low-confirmation-rate') ||
-    f.drawerSort.includes('low-confirmation-rate');
-  if (wantsTotalSpend) {
-    out.sortBy = 'totalSpend';
-  } else if (wantsConfirmation) {
-    out.sortBy = 'confirmationRate';
+  if (f.sortBy) {
+    Object.assign(out, vendorSortToApiQuery(f.sortBy, f.sortOrder));
+  } else {
+    const wantsTotalSpend =
+      f.quickPresets.includes('high-spend') ||
+      f.drawerSort.includes('high-spend') ||
+      f.drawerSort.includes('top-spend');
+    const wantsConfirmation =
+      f.quickPresets.includes('low-confirmation-rate') ||
+      f.drawerSort.includes('low-confirmation-rate');
+    if (wantsTotalSpend) {
+      out.sortBy = 'totalSpend';
+    } else if (wantsConfirmation) {
+      out.sortBy = 'confirmationRate';
+    }
   }
 
   if (f.drawerSort.includes('missing-email')) {
@@ -161,7 +232,12 @@ export function vendorFiltersToSearchParams(
   }
   const facets = vendorFiltersToApiQuery(f);
   if (facets.riskLevel) params.set('riskLevel', facets.riskLevel);
-  if (facets.sortBy) params.set('sortBy', facets.sortBy);
+  if (f.sortBy) {
+    params.set('sortBy', f.sortBy);
+    params.set('sortOrder', f.sortOrder === 'DESC' ? 'DESC' : 'ASC');
+  } else if (facets.sortBy) {
+    params.set('sortBy', facets.sortBy);
+  }
   if (facets.missingEmail === true) params.set('missingEmail', 'true');
   return params;
 }
@@ -201,17 +277,22 @@ export function searchParamsToVendorFilters(
   const quickPresets: string[] = [];
   let drawerSort: string[] = [];
 
+  const sortByRaw = searchParams.get('sortBy') ?? '';
+  const sortBy = isVendorSortField(sortByRaw) ? sortByRaw : '';
+  const sortOrder = sortBy
+    ? normalizeVendorSortOrder(searchParams.get('sortOrder') ?? '') || 'ASC'
+    : '';
+
   const riskLevelParam = searchParams.get('riskLevel');
   if (riskLevelParam === 'high') {
     quickPresets.push('high-risk');
     drawerSort.push('high-risk');
   }
 
-  const sortByParam = searchParams.get('sortBy');
-  if (sortByParam === 'confirmationRate') {
+  if (sortBy === 'confirmationRate') {
     quickPresets.push('low-confirmation-rate');
     drawerSort.push('low-confirmation-rate');
-  } else if (sortByParam === 'totalSpend') {
+  } else if (sortBy === 'totalSpend') {
     quickPresets.push('high-spend');
     drawerSort.push('high-spend');
   }
@@ -232,6 +313,8 @@ export function searchParamsToVendorFilters(
     ...base,
     quickPresets: [...new Set(quickPresets)],
     drawerSort: [...new Set(drawerSort)],
+    sortBy,
+    sortOrder,
   };
 }
 
@@ -254,7 +337,11 @@ export function hasVendorFilterSelection(f: VendorFiltersState): boolean {
 }
 
 export function hasVendorSearchOrFilters(f: VendorFiltersState): boolean {
-  return Boolean(f.searchValue.trim()) || hasVendorFilterSelection(f);
+  return (
+    Boolean(f.searchValue.trim()) ||
+    hasVendorFilterSelection(f) ||
+    Boolean(f.sortBy)
+  );
 }
 
 export function getPresetLabel(id: string): string {

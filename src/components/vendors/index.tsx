@@ -9,7 +9,9 @@ import { VendorFilters, type VendorFiltersState } from './VendorFilters';
 import {
   hasVendorSearchOrFilters,
   searchParamsToVendorFilters,
+  toggleVendorSort,
   vendorFiltersToSearchParams,
+  type VendorSortField,
 } from './VendorFilters/constants';
 import { VendorsTable } from './VendorsTable';
 import { Button } from '@/components/ui/button';
@@ -52,6 +54,16 @@ export const VendorsSection = () => {
       router.push(`${pathname}?${p.toString()}`, { scroll: true });
     },
     [filters, pathname, router],
+  );
+
+  const handleSortChange = useCallback(
+    (field: VendorSortField) => {
+      setVendorFilters({
+        ...filters,
+        ...toggleVendorSort(filters.sortBy, filters.sortOrder, field),
+      });
+    },
+    [filters, setVendorFilters],
   );
 
   const handlePageSizeChange = useCallback(
@@ -105,6 +117,9 @@ export const VendorsSection = () => {
       )}
       <VendorsTable
         filters={filters}
+        sortBy={filters.sortBy}
+        sortOrder={filters.sortOrder}
+        onSortChange={handleSortChange}
         pageIndex={page - 1}
         pageSize={pageSize}
         onPageChange={handlePageChange}
