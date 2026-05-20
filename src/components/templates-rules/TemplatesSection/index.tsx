@@ -1,44 +1,44 @@
 'use client';
 
 import { useMemo } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useEmailTemplates } from '@/tanstack/templates/useEmailTemplates';
 import { TemplatesTable } from './TemplatesTable';
-import { acknowledgementTemplatesMock, overdueTemplatesMock } from './mockData';
-import type { TemplateRow } from './types';
-
-function filterTemplates(rows: TemplateRow[], q: string): TemplateRow[] {
-  const s = q.trim().toLowerCase();
-  if (!s) return rows;
-  return rows.filter((r) =>
-    [r.template, r.type, r.followUpFrequency, r.lastUpdated].some((field) =>
-      field.toLowerCase().includes(s),
-    ),
-  );
-}
+import { TemplatesTableSkeleton } from './TemplatesTableSkeleton';
+import { emailTemplateToRow } from './utils';
 
 export const TemplatesSection = () => {
-  const searchParams = useSearchParams();
-  const searchValue = searchParams.get('searchValue') ?? '';
+  const { data, isLoading, isError } = useEmailTemplates();
+  const rows = useMemo(
+    () => (data?.templates ?? []).map(emailTemplateToRow),
+    [data?.templates],
+  );
 
-  const acknowledgementFiltered = useMemo(
-    () => filterTemplates(acknowledgementTemplatesMock, searchValue),
-    [searchValue],
-  );
-  const overdueFiltered = useMemo(
-    () => filterTemplates(overdueTemplatesMock, searchValue),
-    [searchValue],
-  );
+  if (isLoading) {
+    return (
+      <div className="space-y-8">
+        <section className="space-y-4">
+          <h2 className="text-lg font-semibold">Acknowledgement templates</h2>
+          <TemplatesTableSkeleton />
+        </section>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="space-y-4">
+        <p className="text-sm text-destructive">
+          Unable to load templates. Please try again later.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
       <section className="space-y-4">
-        <h2 className="text-lg font-semibold">Acknowledgement templates</h2>
-        <TemplatesTable data={acknowledgementFiltered} />
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-lg font-semibold">Overdue templates</h2>
-        <TemplatesTable data={overdueFiltered} />
+        <h2 className="text-lg font-semibold">Templates</h2>
+        <TemplatesTable data={rows} />
       </section>
     </div>
   );

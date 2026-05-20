@@ -101,9 +101,7 @@ export const VendorDetails = ({
 
   const handleViewAll = () => {
     if (!vendor) return;
-    router.push(
-      `${routeUrls.purchaseOrdersRoute}?searchValue=${vendor.email || vendor.name}`,
-    );
+    router.push(`${routeUrls.purchaseOrdersRoute}?vendorId=${vendor.id}`);
   };
 
   return (

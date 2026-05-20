@@ -20,12 +20,12 @@ import { Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
-const tableColumns: ColumnDef<TemplateRow>[] = [
+export const tableColumns: ColumnDef<TemplateRow>[] = [
   {
-    accessorKey: 'template',
+    accessorKey: 'name',
     header: ({ column }) => <SortableHeader column={column} title="Template" />,
     cell: ({ row }) => (
-      <div className="text-foreground font-medium">{row.original.template}</div>
+      <div className="text-foreground font-medium">{row.original.name}</div>
     ),
   },
   {
@@ -40,30 +40,34 @@ const tableColumns: ColumnDef<TemplateRow>[] = [
     header: ({ column }) => (
       <SortableHeader column={column} title="Follow-up Frequency" />
     ),
-    cell: ({ row }) => (
-      <div className="text-foreground font-medium">
-        {row.original.followUpFrequency}
-      </div>
-    ),
+    cell: ({ row }) => {
+      return (
+        <div className="text-foreground font-medium">
+          {row.original.followUpFrequency}
+        </div>
+      );
+    },
   },
   {
-    accessorKey: 'lastUpdated',
+    accessorKey: 'updatedAt',
     header: ({ column }) => (
       <SortableHeader column={column} title="Last Updated" />
     ),
     cell: ({ row }) => (
       <div className="text-foreground font-medium">
-        {row.original.lastUpdated}
+        {row.original.updatedAt}
       </div>
     ),
   },
   {
     id: 'action',
     header: ({ column }) => <SortableHeader column={column} title="Action" />,
-    cell: () => (
+    cell: ({ row }) => (
       <TableCell data-no-row-click>
         <Button variant="ghost" size="icon">
-          <Pencil className="h-4 w-4" />
+          <Link href={`/templates-rules/edit/${row.original.id}`}>
+            <Pencil className="h-4 w-4" />
+          </Link>
         </Button>
       </TableCell>
     ),

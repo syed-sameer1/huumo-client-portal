@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { Pencil } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -14,14 +15,30 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { LoadingButton } from '@/components/LoadingButton';
+import { toast } from 'sonner';
 import { FollowUpRuleModal } from './FollowUpRuleModal';
+import { EditTemplateFormSkeleton } from './EditTemplateFormSkeleton';
 import { routeUrls } from '@/constants/urls';
+import { useEmailTemplate } from '@/tanstack/templates/useEmailTemplate';
+import { useUpdateEmailTemplate } from '@/tanstack/templates/useUpdateEmailTemplate';
+import { emailTemplateKeys } from '@/tanstack/templates/keys';
+import {
+  formatEmailTemplateTypeLabel,
+  type EmailTemplate,
+} from '@/types/emailTemplate';
 
-/** Renders text with content inside {} (including the braces) in bold */
+const PLACEHOLDER_SPLIT_RE = /(\{\{[^}]+\}\}|\{[^}]+\})/g;
+
+function isPlaceholderSegment(part: string): boolean {
+  return /^\{\{[^}]+\}\}$/.test(part) || /^\{[^}]+\}$/.test(part);
+}
+
+/** Renders text with `{{var}}` or `{var}` segments in bold */
 function formatWithBoldPlaceholders(text: string) {
-  const parts = text.split(/(\{[^}]*\})/g);
+  const parts = text.split(PLACEHOLDER_SPLIT_RE);
   return parts.map((part, i) =>
-    part.startsWith('{') && part.endsWith('}') ? (
+    isPlaceholderSegment(part) ? (
       <span key={i} className="font-bold">
         {part}
       </span>
@@ -31,79 +48,122 @@ function formatWithBoldPlaceholders(text: string) {
   );
 }
 
-const HARDCODED_SUBJECT = 'Follow-up on Purchase Order {PO Number}';
+function isHtmlContent(text: string): boolean {
+  return /<[a-z][\s\S]*>/i.test(text);
+}
 
 const AVAILABLE_VARIABLES = [
-  '{PO Number}',
-  '{Order Date}',
-  '{Vendor}',
-  '{Email Address}',
-  '{Unit Cost}',
-  '{PO Value}',
-  '{Quantity}',
-  '{Due Date}',
-  '{Status}',
-  '{PO Line Item}',
-  '{Company Signature}',
+  '{{PO Number}}',
+  '{{Order Date}}',
+  '{{Vendor}}',
+  '{{Email Address}}',
+  '{{Unit Cost}}',
+  '{{PO Value}}',
+  '{{Quantity}}',
+  '{{Due Date}}',
+  '{{Status}}',
+  '{{PO Line Item}}',
+  '{{Company Signature}}',
 ];
-
-const HARDCODED_BODY = `Dear {Vendor},
-
-I hope this message finds you well. I am reaching out to follow up on our Purchase Order # {PO Number}, which was placed on {Order Date}. As we approach the due date of {Due Date}, I wanted to check in on the status of the order.
-
-Could you kindly provide us with an update on the current progress of the order, including the expected timeline for delivery? If there have been any delays or issues that might affect the delivery schedule, please inform us as soon as possible so we can adjust our planning accordingly.
-
-Additionally, we would appreciate any details regarding the PO Line Items, Unit Cost {Unit Cost} and PO Value {PO Value} if there are any discrepancies.
-
-Thank you for your time and consideration. Should you have any questions or require further assistance, please don't hesitate to reach out. We look forward to the opportunity of working with you.
-Best regards,
-{Company Signature}`;
 
 interface EditTemplateFormProps {
   templateId: string;
 }
 
-export const EditTemplateForm = ({ templateId }: EditTemplateFormProps) => {
+type EditTemplateFormFieldsProps = {
+  templateId: string;
+  template: EmailTemplate;
+};
+
+function EditTemplateFormFields({
+  templateId,
+  template,
+}: EditTemplateFormFieldsProps) {
   const router = useRouter();
-  const [subject, setSubject] = useState(HARDCODED_SUBJECT);
-  const [body, setBody] = useState(HARDCODED_BODY);
+  const queryClient = useQueryClient();
+  const { mutate: updateTemplate, isPending } = useUpdateEmailTemplate();
+
+  const [name, setName] = useState(template.name);
+  const [subject, setSubject] = useState(template.subject);
+  const [body, setBody] = useState(template.body);
+  const [metaData] = useState(template.metaData);
   const [editingSubject, setEditingSubject] = useState(false);
   const [editingBody, setEditingBody] = useState(false);
   const [followUpModalOpen, setFollowUpModalOpen] = useState(false);
+
+  const templateTypeLabel = formatEmailTemplateTypeLabel(template.type);
 
   const handleCancel = () => {
     router.push(`${routeUrls.templateRulesRoute}/${templateId}`);
   };
 
   const handleSave = () => {
-    // TODO: persist when API is ready
-    router.push(`${routeUrls.templateRulesRoute}/${templateId}`);
+    const id = Number(templateId);
+    if (!Number.isFinite(id)) {
+      toast.error('Invalid template id');
+      return;
+    }
+
+    updateTemplate(
+      {
+        id,
+        name: name.trim(),
+        subject: subject.trim(),
+        body,
+        metaData,
+      },
+      {
+        onSuccess: () => {
+          toast.success('Template saved successfully');
+          queryClient.invalidateQueries({
+            queryKey: emailTemplateKeys.all,
+          });
+          router.push(`${routeUrls.templateRulesRoute}/${templateId}`);
+        },
+        onError: () => {
+          toast.error('Failed to save template. Please try again.');
+        },
+      },
+    );
   };
 
   return (
     <div className="space-y-10">
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <h1 className="text-[24px] font-semibold">Edit Template</h1>
         <div className="flex items-center gap-2">
-          <Button variant="secondary" onClick={handleCancel}>
+          <Button
+            variant="secondary"
+            onClick={handleCancel}
+            disabled={isPending}
+          >
             Cancel
           </Button>
-          <Button
+          <LoadingButton
             className="bg-[#52a46d] hover:bg-[#438e5b]"
             onClick={handleSave}
+            loading={isPending}
           >
             Save Changes
-          </Button>
+          </LoadingButton>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8 max-w-[1200px] m-auto">
-        {/* Left: Template content */}
-        <div className="rounded-[8px] p-[16px] border border-[#E4E4E7] space-y-[20px]">
-          <div>Template 2</div>
+      <div className="m-auto grid max-w-[1200px] grid-cols-1 gap-8 lg:grid-cols-[1fr_320px]">
+        <div className="space-y-[20px] rounded-[8px] border border-[#E4E4E7] p-[16px]">
+          <div className="space-y-2">
+            <Label className="font-medium text-foreground">Template name</Label>
+            <Input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="h-11"
+              placeholder="Template name"
+            />
+            <p className="text-sm text-muted-foreground">{templateTypeLabel}</p>
+          </div>
 
           <div className="space-y-2">
-            <Label className="text-foreground font-medium">Subject</Label>
+            <Label className="font-medium text-foreground">Subject</Label>
             {editingSubject ? (
               <Input
                 value={subject}
@@ -119,7 +179,7 @@ export const EditTemplateForm = ({ templateId }: EditTemplateFormProps) => {
                 tabIndex={0}
                 onClick={() => setEditingSubject(true)}
                 onKeyDown={(e) => e.key === 'Enter' && setEditingSubject(true)}
-                className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 cursor-text"
+                className="flex h-11 w-full cursor-text rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
                 {formatWithBoldPlaceholders(subject)}
               </div>
@@ -127,13 +187,13 @@ export const EditTemplateForm = ({ templateId }: EditTemplateFormProps) => {
           </div>
 
           <div className="space-y-2">
-            <Label className="text-foreground font-medium">Body</Label>
+            <Label className="font-medium text-foreground">Body</Label>
             {editingBody ? (
               <Textarea
                 value={body}
                 onChange={(e) => setBody(e.target.value)}
                 onBlur={() => setEditingBody(false)}
-                className="min-h-[280px] resize-y"
+                className="min-h-[280px] resize-y font-mono text-sm"
                 placeholder="Body"
                 autoFocus
               />
@@ -143,15 +203,23 @@ export const EditTemplateForm = ({ templateId }: EditTemplateFormProps) => {
                 tabIndex={0}
                 onClick={() => setEditingBody(true)}
                 onKeyDown={(e) => e.key === 'Enter' && setEditingBody(true)}
-                className="block min-h-[280px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 cursor-text whitespace-pre-wrap"
+                className="block min-h-[280px] w-full cursor-text rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
-                {formatWithBoldPlaceholders(body)}
+                {isHtmlContent(body) ? (
+                  <div
+                    className="prose prose-sm max-w-none font-normal [&_p]:mb-4 [&_p:last-child]:mb-0"
+                    dangerouslySetInnerHTML={{ __html: body }}
+                  />
+                ) : (
+                  <span className="whitespace-pre-wrap">
+                    {formatWithBoldPlaceholders(body)}
+                  </span>
+                )}
               </div>
             )}
           </div>
         </div>
 
-        {/* Right: Available Variables, Email Signature, Follow-up Rule, Usage Stats */}
         <div className="space-y-4">
           <Card>
             <CardHeader className="p-4 pb-2">
@@ -208,9 +276,8 @@ export const EditTemplateForm = ({ templateId }: EditTemplateFormProps) => {
                 </Button>
               </div>
             </CardHeader>
-            <CardContent className="p-4 pt-0 space-y-1 text-sm text-muted-foreground">
-              <p>Sends 3 days after PO creation</p>
-              <p>Threshold 60%</p>
+            <CardContent className="space-y-1 p-4 pt-0 text-sm text-muted-foreground">
+              <p>{metaData || '—'}</p>
             </CardContent>
           </Card>
 
@@ -218,7 +285,7 @@ export const EditTemplateForm = ({ templateId }: EditTemplateFormProps) => {
             <CardHeader className="p-4 pb-2">
               <CardTitle className="text-base">Usage Stats</CardTitle>
             </CardHeader>
-            <CardContent className="p-4 pt-0 space-y-1 text-sm text-muted-foreground">
+            <CardContent className="space-y-1 p-4 pt-0 text-sm text-muted-foreground">
               <p>Used 42 times · 87% response rate</p>
               <p>Last edited by John Doe</p>
               <p>Edited 5 days ago</p>
@@ -232,5 +299,40 @@ export const EditTemplateForm = ({ templateId }: EditTemplateFormProps) => {
         onOpenChange={setFollowUpModalOpen}
       />
     </div>
+  );
+}
+
+export const EditTemplateForm = ({ templateId }: EditTemplateFormProps) => {
+  const router = useRouter();
+  const { data, isLoading, isError } = useEmailTemplate(templateId);
+
+  const handleCancel = () => {
+    router.push(`${routeUrls.templateRulesRoute}/${templateId}`);
+  };
+
+  if (isLoading) {
+    return <EditTemplateFormSkeleton />;
+  }
+
+  if (isError || !data?.template) {
+    return (
+      <div className="space-y-4">
+        <h1 className="text-[24px] font-semibold">Edit Template</h1>
+        <p className="text-sm text-destructive">
+          Unable to load template. Please try again later.
+        </p>
+        <Button variant="secondary" onClick={handleCancel}>
+          Back
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <EditTemplateFormFields
+      key={`${templateId}-${data.template.updatedAt}`}
+      templateId={templateId}
+      template={data.template}
+    />
   );
 };

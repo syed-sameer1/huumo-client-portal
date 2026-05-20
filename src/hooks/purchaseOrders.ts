@@ -6,7 +6,9 @@ import {
   purchaseOrderStats,
   createPurchaseOrder,
   bulkPurchaseOrderAction,
+  sendFollowUp,
   type PurchaseOrderBulkActionPayload,
+  type SendFollowUpResponse,
   exportCsvPurchaseOrders,
   type ExportPurchaseOrdersCsvParams,
   type PurchaseOrdersParams,
@@ -95,4 +97,14 @@ export const useExportCsvPurchaseOrders = (
   >,
 ) => {
   return useApiMutation(exportCsvPurchaseOrders, options);
+};
+
+export const useSendFollowUp = (
+  options?: MutationOptions<
+    SendFollowUpResponse,
+    AxiosError<{ message?: string }>,
+    string
+  >,
+) => {
+  return useApiMutation(sendFollowUp, options);
 };

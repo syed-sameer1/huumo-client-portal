@@ -17,13 +17,13 @@ export const lineItemSchema = z.object({
   lineItem: z.string().min(1, 'Line Item name is required'),
   quantity: z.coerce.number().min(1, 'Quantity is required'),
   unitCost: z.coerce.number().min(0.01, 'Unit Cost is required'),
+  dueDate: z.string().min(1, 'Due Date is required'),
 });
 
 export const manualPurchaseOrderSchema = z
   .object({
     poNumber: z.string().min(1, 'PO Number is required'),
     orderDate: z.string().min(1, 'Order Date is required'),
-    dueDate: z.string().optional(),
     site: z.string().refine(isOptionalStrictSiteDomain, {
       message: 'Enter a valid domain (e.g. example.com)',
     }),

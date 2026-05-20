@@ -1,7 +1,12 @@
 export interface TemplateRow {
   id: string;
-  template: string;
+  name: string;
   type: string;
   followUpFrequency: string;
-  lastUpdated: string;
+  updatedAt: string;
 }
+
+export type {
+  EmailTemplate,
+  EmailTemplatesResponse,
+} from '@/types/emailTemplate';

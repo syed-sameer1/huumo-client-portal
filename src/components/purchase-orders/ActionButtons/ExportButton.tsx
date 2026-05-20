@@ -29,6 +29,15 @@ export const ExporetButton = () => {
 
   const handleExportCsv = () => {
     const statusList = searchParams.getAll('status');
+    const sortBy = searchParams.get('sortBy') || undefined;
+    const sortOrderRaw = searchParams.get('sortOrder') ?? '';
+    const sortOrderUpper = sortOrderRaw.toUpperCase();
+    const sortOrder: 'ASC' | 'DESC' | undefined =
+      sortBy && sortOrderUpper === 'DESC'
+        ? 'DESC'
+        : sortBy
+          ? 'ASC'
+          : undefined;
     const params = {
       searchValue: searchParams.get('searchValue') || undefined,
       orderDateFrom: searchParams.get('orderDateFrom') || undefined,
@@ -36,6 +45,8 @@ export const ExporetButton = () => {
       dueDateFrom: searchParams.get('dueDateFrom') || undefined,
       dueDateTo: searchParams.get('dueDateTo') || undefined,
       statuses: statusList.length > 0 ? statusList : undefined,
+      sortBy,
+      sortOrder,
     };
 
     exportCsv(params, {
