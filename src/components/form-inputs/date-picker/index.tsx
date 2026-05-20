@@ -16,7 +16,7 @@ import { cn } from '@/lib/utils';
 
 type DatePickerFormat = 'long' | 'short';
 
-function formatDate(date: Date | undefined, format: DatePickerFormat) {
+export function formatDate(date: Date | undefined, format: DatePickerFormat) {
   if (!date) {
     return '';
   }
