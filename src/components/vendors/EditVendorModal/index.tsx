@@ -66,6 +66,10 @@ export const EditVendorModal = ({
             exact: false,
           });
           queryClient.invalidateQueries({
+            queryKey: ['purchase-orders-stats'],
+            exact: false,
+          });
+          queryClient.invalidateQueries({
             queryKey: ['purchase-orders-details', orderId],
             exact: false,
           });

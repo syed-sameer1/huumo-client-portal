@@ -47,6 +47,10 @@ export const DeletePurchaseOrderModal = ({
             exact: false,
           });
           queryClient.invalidateQueries({
+            queryKey: ['purchase-orders-stats'],
+            exact: false,
+          });
+          queryClient.invalidateQueries({
             queryKey: ['client-settings'],
             exact: false,
           });

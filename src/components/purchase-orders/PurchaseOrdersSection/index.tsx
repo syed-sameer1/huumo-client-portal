@@ -96,11 +96,7 @@ export const PurchaseOrdersSection = () => {
     (field: PurchaseOrderSortField) => {
       setFilters({
         ...filters,
-        ...togglePurchaseOrderSort(
-          filters.sortBy,
-          filters.sortOrder,
-          field,
-        ),
+        ...togglePurchaseOrderSort(filters.sortBy, filters.sortOrder, field),
       });
     },
     [filters, setFilters],
@@ -156,6 +152,9 @@ export const PurchaseOrdersSection = () => {
       <PurchaseOrderBanner
         onApplyOverdueFilter={() =>
           setFilters({ ...filters, statuses: ['overdue'] })
+        }
+        onApplyMissingEmailsFilter={() =>
+          setFilters({ ...filters, statuses: ['missing-vendor-info'] })
         }
       />
       <PurchaseOrdersFilters filters={filters} onFiltersChange={setFilters} />
