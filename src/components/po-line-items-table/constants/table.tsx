@@ -34,7 +34,7 @@ export const tableColumns: ColumnDef<POLineItems>[] = [
       <SortableHeader column={column} title="Total Cost" />
     ),
     cell: ({ row }) => {
-      return row.original.totalCost ? `$${row.original.totalCost}` : '-';
+      return `$${Number(row.original.unitCost) * Number(row.original.quantity)}`;
     },
   },
   {
