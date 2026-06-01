@@ -33,7 +33,7 @@ export enum POStatus {
   ESCALATED = 'escalated',
   CREATED = 'created',
   CLOSED = 'closed',
-  CLOSE = 'close',
+  CLOSE = 'closed',
 }
 
 export type PurchaseOrderRawData = {
