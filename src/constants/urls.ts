@@ -1,5 +1,5 @@
-// export const BASE_URL = 'https://staging-api.huumo.ai';
-export const BASE_URL = 'http://localhost:8080';
+export const BASE_URL = 'https://staging-api.huumo.ai';
+// export const BASE_URL = 'http://localhost:8080';
 
 export const urls = {
   register: '/auth/client/register',
