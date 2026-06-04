@@ -62,7 +62,7 @@ export default function OnBoardingStepper() {
     const id = setTimeout(() => {
       if (gmailStatus === 'connected') {
         toast.success('Gmail connected successfully');
-        // eslint-disable-next-line react-hooks/immutability
+
         handleNext();
       }
 

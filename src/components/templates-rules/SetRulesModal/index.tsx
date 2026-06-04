@@ -53,12 +53,14 @@ export const SetRulesModal = ({ open, onClose }: SetRulesModalProps) => {
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto p-8 gap-0">
         <DialogHeader className="mb-4">
-          <DialogTitle className="text-2xl font-semibold">Set Rules</DialogTitle>
+          <DialogTitle className="text-2xl font-semibold">
+            Set Rules
+          </DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <AutomationRules />
+            {open ? <AutomationRules /> : null}
             <div className="flex justify-end pt-2">
               <LoadingButton
                 type="submit"

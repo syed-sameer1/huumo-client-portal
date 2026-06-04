@@ -19,7 +19,6 @@ export interface EmailTemplate {
   subject: string;
   body: string;
   metaData: string;
-  followUpFrequency: string;
 }
 
 export interface EmailTemplatesResponse {

@@ -1,4 +1,6 @@
-import type { ChangeEvent, Ref } from 'react';
+'use client';
+
+import { useEffect, useRef } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { Info } from 'lucide-react';
 import {
@@ -8,7 +10,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
 import {
   Tooltip,
@@ -23,62 +24,79 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useClientSettings } from '@/hooks/client';
+import type { FollowUpFrequencyFormValues } from '@/components/onboarding/types';
+import {
+  followUpFrequencyFormDefaults,
+  getClientSettingsFromQueryData,
+} from '@/lib/followUpFrequencyDefaults';
 
 const MIN_DAYS = 1;
 const MAX_DAYS = 365;
+const PRESET_DAYS = [1, 2, 3];
 
-type FrequencyDaysControlProps = {
+function frequencyDayOptions(current?: number) {
+  const options = new Set(PRESET_DAYS);
+  if (
+    typeof current === 'number' &&
+    current >= MIN_DAYS &&
+    current <= MAX_DAYS
+  ) {
+    options.add(current);
+  }
+  return [...options].sort((a, b) => a - b);
+}
+
+type FrequencyDaySelectProps = {
   value: number | undefined;
-  onChange: (value: number | undefined) => void;
-  onBlur: () => void;
-  name: string;
-  ref: Ref<HTMLInputElement>;
+  onChange: (value: number) => void;
 };
 
-function FrequencyDaysControl({
-  value,
-  onChange,
-  onBlur,
-  name,
-  ref,
-}: FrequencyDaysControlProps) {
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const raw = e.target.value;
-    if (raw === '') {
-      onChange(undefined);
-      return;
-    }
-    const n = Number.parseInt(raw, 10);
-    if (Number.isNaN(n)) return;
-    onChange(Math.min(MAX_DAYS, Math.max(MIN_DAYS, n)));
-  };
-
-  const handleBlur = () => {
-    if (value === undefined || value < MIN_DAYS) {
-      onChange(MIN_DAYS);
-    }
-    onBlur();
-  };
+function FrequencyDaySelect({ value, onChange }: FrequencyDaySelectProps) {
+  const options = frequencyDayOptions(value);
 
   return (
-    <Input
-      type="number"
-      min={MIN_DAYS}
-      max={MAX_DAYS}
-      inputMode="numeric"
-      className="w-full"
-      value={value === undefined ? '' : value}
-      onChange={handleInputChange}
-      onBlur={handleBlur}
-      name={name}
-      ref={ref}
-      aria-label="Days until follow-up"
-    />
+    <Select
+      value={value?.toString()}
+      onValueChange={(v) => onChange(Number(v))}
+    >
+      <SelectTrigger>
+        <SelectValue placeholder="Select" />
+      </SelectTrigger>
+      <SelectContent>
+        {options.map((day) => (
+          <SelectItem key={day} value={String(day)}>
+            {day}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }
 
 export const AutomationRules = () => {
-  const { control } = useFormContext();
+  const { control, reset } = useFormContext<FollowUpFrequencyFormValues>();
+  const { data: settingsResponse, isSuccess } = useClientSettings();
+  const lastHydratedSignature = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!isSuccess) return;
+
+    const settings = getClientSettingsFromQueryData(settingsResponse);
+    if (!settings) return;
+
+    const signature = JSON.stringify([
+      settings.followup1FrequencyDays,
+      settings.followup2FrequencyDays,
+      settings.followup3FrequencyDays,
+      settings.aiConfidenceThreshold,
+    ]);
+
+    if (lastHydratedSignature.current === signature) return;
+    lastHydratedSignature.current = signature;
+
+    reset(followUpFrequencyFormDefaults(settings));
+  }, [isSuccess, settingsResponse, reset]);
 
   return (
     <TooltipProvider delayDuration={200}>
@@ -105,19 +123,10 @@ export const AutomationRules = () => {
 
                 <div className="flex items-center">
                   <div className="w-20 mr-2">
-                    <Select
-                      value={field.value?.toString()}
-                      onValueChange={(v) => field.onChange(Number(v))}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="1">1</SelectItem>
-                        <SelectItem value="2">2</SelectItem>
-                        <SelectItem value="3">3</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <FrequencyDaySelect
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
                   </div>
                   <p>day(s) from the PO creation date</p>
                 </div>
@@ -138,19 +147,10 @@ export const AutomationRules = () => {
                 </FormLabel>
                 <div className="flex items-center">
                   <div className="w-20 mr-2">
-                    <Select
-                      value={field.value?.toString()}
-                      onValueChange={(v) => field.onChange(Number(v))}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="1">1</SelectItem>
-                        <SelectItem value="2">2</SelectItem>
-                        <SelectItem value="3">3</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <FrequencyDaySelect
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
                   </div>
                   <p>day(s) from the PO creation date</p>
                 </div>
@@ -170,19 +170,10 @@ export const AutomationRules = () => {
                 </FormLabel>
                 <div className="flex items-center">
                   <div className="w-20 mr-2">
-                    <Select
-                      value={field.value?.toString()}
-                      onValueChange={(v) => field.onChange(Number(v))}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="1">1</SelectItem>
-                        <SelectItem value="2">2</SelectItem>
-                        <SelectItem value="3">3</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <FrequencyDaySelect
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
                   </div>
                   <p>day(s) from the PO creation date</p>
                 </div>
