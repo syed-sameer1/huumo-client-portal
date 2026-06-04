@@ -6,6 +6,7 @@ export type PreviewSummaryType = {
   errorBreakdown: Record<string, number>;
   invalidRows: number;
   missingVendorEmailCount: number;
+  limit: any;
   overdueCount: number;
   topErrors: string[];
   totalRows: number;
