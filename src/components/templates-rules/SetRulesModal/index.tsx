@@ -14,7 +14,10 @@ import { toast } from 'sonner';
 import { followUpFrequencySchema } from '@/schema/followUpFrequencySchema';
 import type { FollowUpFrequencyFormValues } from '@/components/onboarding/types';
 import { AutomationRules } from '@/components/onboarding/AutomationRules';
-import { useClientUpdateFrequency } from '@/hooks/client';
+import { useClientSettings, useClientUpdateFrequency } from '@/hooks/client';
+import { useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { emailTemplateKeys } from '@/tanstack/templates';
 
 interface SetRulesModalProps {
   open: boolean;
@@ -23,6 +26,7 @@ interface SetRulesModalProps {
 
 export const SetRulesModal = ({ open, onClose }: SetRulesModalProps) => {
   const { mutate, isPending } = useClientUpdateFrequency();
+  const { data } = useClientSettings();
 
   const form = useForm<FollowUpFrequencyFormValues>({
     resolver: zodResolver(
@@ -36,6 +40,17 @@ export const SetRulesModal = ({ open, onClose }: SetRulesModalProps) => {
       aiConfidenceThreshold: 0,
     },
   });
+
+  useEffect(() => {
+    if (!data?.data?.settings) return;
+
+    form.reset({
+      followup1FrequencyDays: data.data.settings.followup1FrequencyDays ?? 1,
+      followup2FrequencyDays: data.data.settings.followup2FrequencyDays ?? 1,
+      followup3FrequencyDays: data.data.settings.followup3FrequencyDays ?? 1,
+      aiConfidenceThreshold: data.data.settings.aiConfidenceThreshold ?? 0,
+    });
+  }, [data]);
 
   const onSubmit = (values: FollowUpFrequencyFormValues) => {
     mutate(values, {
@@ -60,7 +75,7 @@ export const SetRulesModal = ({ open, onClose }: SetRulesModalProps) => {
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {open ? <AutomationRules /> : null}
+            <AutomationRules />
             <div className="flex justify-end pt-2">
               <LoadingButton
                 type="submit"

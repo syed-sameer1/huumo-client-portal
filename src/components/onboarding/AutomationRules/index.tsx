@@ -26,10 +26,7 @@ import {
 } from '@/components/ui/select';
 import { useClientSettings } from '@/hooks/client';
 import type { FollowUpFrequencyFormValues } from '@/components/onboarding/types';
-import {
-  followUpFrequencyFormDefaults,
-  getClientSettingsFromQueryData,
-} from '@/lib/followUpFrequencyDefaults';
+import { getClientSettingsFromQueryData } from '@/lib/followUpFrequencyDefaults';
 
 const MIN_DAYS = 1;
 const MAX_DAYS = 365;
@@ -94,8 +91,6 @@ export const AutomationRules = () => {
 
     if (lastHydratedSignature.current === signature) return;
     lastHydratedSignature.current = signature;
-
-    reset(followUpFrequencyFormDefaults(settings));
   }, [isSuccess, settingsResponse, reset]);
 
   return (
