@@ -24,9 +24,8 @@ export const manualPurchaseOrderSchema = z
   .object({
     poNumber: z.string().min(1, 'PO Number is required'),
     orderDate: z.string().min(1, 'Order Date is required'),
-    site: z.string().refine(isOptionalStrictSiteDomain, {
-      message: 'Enter a valid domain (e.g. example.com)',
-    }),
+    dueDate: z.string().min(1, 'Due Date is required'),
+    site: z.string().optional(),
     buyer: z.string(),
     account: z.string(),
     vendorMode: vendorModeSchema,

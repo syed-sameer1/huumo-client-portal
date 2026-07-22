@@ -63,6 +63,7 @@ export const ManualPurchaseOrder = () => {
     defaultValues: {
       poNumber: '',
       orderDate: '',
+      dueDate: '',
       site: '',
       buyer: '',
       account: '',
@@ -103,12 +104,13 @@ export const ManualPurchaseOrder = () => {
 
   const onSubmit = (values: ManualPurchaseOrderFormValues) => {
     const orderDate = toMMDDYYYY(values.orderDate);
+    const dueDate = toMMDDYYYY(values.dueDate);
     const items = values.items.map((item) => ({
       ...item,
       dueDate: toMMDDYYYY(item.dueDate),
     }));
 
-    const siteTrimmed = values.site.trim();
+    const siteTrimmed = values?.site?.trim();
     const sitePayload = siteTrimmed ? { site: siteTrimmed } : {};
     const buyer = values.buyer;
     const buyerPayload = buyer ? { buyer } : {};
@@ -125,6 +127,7 @@ export const ManualPurchaseOrder = () => {
         ? {
             poNumber: values.poNumber,
             orderDate,
+            dueDate,
             ...optionalFields,
             vendorId: Number(values.vendorId),
             items,
@@ -132,6 +135,7 @@ export const ManualPurchaseOrder = () => {
         : {
             poNumber: values.poNumber,
             orderDate,
+            dueDate,
             ...optionalFields,
             vendorName: values.vendorName?.trim(),
             vendorEmail: values.vendorEmail?.trim(),
@@ -152,6 +156,8 @@ export const ManualPurchaseOrder = () => {
   const onBack = () => {
     router.push(routeUrls.purchaseOrdersRoute);
   };
+
+  const orderDate = form.watch('orderDate');
 
   return (
     <div className="space-y-6">
@@ -198,9 +204,104 @@ export const ManualPurchaseOrder = () => {
                     </FormLabel>
                     <FormControl>
                       <DatePicker
-                        value={field.value ? new Date(field.value) : undefined}
+                        value={
+                          field.value
+                            ? (() => {
+                                const [year, month, day] = field.value
+                                  .split('-')
+                                  .map(Number);
+
+                                return new Date(year, month - 1, day);
+                              })()
+                            : undefined
+                        }
                         onChange={(d) => {
-                          field.onChange(d ? d.toISOString().slice(0, 10) : '');
+                          if (!d) {
+                            field.onChange('');
+                            return;
+                          }
+
+                          const year = d.getFullYear();
+                          const month = String(d.getMonth() + 1).padStart(
+                            2,
+                            '0',
+                          );
+                          const day = String(d.getDate()).padStart(2, '0');
+
+                          const newOrderDate = `${year}-${month}-${day}`;
+
+                          field.onChange(newOrderDate);
+
+                          const dueDate = form.getValues('dueDate');
+
+                          if (dueDate && dueDate < newOrderDate) {
+                            form.setValue('dueDate', '', {
+                              shouldDirty: true,
+                              shouldTouch: true,
+                              shouldValidate: true,
+                            });
+                          }
+
+                          // Revalidate Due Date
+                          setTimeout(() => {
+                            form.trigger('dueDate');
+                          }, 0);
+                        }}
+                        placeholder="mm/dd/yyyy"
+                        format="short"
+                        inputClassName="h-11 w-full"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="dueDate"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="font-medium mb-3 block">
+                      Due Date <span className="text-destructive">*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <DatePicker
+                        value={
+                          field.value
+                            ? (() => {
+                                const [year, month, day] = field.value
+                                  .split('-')
+                                  .map(Number);
+
+                                return new Date(year, month - 1, day);
+                              })()
+                            : undefined
+                        }
+                        onChange={(d) => {
+                          if (!d) {
+                            field.onChange('');
+                            return;
+                          }
+
+                          const value = `${d.getFullYear()}-${String(
+                            d.getMonth() + 1,
+                          ).padStart(
+                            2,
+                            '0',
+                          )}-${String(d.getDate()).padStart(2, '0')}`;
+
+                          if (orderDate && value < orderDate) {
+                            form.setError('dueDate', {
+                              type: 'manual',
+                              message:
+                                'Due Date cannot be earlier than Order Date',
+                            });
+                            return;
+                          }
+
+                          form.clearErrors('dueDate');
+                          field.onChange(value);
                         }}
                         placeholder="mm/dd/yyyy"
                         format="short"
@@ -568,9 +669,31 @@ export const ManualPurchaseOrder = () => {
                     </FormLabel>
                     <FormControl>
                       <DatePicker
-                        value={field.value ? new Date(field.value) : undefined}
+                        value={
+                          field.value
+                            ? (() => {
+                                const [year, month, day] = field.value
+                                  .split('-')
+                                  .map(Number);
+
+                                return new Date(year, month - 1, day);
+                              })()
+                            : undefined
+                        }
                         onChange={(d) => {
-                          field.onChange(d ? d.toISOString().slice(0, 10) : '');
+                          if (!d) {
+                            field.onChange('');
+                            return;
+                          }
+
+                          const year = d.getFullYear();
+                          const month = String(d.getMonth() + 1).padStart(
+                            2,
+                            '0',
+                          );
+                          const day = String(d.getDate()).padStart(2, '0');
+
+                          field.onChange(`${year}-${month}-${day}`);
                         }}
                         placeholder="mm/dd/yyyy"
                         format="short"

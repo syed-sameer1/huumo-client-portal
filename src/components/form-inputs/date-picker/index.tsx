@@ -55,14 +55,18 @@ export function DatePicker({
 }) {
   const [open, setOpen] = React.useState(false);
   const [internalDate, setInternalDate] = React.useState<Date | undefined>();
-  const date = value ?? internalDate;
+  const date = value;
   const [month, setMonth] = React.useState<Date | undefined>(date);
   const [inputValue, setInputValue] = React.useState(formatDate(date, format));
 
   React.useEffect(() => {
-    setInputValue(formatDate(date, format));
-    setMonth(date);
-  }, [date, format]);
+    if (value === undefined) {
+      setInternalDate(undefined);
+    }
+
+    setInputValue(formatDate(value, format));
+    setMonth(value);
+  }, [value, format]);
 
   return (
     <div className="flex flex-col gap-3">
@@ -122,7 +126,6 @@ export function DatePicker({
             className="w-full"
             onMonthChange={setMonth}
             onSelect={(date) => {
-              setInternalDate(date);
               setInputValue(formatDate(date, format));
               onChange?.(date);
               setOpen(false);
