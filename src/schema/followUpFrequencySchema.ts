@@ -2,8 +2,8 @@ import { z } from 'zod';
 
 const requiredNumber = z
   .union([z.number(), z.undefined()])
-  .refine((val) => typeof val === 'number' && val >= 1, {
-    message: 'Required',
+  .refine((val) => typeof val === 'number' && val >= 1 && val <= 365, {
+    message: 'Enter a number of days between 1 and 365',
   });
 
 export const followUpFrequencySchema = z.object({

@@ -1,8 +1,9 @@
 import { Checkbox } from '@/components/ui/checkbox';
 import { SortableHeader } from '@/components/purchase-orders/PurchaseOrdersTable/SortableHeader';
-import { ColumnDef, flexRender } from '@tanstack/react-table';
+import { Column, ColumnDef, flexRender, Table } from '@tanstack/react-table';
+import type { VendorSortField } from '../VendorFilters/constants';
 import { MoreOptions } from './MoreOptions';
-import { VendorsTableType } from './types';
+import { VendorsTableMeta, VendorsTableType } from './types';
 import {
   TableRow,
   TableHead,
@@ -13,6 +14,33 @@ import { PerformanceScoreChip } from '../PerformanceScoreChip';
 import { RiskScoreChip } from '../RiskScoreChip';
 import { VendorData } from '@/types/vendors';
 import { vendorColumnWidthStyle } from './columnLayout';
+
+function VendorSortableHeader({
+  column,
+  table,
+  title,
+  sortField,
+}: {
+  column: Column<VendorData, unknown>;
+  table: Table<VendorData>;
+  title: string;
+  sortField: VendorSortField;
+}) {
+  const meta = table.options.meta as VendorsTableMeta | undefined;
+  if (meta?.onSortChange) {
+    return (
+      <SortableHeader
+        column={column}
+        title={title}
+        sortField={sortField}
+        sortBy={meta.sortBy}
+        sortOrder={meta.sortOrder}
+        onSortChange={meta.onSortChange}
+      />
+    );
+  }
+  return <SortableHeader column={column} title={title} />;
+}
 
 export const tableColumns: ColumnDef<VendorData>[] = [
   {
@@ -38,7 +66,14 @@ export const tableColumns: ColumnDef<VendorData>[] = [
   {
     accessorKey: 'vendorName',
     meta: { width: 200 },
-    header: ({ column }) => <SortableHeader column={column} title="Vendor" />,
+    header: ({ column, table }) => (
+      <VendorSortableHeader
+        column={column}
+        table={table}
+        title="Vendor"
+        sortField="vendorName"
+      />
+    ),
     cell: ({ row }) => {
       return (
         <div className="flex items-center space-x-2">
@@ -55,7 +90,14 @@ export const tableColumns: ColumnDef<VendorData>[] = [
   {
     accessorKey: 'email',
     meta: { width: 220 },
-    header: ({ column }) => <SortableHeader column={column} title="Email" />,
+    header: ({ column, table }) => (
+      <VendorSortableHeader
+        column={column}
+        table={table}
+        title="Email"
+        sortField="vendorEmail"
+      />
+    ),
     cell: ({ row }) => {
       if (row.original.vendorEmail) {
         return <div className="font-medium">{row.original.vendorEmail}</div>;
@@ -71,8 +113,13 @@ export const tableColumns: ColumnDef<VendorData>[] = [
   {
     accessorKey: 'totalSpend',
     meta: { width: 120 },
-    header: ({ column }) => (
-      <SortableHeader column={column} title="Total Spend" />
+    header: ({ column, table }) => (
+      <VendorSortableHeader
+        column={column}
+        table={table}
+        title="Total Spend"
+        sortField="totalSpend"
+      />
     ),
     cell: ({ row }) => {
       return <div>${row.original.totalSpend}</div>;
@@ -81,8 +128,13 @@ export const tableColumns: ColumnDef<VendorData>[] = [
   {
     accessorKey: 'confirmationRate',
     meta: { width: 160 },
-    header: ({ column }) => (
-      <SortableHeader column={column} title="Confirmation Rate" />
+    header: ({ column, table }) => (
+      <VendorSortableHeader
+        column={column}
+        table={table}
+        title="Confirmation Rate"
+        sortField="confirmationRate"
+      />
     ),
     cell: ({ row }) => {
       return <div>{row.original.confirmationRate}%</div>;
@@ -91,8 +143,13 @@ export const tableColumns: ColumnDef<VendorData>[] = [
   {
     accessorKey: 'performanceScore',
     meta: { width: 170 },
-    header: ({ column }) => (
-      <SortableHeader column={column} title="Performance Score" />
+    header: ({ column, table }) => (
+      <VendorSortableHeader
+        column={column}
+        table={table}
+        title="Performance Score"
+        sortField="performanceScore"
+      />
     ),
     cell: ({ row }) => {
       return <PerformanceScoreChip value={row.original.performanceScore} />;
@@ -101,8 +158,13 @@ export const tableColumns: ColumnDef<VendorData>[] = [
   {
     accessorKey: 'riskLevel',
     meta: { width: 130 },
-    header: ({ column }) => (
-      <SortableHeader column={column} title="Risk Level" />
+    header: ({ column, table }) => (
+      <VendorSortableHeader
+        column={column}
+        table={table}
+        title="Risk Level"
+        sortField="riskLevel"
+      />
     ),
     cell: ({ row }) => {
       return <RiskScoreChip value={row.original.riskLevel} />;

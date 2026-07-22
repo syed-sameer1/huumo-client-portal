@@ -1,14 +1,15 @@
 import { useState } from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { POStatus, PurchaseOrders } from '@/types/purchaseOrders';
-import { ColumnDef, flexRender } from '@tanstack/react-table';
+import { Column, ColumnDef, flexRender, Table } from '@tanstack/react-table';
 import { SortableHeader } from './SortableHeader';
 import {
   TableRow,
   TableHead,
   TableHeader as ShadcnTableHeader,
 } from '@/components/ui/table';
-import { PurchaseOrdersTableType } from './types';
+import { PurchaseOrdersTableMeta, PurchaseOrdersTableType } from './types';
+import type { PurchaseOrderSortField } from '../PurchaseOrdersFilters/constants';
 import { StatusActionDropdown } from './StatusActionDropdown';
 import { EditVendorModal } from '@/components/vendors/EditVendorModal';
 import { purchaseOrderColumnWidthStyle } from './columnLayout';
@@ -49,6 +50,33 @@ export function EmailCell({ row }: { row: PurchaseOrders }) {
   return <>{email}</>;
 }
 
+function PoSortableHeader({
+  column,
+  table,
+  title,
+  sortField,
+}: {
+  column: Column<PurchaseOrders, unknown>;
+  table: Table<PurchaseOrders>;
+  title: string;
+  sortField: PurchaseOrderSortField;
+}) {
+  const meta = table.options.meta as PurchaseOrdersTableMeta | undefined;
+  if (meta?.onSortChange) {
+    return (
+      <SortableHeader
+        column={column}
+        title={title}
+        sortField={sortField}
+        sortBy={meta.sortBy}
+        sortOrder={meta.sortOrder}
+        onSortChange={meta.onSortChange}
+      />
+    );
+  }
+  return <SortableHeader column={column} title={title} />;
+}
+
 export const tableColumns: ColumnDef<PurchaseOrders>[] = [
   {
     id: 'select',
@@ -74,8 +102,13 @@ export const tableColumns: ColumnDef<PurchaseOrders>[] = [
   {
     accessorKey: 'poNumber',
     meta: { width: 128 },
-    header: ({ column }) => (
-      <SortableHeader column={column} title="PO Number" />
+    header: ({ column, table }) => (
+      <PoSortableHeader
+        column={column}
+        table={table}
+        title="PO Number"
+        sortField="poNumber"
+      />
     ),
     cell: ({ row }) => {
       return row.original.poNumber;
@@ -84,7 +117,14 @@ export const tableColumns: ColumnDef<PurchaseOrders>[] = [
   {
     accessorKey: 'vendorName',
     meta: { width: 168 },
-    header: ({ column }) => <SortableHeader column={column} title="Vendor" />,
+    header: ({ column, table }) => (
+      <PoSortableHeader
+        column={column}
+        table={table}
+        title="Vendor"
+        sortField="vendorName"
+      />
+    ),
     cell: ({ getValue }) => (
       <span className="capitalize">{String(getValue() ?? '')}</span>
     ),
@@ -92,7 +132,14 @@ export const tableColumns: ColumnDef<PurchaseOrders>[] = [
   {
     accessorKey: 'site',
     meta: { width: 104 },
-    header: ({ column }) => <SortableHeader column={column} title="Site" />,
+    header: ({ column, table }) => (
+      <PoSortableHeader
+        column={column}
+        table={table}
+        title="Site"
+        sortField="site"
+      />
+    ),
     cell: ({ getValue }) => (
       <span className="capitalize">{String(getValue() ?? '-')}</span>
     ),
@@ -100,7 +147,14 @@ export const tableColumns: ColumnDef<PurchaseOrders>[] = [
   {
     accessorKey: 'buyer',
     meta: { width: 112 },
-    header: ({ column }) => <SortableHeader column={column} title="Buyer" />,
+    header: ({ column, table }) => (
+      <PoSortableHeader
+        column={column}
+        table={table}
+        title="Buyer"
+        sortField="buyer"
+      />
+    ),
     cell: ({ getValue }) => (
       <span className="capitalize">{String(getValue() ?? '-')}</span>
     ),
@@ -108,7 +162,14 @@ export const tableColumns: ColumnDef<PurchaseOrders>[] = [
   {
     accessorKey: 'account',
     meta: { width: 112 },
-    header: ({ column }) => <SortableHeader column={column} title="Account" />,
+    header: ({ column, table }) => (
+      <PoSortableHeader
+        column={column}
+        table={table}
+        title="Account"
+        sortField="account"
+      />
+    ),
     cell: ({ getValue }) => (
       <span className="capitalize">{String(getValue() ?? '-')}</span>
     ),
@@ -116,32 +177,65 @@ export const tableColumns: ColumnDef<PurchaseOrders>[] = [
   {
     accessorKey: 'vendorEmail',
     meta: { width: 220 },
-    header: 'Email Address',
+    header: ({ column, table }) => (
+      <PoSortableHeader
+        column={column}
+        table={table}
+        title="Email Address"
+        sortField="vendorEmail"
+      />
+    ),
     cell: ({ row }) => <EmailCell row={row.original} />,
   },
   {
     accessorKey: 'poValue',
     meta: { width: 104 },
-    header: ({ column }) => <SortableHeader column={column} title="PO Value" />,
+    header: ({ column, table }) => (
+      <PoSortableHeader
+        column={column}
+        table={table}
+        title="PO Value"
+        sortField="totalValue"
+      />
+    ),
     cell: ({ getValue }) => `$${Number(getValue<number>())?.toFixed(2)}`,
   },
 
   {
     accessorKey: 'orderDate',
     meta: { width: 116 },
-    header: ({ column }) => (
-      <SortableHeader column={column} title="Order Date" />
+    header: ({ column, table }) => (
+      <PoSortableHeader
+        column={column}
+        table={table}
+        title="Order Date"
+        sortField="orderDate"
+      />
     ),
   },
   {
     accessorKey: 'dueDate',
     meta: { width: 116 },
-    header: 'Deliver',
+    header: ({ column, table }) => (
+      <PoSortableHeader
+        column={column}
+        table={table}
+        title="Deliver"
+        sortField="dueDate"
+      />
+    ),
   },
   {
     accessorKey: 'dueIn',
     meta: { width: 88 },
-    header: ({ column }) => <SortableHeader column={column} title="Due In" />,
+    header: ({ column, table }) => (
+      <PoSortableHeader
+        column={column}
+        table={table}
+        title="Due In"
+        sortField="dueIn"
+      />
+    ),
     cell: ({ getValue }) => {
       return getValue() ? String(getValue()) : '-';
     },
@@ -149,8 +243,13 @@ export const tableColumns: ColumnDef<PurchaseOrders>[] = [
   {
     accessorKey: 'overdueBy',
     meta: { width: 108 },
-    header: ({ column }) => (
-      <SortableHeader column={column} title="Overdue By" />
+    header: ({ column, table }) => (
+      <PoSortableHeader
+        column={column}
+        table={table}
+        title="Overdue By"
+        sortField="overdueBy"
+      />
     ),
     cell: ({ getValue }) => {
       return getValue() ? String(getValue()) : '-';
@@ -159,8 +258,13 @@ export const tableColumns: ColumnDef<PurchaseOrders>[] = [
   {
     accessorKey: 'lastUpdate',
     meta: { width: 124 },
-    header: ({ column }) => (
-      <SortableHeader column={column} title="Last Update" />
+    header: ({ column, table }) => (
+      <PoSortableHeader
+        column={column}
+        table={table}
+        title="Last Update"
+        sortField="lastUpdate"
+      />
     ),
   },
   {

@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import { Table } from '@/components/ui/table';
 import {
   getCoreRowModel,
@@ -19,65 +20,95 @@ import type { TemplateRow } from './types';
 import { Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { useClientSettings } from '@/hooks/client';
+import { getClientSettingsFromQueryData } from '@/lib/followUpFrequencyDefaults';
+import {
+  getFollowUpFrequencyLabel,
+  type FollowUpFrequencySettings,
+} from './utils';
 
-const tableColumns: ColumnDef<TemplateRow>[] = [
-  {
-    accessorKey: 'template',
-    header: ({ column }) => <SortableHeader column={column} title="Template" />,
-    cell: ({ row }) => (
-      <div className="text-foreground font-medium">{row.original.template}</div>
-    ),
-  },
-  {
-    accessorKey: 'type',
-    header: ({ column }) => <SortableHeader column={column} title="Type" />,
-    cell: ({ row }) => (
-      <div className="text-foreground font-medium">{row.original.type}</div>
-    ),
-  },
-  {
-    accessorKey: 'followUpFrequency',
-    header: ({ column }) => (
-      <SortableHeader column={column} title="Follow-up Frequency" />
-    ),
-    cell: ({ row }) => (
-      <div className="text-foreground font-medium">
-        {row.original.followUpFrequency}
-      </div>
-    ),
-  },
-  {
-    accessorKey: 'lastUpdated',
-    header: ({ column }) => (
-      <SortableHeader column={column} title="Last Updated" />
-    ),
-    cell: ({ row }) => (
-      <div className="text-foreground font-medium">
-        {row.original.lastUpdated}
-      </div>
-    ),
-  },
-  {
-    id: 'action',
-    header: ({ column }) => <SortableHeader column={column} title="Action" />,
-    cell: () => (
-      <TableCell data-no-row-click>
-        <Button variant="ghost" size="icon">
-          <Pencil className="h-4 w-4" />
-        </Button>
-      </TableCell>
-    ),
-  },
-];
+export function createTableColumns(
+  frequencySettings?: FollowUpFrequencySettings | null,
+): ColumnDef<TemplateRow>[] {
+  return [
+    {
+      accessorKey: 'name',
+      header: ({ column }) => (
+        <SortableHeader column={column} title="Template" />
+      ),
+      cell: ({ row }) => (
+        <div className="text-foreground font-medium">{row.original.name}</div>
+      ),
+    },
+    {
+      accessorKey: 'type',
+      header: ({ column }) => <SortableHeader column={column} title="Type" />,
+      cell: ({ row }) => (
+        <div className="text-foreground font-medium">{row.original.type}</div>
+      ),
+    },
+    {
+      id: 'followUpFrequency',
+      header: ({ column }) => (
+        <SortableHeader column={column} title="Follow-up Frequency" />
+      ),
+      cell: ({ row }) => {
+        console.log(row.original.typeKey);
+        return (
+          <div className="text-foreground font-medium">
+            {getFollowUpFrequencyLabel(row.original.typeKey, frequencySettings)}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: 'updatedAt',
+      header: ({ column }) => (
+        <SortableHeader column={column} title="Last Updated" />
+      ),
+      cell: ({ row }) => (
+        <div className="text-foreground font-medium">
+          {row.original.updatedAt}
+        </div>
+      ),
+    },
+    {
+      id: 'action',
+      header: ({ column }) => <SortableHeader column={column} title="Action" />,
+      cell: ({ row }) => (
+        <TableCell data-no-row-click>
+          <Button variant="ghost" size="icon">
+            <Link href={`/templates-rules/edit/${row.original.id}`}>
+              <Pencil className="h-4 w-4" />
+            </Link>
+          </Button>
+        </TableCell>
+      ),
+    },
+  ];
+}
+
+/** Static columns for skeleton (frequency cell content is not rendered). */
+export const tableColumns = createTableColumns();
 
 interface TemplatesTableProps {
   data: TemplateRow[];
 }
 
 export const TemplatesTable = ({ data }: TemplatesTableProps) => {
+  const { data: clientSettingsResponse } = useClientSettings();
+  const frequencySettings = getClientSettingsFromQueryData(
+    clientSettingsResponse,
+  );
+
+  const columns = useMemo(
+    () => createTableColumns(frequencySettings),
+    [frequencySettings],
+  );
+
   const table = useReactTable({
     data,
-    columns: tableColumns,
+    columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
   });

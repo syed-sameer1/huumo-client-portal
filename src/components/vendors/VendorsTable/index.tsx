@@ -13,13 +13,21 @@ import { useVendorsData } from '@/hooks/vendors';
 import { useCallback } from 'react';
 import { NoResultFound } from '@/components/no-results-found';
 import type { VendorFiltersState } from '@/components/vendors/VendorFilters';
-import { hasVendorSearchOrFilters } from '@/components/vendors/VendorFilters/constants';
+import {
+  hasVendorSearchOrFilters,
+  type VendorSortField,
+  type VendorSortOrder,
+} from '@/components/vendors/VendorFilters/constants';
+import type { VendorsTableMeta } from './types';
 import { PAGE_SIZE_OPTIONS } from './constants';
 import type { VendorData } from '@/types/vendors';
 import { DataTablePagination } from '@/components/TablePagination';
 
 interface VendorsTableProps {
   filters: VendorFiltersState;
+  sortBy: '' | VendorSortField;
+  sortOrder: '' | VendorSortOrder;
+  onSortChange: (field: VendorSortField) => void;
   pageIndex: number;
   pageSize: number;
   onPageChange: (pageIndex: number) => void;
@@ -33,6 +41,9 @@ interface VendorsTableProps {
 
 export const VendorsTable = ({
   filters,
+  sortBy,
+  sortOrder,
+  onSortChange,
   pageIndex,
   pageSize,
   onPageChange,
@@ -73,6 +84,12 @@ export const VendorsTable = ({
     onRowSelectionChange: handleRowSelectionChange,
     getRowId: (row) => String(row.id),
     manualPagination: true,
+    manualSorting: true,
+    meta: {
+      sortBy,
+      sortOrder,
+      onSortChange,
+    } satisfies VendorsTableMeta,
     onPaginationChange: (updater) => {
       const next =
         typeof updater === 'function'

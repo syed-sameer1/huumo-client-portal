@@ -16,6 +16,9 @@ import { PurchaseOrderBanner } from '../PurchaseOrderHeader/PurchaseOrderBanner'
 import {
   filtersToParams,
   paramsToFilters,
+  togglePurchaseOrderSort,
+  purchaseOrderSortToApiQuery,
+  type PurchaseOrderSortField,
   type PurchaseOrderFilters as Filters,
 } from '../PurchaseOrdersFilters/constants';
 import { Button } from '@/components/ui/button';
@@ -61,16 +64,43 @@ export const PurchaseOrdersSection = () => {
     [router, pathname],
   );
 
-  const filterParams = {
-    searchValue: filters.searchValue || undefined,
-    orderDateFrom: filters.orderDateFrom || undefined,
-    orderDateTo: filters.orderDateTo || undefined,
-    dueDateFrom: filters.dueDateFrom || undefined,
-    dueDateTo: filters.dueDateTo || undefined,
-    statuses: filters.statuses.length > 0 ? filters.statuses : undefined,
-    secondaryFlags:
-      filters.secondaryFlags.length > 0 ? filters.secondaryFlags : undefined,
-  };
+  const sortKey = `${filters.sortBy}|${filters.sortOrder}`;
+
+  const filterParams = useMemo(
+    () => ({
+      searchValue: filters.searchValue || undefined,
+      orderDateFrom: filters.orderDateFrom || undefined,
+      orderDateTo: filters.orderDateTo || undefined,
+      dueDateFrom: filters.dueDateFrom || undefined,
+      dueDateTo: filters.dueDateTo || undefined,
+      statuses: filters.statuses.length > 0 ? filters.statuses : undefined,
+      secondaryFlags:
+        filters.secondaryFlags.length > 0 ? filters.secondaryFlags : undefined,
+      vendorId: filters.vendorId || undefined,
+      ...purchaseOrderSortToApiQuery(filters.sortBy, filters.sortOrder),
+    }),
+    [
+      filters.searchValue,
+      filters.orderDateFrom,
+      filters.orderDateTo,
+      filters.dueDateFrom,
+      filters.dueDateTo,
+      filters.statuses,
+      filters.secondaryFlags,
+      filters.vendorId,
+      sortKey,
+    ],
+  );
+
+  const handleSortChange = useCallback(
+    (field: PurchaseOrderSortField) => {
+      setFilters({
+        ...filters,
+        ...togglePurchaseOrderSort(filters.sortBy, filters.sortOrder, field),
+      });
+    },
+    [filters, setFilters],
+  );
 
   const { data, loading, isFetching } = usePurchaseOrders(
     1,
@@ -106,7 +136,8 @@ export const PurchaseOrdersSection = () => {
     filters.orderDateFrom ||
     filters.orderDateTo ||
     filters.dueDateFrom ||
-    filters.dueDateTo;
+    filters.dueDateTo ||
+    Boolean(filters.sortBy);
 
   if (data?.purchaseOrders.length === 0 && !hasAnyFilter) {
     return <NoPurchaseOrder />;
@@ -118,7 +149,14 @@ export const PurchaseOrdersSection = () => {
         HUUMO automatically follows up on unacknowledged POs using the rules and
         templates you define.
       </div>
-      <PurchaseOrderBanner />
+      <PurchaseOrderBanner
+        onApplyOverdueFilter={() =>
+          setFilters({ ...filters, statuses: ['overdue'] })
+        }
+        onApplyMissingEmailsFilter={() =>
+          setFilters({ ...filters, statuses: ['missing-vendor-info'] })
+        }
+      />
       <PurchaseOrdersFilters filters={filters} onFiltersChange={setFilters} />
       {(hasAnyFilter || selectedPoIds.length > 0) && (
         <div
@@ -188,6 +226,9 @@ export const PurchaseOrdersSection = () => {
       )}
       <PurchaseOrdersTable
         filterParams={filterParams}
+        sortBy={filters.sortBy}
+        sortOrder={filters.sortOrder}
+        onSortChange={handleSortChange}
         rowSelection={rowSelection}
         onRowSelectionChange={handleRowSelectionChange}
         pageSize={pageSize}

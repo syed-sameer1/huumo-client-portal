@@ -14,6 +14,26 @@ import { POStatus } from '@/types/purchaseOrders';
 import { ChevronDown } from 'lucide-react';
 import { usePurchaseOrderBulkAction } from '@/hooks/purchaseOrders';
 
+type StatusConfig = (typeof PurchaseOrdersStatusConfigs)[POStatus.CLOSED];
+
+const DEFAULT_STATUS_CONFIG: StatusConfig = {
+  label: 'Unknown',
+  bgColor: '#F5F5F5',
+  textColor: '#71717A',
+};
+
+type ConfiguredPOStatus = keyof typeof PurchaseOrdersStatusConfigs;
+
+/** API may return `close`; UI config uses `closed`. */
+function normalizeStatusKey(status: POStatus): ConfiguredPOStatus {
+  return status === POStatus.CLOSE ? POStatus.CLOSED : status;
+}
+
+function getStatusConfig(status: POStatus): StatusConfig {
+  const key = normalizeStatusKey(status);
+  return PurchaseOrdersStatusConfigs[key] ?? DEFAULT_STATUS_CONFIG;
+}
+
 export const StatusActionDropdown = ({
   poId,
   statusValue,
@@ -24,14 +44,18 @@ export const StatusActionDropdown = ({
   const queryClient = useQueryClient();
   const { mutate, isPending } = usePurchaseOrderBulkAction();
 
-  const selectedStatus = PurchaseOrdersStatusConfigs[statusValue] || {};
+  const selectedStatus = getStatusConfig(statusValue);
   const canChangeStatus = typeof poId === 'number' && poId > 0;
 
   const onSelectStatus = (nextStatus: POStatus) => {
     const id = poId;
     if (typeof id !== 'number' || id <= 0) return;
+    let status = nextStatus;
+    if (nextStatus === POStatus.CLOSED) {
+      status = POStatus.CLOSE;
+    }
     mutate(
-      { poIds: [id], action: nextStatus },
+      { poIds: [id], action: status },
       {
         onSuccess: () => {
           toast.success('Status updated');
@@ -77,9 +101,10 @@ export const StatusActionDropdown = ({
     return statusButton;
   }
 
+  const currentStatusKey = normalizeStatusKey(statusValue);
   const otherStatuses = (
-    Object.keys(PurchaseOrdersStatusConfigs) as POStatus[]
-  ).filter((key) => key !== statusValue);
+    Object.keys(PurchaseOrdersStatusConfigs) as ConfiguredPOStatus[]
+  ).filter((key) => key !== currentStatusKey);
 
   return (
     <DropdownMenu data-no-row-click>

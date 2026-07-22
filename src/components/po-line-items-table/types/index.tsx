@@ -9,6 +9,7 @@ export type POLineItems = {
   quantity: string;
   unitCost: string;
   updatedAt: string;
+  totalCost: string;
 };
 
 export type POLineItemsTableType = Table<POLineItems>;

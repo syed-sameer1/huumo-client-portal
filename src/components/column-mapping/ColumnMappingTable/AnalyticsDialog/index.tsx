@@ -132,153 +132,183 @@ export const AnalyticsDialog = ({
 
   return (
     <>
-      <Dialog open={open} onOpenChange={onClose}>
-        <DialogContent className="sm:max-w-[520px]">
-          <div>
-            {isRefetching || isPending ? (
-              <div className="flex items-center flex-col gap-[40px]">
-                <GradientRingSpinner size={100} />
-                <div className="font-semibold">
-                  {flow === 'vendor'
-                    ? 'Vendor file analyzing…'
-                    : 'PO details analyzing…'}
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-8">
-                <div className="text-center space-y-2">
-                  <div className="text-[18px] font-semibold">
-                    CSV file has been analyzed{' '}
-                  </div>
-                  <div className="text-sm">
-                    Please review below before completing the import.
+      {!previewSummary.limit.exceeded && (
+        <Dialog open={open} onOpenChange={onClose}>
+          <DialogContent className="sm:max-w-[520px]">
+            <div>
+              {isRefetching || isPending ? (
+                <div className="flex items-center flex-col gap-[40px]">
+                  <GradientRingSpinner size={100} />
+                  <div className="font-semibold">
+                    {flow === 'vendor'
+                      ? 'Vendor file analyzing…'
+                      : 'PO details analyzing…'}
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <div className="text-[#3F3F46]">
-                    Total records :{' '}
-                    <span className="font-semibold text-[#09090B]">
-                      {previewSummary?.totalRows}
-                    </span>
+              ) : (
+                <div className="space-y-8">
+                  <div className="text-center space-y-2">
+                    <div className="text-[18px] font-semibold">
+                      CSV file has been analyzed{' '}
+                    </div>
+                    <div className="text-sm">
+                      Please review below before completing the import.
+                    </div>
                   </div>
-                  <div className="text-[#3F3F46]">
-                    Valid records :{' '}
-                    <span className="font-semibold text-[#09090B]">
-                      {previewSummary?.validRows}
-                    </span>
-                  </div>
-                  <div className="text-[#3F3F46]">
-                    Invalid records :{' '}
-                    <span className="font-semibold text-[#09090B]">
-                      {previewSummary?.invalidRows}
-                    </span>
-                  </div>
-                  <div className="text-[#3F3F46]">
-                    Duplicate records :{' '}
-                    <span className="font-semibold text-[#09090B]">
-                      {previewSummary?.duplicateRows}
-                    </span>
-                  </div>
-                  {isPurchaseOrderFlow && (
-                    <>
-                      <div className="text-[#3F3F46]">
-                        Total POs :{' '}
-                        <span className="font-semibold text-[#09090B]">
-                          {previewSummary?.uniquePOs}
-                        </span>
-                      </div>
-                      <div className="text-[#3F3F46]">
-                        POs to create :{' '}
-                        <span className="font-semibold text-[#09090B]">
-                          {previewSummary?.newPOs}
-                        </span>
-                      </div>
-                      <div className="text-[#3F3F46]">
-                        POs to update :{' '}
-                        <span className="font-semibold text-[#09090B]">
-                          {previewSummary?.existingPOs}
-                        </span>
-                      </div>
-                      <div className="text-[#3F3F46]">
-                        Missing vendor emails:{' '}
-                        <span className="font-semibold text-[#09090B]">
-                          {previewSummary?.missingVendorEmailCount}
-                        </span>
-                      </div>
+                  <div className="space-y-2">
+                    <div className="text-[#3F3F46]">
+                      Total records :{' '}
+                      <span className="font-semibold text-[#09090B]">
+                        {previewSummary?.totalRows}
+                      </span>
+                    </div>
+                    <div className="text-[#3F3F46]">
+                      Valid records :{' '}
+                      <span className="font-semibold text-[#09090B]">
+                        {previewSummary?.validRows}
+                      </span>
+                    </div>
+                    <div className="text-[#3F3F46]">
+                      Invalid records :{' '}
+                      <span className="font-semibold text-[#09090B]">
+                        {previewSummary?.invalidRows}
+                      </span>
+                    </div>
+                    <div className="text-[#3F3F46]">
+                      Duplicate records :{' '}
+                      <span className="font-semibold text-[#09090B]">
+                        {previewSummary?.duplicateRows}
+                      </span>
+                    </div>
+                    {isPurchaseOrderFlow && (
+                      <>
+                        <div className="text-[#3F3F46]">
+                          Total POs :{' '}
+                          <span className="font-semibold text-[#09090B]">
+                            {previewSummary?.uniquePOs}
+                          </span>
+                        </div>
+                        <div className="text-[#3F3F46]">
+                          POs to create :{' '}
+                          <span className="font-semibold text-[#09090B]">
+                            {previewSummary?.newPOs}
+                          </span>
+                        </div>
+                        <div className="text-[#3F3F46]">
+                          POs to update :{' '}
+                          <span className="font-semibold text-[#09090B]">
+                            {previewSummary?.existingPOs}
+                          </span>
+                        </div>
+                        <div className="text-[#3F3F46]">
+                          Missing vendor emails:{' '}
+                          <span className="font-semibold text-[#09090B]">
+                            {previewSummary?.missingVendorEmailCount}
+                          </span>
+                        </div>
 
-                      <div className="text-[#3F3F46]">
-                        Overdue POs:{' '}
-                        <span className="font-semibold text-[#09090B]">
-                          {previewSummary?.overdueCount}
-                        </span>
-                      </div>
-                    </>
+                        <div className="text-[#3F3F46]">
+                          Overdue POs:{' '}
+                          <span className="font-semibold text-[#09090B]">
+                            {previewSummary?.overdueCount}
+                          </span>
+                        </div>
+                      </>
+                    )}
+                    <div className="text-[#3F3F46]">
+                      Errors :{' '}
+                      <span className="font-semibold text-[#09090B]">
+                        {previewSummary?.topErrors?.length ?? 0}
+                      </span>
+                    </div>
+                  </div>
+
+                  {!!previewSummary?.topErrors?.length && (
+                    <Accordion type="single" collapsible className="w-full">
+                      <AccordionItem value="errors">
+                        <AccordionTrigger className="no-underline hover:no-underline pt-0 text-md text-[#3F3F46]">
+                          Errors
+                        </AccordionTrigger>
+                        <AccordionContent>
+                          <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
+                            {Object.keys(previewSummary.errorBreakdown).map(
+                              (val, index) => {
+                                return (
+                                  <li key={`${val}-${index}`}>
+                                    {val}: {previewSummary.errorBreakdown[val]}
+                                  </li>
+                                );
+                              },
+                            )}
+                          </ul>
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
                   )}
-                  <div className="text-[#3F3F46]">
-                    Errors :{' '}
-                    <span className="font-semibold text-[#09090B]">
-                      {previewSummary?.topErrors?.length ?? 0}
-                    </span>
-                  </div>
-                </div>
 
-                {!!previewSummary?.topErrors?.length && (
-                  <Accordion type="single" collapsible className="w-full">
-                    <AccordionItem value="errors">
-                      <AccordionTrigger className="no-underline hover:no-underline pt-0 text-md text-[#3F3F46]">
-                        Errors
-                      </AccordionTrigger>
-                      <AccordionContent>
-                        <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
-                          {Object.keys(previewSummary.errorBreakdown).map(
-                            (val, index) => {
-                              return (
-                                <li key={`${val}-${index}`}>
-                                  {val}: {previewSummary.errorBreakdown[val]}
-                                </li>
-                              );
-                            },
-                          )}
-                        </ul>
-                      </AccordionContent>
-                    </AccordionItem>
-                  </Accordion>
-                )}
-
-                <div className="flex justify-between gap-12">
-                  <Button
-                    className="flex-1"
-                    variant="ghost"
-                    type="button"
-                    onClick={() => onClose(false)}
-                  >
-                    Cancel
-                  </Button>
-                  {previewSummary.invalidRows > 0 ? (
+                  <div className="flex justify-between gap-12">
                     <Button
                       className="flex-1"
+                      variant="ghost"
                       type="button"
-                      disabled={!previewSummary.validRows}
-                      onClick={onConfirmImport}
+                      onClick={() => onClose(false)}
                     >
-                      Import
+                      Cancel
                     </Button>
-                  ) : (
-                    <Button
-                      className="flex-1"
-                      type="button"
-                      disabled={!importJobId || isProcessing}
-                      onClick={onImport}
-                    >
-                      {isProcessing ? 'Importing…' : 'Import'}
-                    </Button>
-                  )}
+                    {previewSummary.invalidRows > 0 ? (
+                      <Button
+                        className="flex-1"
+                        type="button"
+                        disabled={!previewSummary.validRows}
+                        onClick={onConfirmImport}
+                      >
+                        Import
+                      </Button>
+                    ) : (
+                      <Button
+                        className="flex-1"
+                        type="button"
+                        disabled={!importJobId || isProcessing}
+                        onClick={onImport}
+                      >
+                        {isProcessing ? 'Importing…' : 'Import'}
+                      </Button>
+                    )}
+                  </div>
                 </div>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {previewSummary.limit.exceeded && (
+        <Dialog open={open} onOpenChange={onClose}>
+          <DialogContent className="sm:max-w-[520px]">
+            <div className="space-y-8">
+              <div className="text-center space-y-2">
+                <div className="text-[18px] font-semibold">
+                  Import Limit Exceeded
+                </div>
+                <div className="text-sm">
+                  Your import contains {previewSummary.limit.incomingPOs} POs,
+                  which exceeds the remaining limit{' '}
+                  {previewSummary.limit.remaining}. Please reduce the number of
+                  records and try again.
+                </div>
+                <Button
+                  className="flex-1"
+                  type="button"
+                  disabled={!importJobId || isProcessing}
+                  onClick={() => router.push(routeUrls.selectImportMethod)}
+                >
+                  Upload new file
+                </Button>
               </div>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
 
       {isPurchaseOrderFlow && (
         <>

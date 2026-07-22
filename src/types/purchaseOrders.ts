@@ -1,4 +1,5 @@
 import { POLineItems } from '@/components/po-line-items-table/types';
+import type { EmailTemplate } from './emailTemplate';
 
 export type PurchaseOrdersResponse = {
   purchaseOrders: PurchaseOrders[];
@@ -32,6 +33,7 @@ export enum POStatus {
   ESCALATED = 'escalated',
   CREATED = 'created',
   CLOSED = 'closed',
+  CLOSE = 'closed',
 }
 
 export type PurchaseOrderRawData = {
@@ -98,15 +100,7 @@ export type PurchaseOrderUser = {
 
 export type PurchaseOrderFollowup = {
   id: number;
-  emailTemplate: {
-    body: string;
-    createdAt: string;
-    metaData: string;
-    name: string;
-    subject: string;
-    type: string;
-    updatedAt: string;
-  };
+  emailTemplate: Omit<EmailTemplate, 'id'> & { id?: number };
   followUpNumber: number;
   scheduledAt: string;
   createdAt: string;
