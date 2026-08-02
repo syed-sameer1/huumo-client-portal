@@ -2,7 +2,7 @@
 import { Form, FormField } from '@/components/ui/form';
 import { AuthWrapper } from '../AuthWrapper';
 import { InputWithLabel } from '@/components/form-inputs/InputWithLabel';
-import { useForm } from 'react-hook-form';
+import { Control, useForm } from 'react-hook-form';
 import { CompanyDetailsFormValues } from '../types';
 import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -76,7 +76,10 @@ export const CompanyDetailsForm = ({
               )}
             />
 
-            <LocationSelectGroup control={control} setValue={form.setValue} />
+            <LocationSelectGroup
+              control={control as Control<any>}
+              setValue={form.setValue}
+            />
 
             <Button className="bg-accent-foreground h-10 rounded-md">
               Continue
