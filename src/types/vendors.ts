@@ -58,3 +58,5 @@ export type VendorDetailsType = {
 export interface VendorDetailsRespone {
   vendor: VendorDetailsType;
 }
+
+export type test = {};
